@@ -1,2 +1,2 @@
-# hms-frontend
-This is the repository for Hotel Management System Frontend
+# Hotel-Management-Frontend
+Frontend by react of the hotel-management system
