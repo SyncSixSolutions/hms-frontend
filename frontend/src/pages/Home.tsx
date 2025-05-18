@@ -4,6 +4,10 @@ import How1Icon from '../assets/images/how1.png';
 import How2Icon from '../assets/images/how2.png';
 import How3Icon from '../assets/images/how3.png';
 import Vector1 from '../assets/images/Vector 1.png';
+import suite1 from '../assets/images/suite1.jpg';
+import suite2 from '../assets/images/suite2.jpg';
+import suite3 from '../assets/images/suite3.jpg';
+
 
 const Home: React.FC = () => {
   return (
@@ -217,8 +221,8 @@ const Home: React.FC = () => {
             </svg>
           </button>
         </div>
-      </header>
-
+      </header>      
+      
       {/* How it works */}
       <section className="py-20 text-center">
         <h2 className="text-5xl font-bold mb-6">How it work</h2>
@@ -229,15 +233,24 @@ const Home: React.FC = () => {
         
         <div className="flex justify-between max-w-6xl mx-auto px-4 relative">
           {/* Background wavy line */}
-          <div className="absolute w-full top-1/2 -z-10">
+          <div className="absolute w-full top-1/4 -z-10">
             <img src={Vector1} alt="Background wave" className="w-full" />
           </div>
           
           {/* Step 1 */}
           <div className="flex flex-col items-center" style={{ maxWidth: '300px' }}>
             <div className="relative mb-16 transform hover:scale-105 transition-transform duration-300">
-              <div className="absolute inset-0 bg-white shadow-lg rounded-3xl transform rotate-6 origin-bottom"></div>
-              <div className="relative bg-white shadow-lg p-16 rounded-3xl z-10">
+              {/* Vector background with random rotation */}
+              <div className="absolute -z-10 w-full h-full" style={{ transform: 'rotate(15deg) scale(1.5) translateX(-10%)' }}>
+                <img src={Vector1} alt="Background wave" className="w-full" style={{ opacity: 0.7 }} />
+              </div>
+              {/* Blob background */}
+              <div className="absolute -z-20 w-44 h-44 bg-gray-100 rounded-full blur-xl opacity-60" 
+                  style={{ top: '-20%', left: '-30%' }}></div>
+              
+              {/* Card */}
+              <div className="absolute inset-0 bg-white shadow-lg rounded-3xl transform rotate-3 origin-bottom"></div>
+              <div className="relative bg-white shadow-lg p-12 rounded-3xl z-10">
                 <div className="w-16 h-16 bg-green-400 rounded-full flex items-center justify-center mx-auto">
                   <img src={How1Icon} alt="Select Dates" className="h-8 w-8" />
                 </div>
@@ -255,9 +268,18 @@ const Home: React.FC = () => {
           {/* Step 2 */}
           <div className="flex flex-col items-center" style={{ maxWidth: '300px' }}>
             <div className="relative mb-16 transform hover:scale-105 transition-transform duration-300">
-              <div className="absolute inset-0 bg-white shadow-lg rounded-3xl transform rotate-6 origin-bottom"></div>
-              <div className="relative bg-white shadow-lg p-16 rounded-3xl z-10">
-                <div className="w-16 h-16 bg-blue-400 rounded-full flex items-center justify-center mx-auto">
+              {/* Vector background with random rotation */}
+              <div className="absolute -z-10 w-full h-full" style={{ transform: 'rotate(-25deg) scale(1.3) translateY(20%)' }}>
+                <img src={Vector1} alt="Background wave" className="w-full" style={{ opacity: 0.7 }} />
+              </div>
+              {/* Blob background */}
+              <div className="absolute -z-20 w-52 h-52 bg-gray-200 rounded-full blur-xl opacity-50" 
+                  style={{ top: '20%', right: '-40%' }}></div>
+              
+              {/* Card */}
+              <div className="absolute inset-0 bg-white shadow-lg rounded-3xl transform -rotate-2 origin-bottom"></div>
+              <div className="relative bg-white shadow-lg p-12 rounded-3xl z-10">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ backgroundColor: '#92A5EF' }}>
                   <img src={How2Icon} alt="Pick a Room" className="h-8 w-8" />
                 </div>
               </div>
@@ -274,8 +296,17 @@ const Home: React.FC = () => {
           {/* Step 3 */}
           <div className="flex flex-col items-center" style={{ maxWidth: '300px' }}>
             <div className="relative mb-16 transform hover:scale-105 transition-transform duration-300">
+              {/* Vector background with random rotation */}
+              <div className="absolute -z-10 w-full h-full" style={{ transform: 'rotate(40deg) scale(1.4) translateX(10%)' }}>
+                <img src={Vector1} alt="Background wave" className="w-full" style={{ opacity: 0.7 }} />
+              </div>
+              {/* Blob background */}
+              <div className="absolute -z-20 w-48 h-48 bg-gray-100 rounded-full blur-xl opacity-60" 
+                  style={{ bottom: '-10%', left: '-20%' }}></div>
+              
+              {/* Card */}
               <div className="absolute inset-0 bg-white shadow-lg rounded-3xl transform rotate-6 origin-bottom"></div>
-              <div className="relative bg-white shadow-lg p-16 rounded-3xl z-10">
+              <div className="relative bg-white shadow-lg p-12 rounded-3xl z-10">
                 <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto">
                   <img src={How3Icon} alt="Confirm Booking" className="h-8 w-8" />
                 </div>
@@ -291,25 +322,76 @@ const Home: React.FC = () => {
             </p>
           </div>
         </div>
-      </section>
+        
+      {/* Rooms & Suites */}
+      <section className="py-20 text-center"></section>
+        <h2 className="text-5xl font-bold mb-2">Rooms & Suites</h2>
+        <p className="text-gray-500 mb-16">find your best way to stay here</p>
 
-      {/* Suites */}
-      <section className="py-16 text-center">
-        <h2 className="text-3xl font-semibold mb-8">Suites</h2>
-        <div className="flex justify-center gap-8">
-          {[1, 2, 3].map((num) => (
-            <div 
-              key={num} 
-              className="w-72 h-96 bg-cover bg-center rounded-lg shadow-md relative"
-              style={{ backgroundImage: `url('/assets/images/suite${num}.jpg')` }}
-            >
-              <div className="absolute bottom-0 w-full bg-black bg-opacity-50 text-white p-4 rounded-b-lg">
-                Suite {num}
+        <div className="max-w-6xl mx-auto px-4 flex flex-col items-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+            {[
+              {
+                img: suite1,
+                title: "Premium Suite",
+                price: "$199",
+                desc: [
+                  "Ocean view, king-size bed",
+                  "Private balcony",
+                  "Complimentary breakfast"
+                ]
+              },
+              {
+                img: suite2,
+                title: "Deluxe Room",
+                price: "$XX",
+                desc: [
+                  "Spacious room with city view",
+                  "King-size bed & mini-bar",
+                  "Complimentary breakfast"
+                ]
+              },
+              {
+                img: suite3,
+                title: "Executive Suite",
+                price: "$299",
+                desc: [
+                  "Luxury amenities",
+                  "Living area & workspace",
+                  "Free airport pickup"
+                ]
+              }
+            ].map((suite, idx) => (
+              <div
+                key={idx}
+                className="relative overflow-hidden rounded-3xl shadow-lg group transform transition-transform hover:scale-[1.02] duration-300"
+              >
+                <img
+                  src={suite.img}
+                  alt={suite.title}
+                  className="w-full h-[450px] object-cover"
+                />
+                {/* Overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
+                  <h3 className="text-3xl font-parisienne text-white mb-2">{suite.title}</h3>
+                  <p className="text-lg text-green-400 mb-1">From <span className="font-semibold">{suite.price}</span> per night</p>
+                  <ul className="text-white text-sm mb-4">
+                    {suite.desc.map((d, i) => (
+                      <li key={i} className="mb-1">• {d}</li>
+                    ))}
+                  </ul>
+                  <button className="bg-white/80 hover:bg-white text-[#2D60FF] font-semibold px-6 py-2 rounded-full text-sm transition-colors duration-200">
+                    Book now
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          <button className="mt-12 bg-[#5C4DF4] hover:bg-[#2D60FF] text-white px-12 py-4 rounded-full text-sm font-medium transition-colors duration-300 shadow">
+            Show more
+          </button>
         </div>
-        <button className="mt-8 bg-indigo-600 text-white px-6 py-2 rounded">See more</button>
       </section>
 
       {/* Trusted Section */}
