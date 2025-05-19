@@ -5,8 +5,7 @@ function App() {
 
   return (
     <div>
-          {/* <Home /> */}
-          <Dashboard/>
+          <Home />
     </div>
   )
 }
