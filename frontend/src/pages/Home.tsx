@@ -264,7 +264,7 @@ const Home: React.FC = () => {
                   transition: { delay: 0.1 * i, duration: 0.4 } 
                 }
               }}
-              className={`cursor-pointer ${item === "Home" ? "text-white" : "hover:text-white text-[#6B7280]"}`}
+              className={`cursor-pointer ${item === "Home" ? "text-white" : "hover:text-blue-500 text-[#6B7280]"}`}
             >
               {item}
             </motion.li>
