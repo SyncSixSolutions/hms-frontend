@@ -22,6 +22,8 @@ import sri1 from '../assets/images/sri1.jpg';
 import sri2 from '../assets/images/sri2.jpg';
 import sri3 from '../assets/images/sri3.jpg';
 import sri4 from '../assets/images/sri4.jpg';
+import sri5 from '../assets/images/sri5.jpg';
+import sri6 from '../assets/images/sri6.jpg';
 import galleryImg from '../assets/images/gallery.jpg';
 import contactImg from '../assets/images/contact.jpg';
 
@@ -194,6 +196,33 @@ const Home: React.FC = () => {
     const newIndexes = [...activeImageIndexes];
     newIndexes[roomIndex] = imageIndex;
     setActiveImageIndexes(newIndexes);
+  };
+
+  const destinations = [
+    { name: "Galle forte", time: "19 minutes drive", image: sri4 },
+    { name: "Ella", time: "7 hours drive", image: sri5 },
+    { name: "Temple of the tooth", time: "5 hours drive", image: sri3 },
+    { name: "Sigiriya", time: "19 minutes drive", image: sri2 },
+    { name: "Coconut Tree Hill", time: "5 minutes drive", image: sri1 },
+    { name: "Kandy", time: "4 hours drive", image: sri6 }
+  ];
+  
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextDestinations = () => {
+    if (currentIndex + 4 >= destinations.length) {
+      setCurrentIndex(0);
+    } else {
+      setCurrentIndex(prev => prev + 4);
+    }
+  };
+
+  const prevDestinations = () => {
+    if (currentIndex - 4 < 0) {
+      setCurrentIndex(Math.max(0, destinations.length - 4));
+    } else {
+      setCurrentIndex(prev => prev - 4);
+    }
   };
 
   return (
@@ -894,7 +923,7 @@ const Home: React.FC = () => {
               <a href="#" className="flex items-center text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors">
                 Search more 
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </a>
             </div>
@@ -1268,13 +1297,140 @@ const Home: React.FC = () => {
             </motion.div>
         </div>
       </motion.section>
-       {/* Explore Sri Lanka */}
-      <section className="py-16 text-center">
-        <h2 className="text-3xl font-semibold mb-6">Explore Sri Lanka</h2>
-        <div className="flex justify-center gap-6">
-          {[1, 2, 3, 4].map((num) => (
-            <img key={num} src={`/assets/images/sri${num}.jpg`} alt={`Sri Lanka ${num}`} className="w-40 h-32 object-cover rounded-lg" />
-          ))}
+
+      {/* Explore Sri Lanka */}
+      <section className="py-0 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div 
+            className="text-center mb-14"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-6xl font-bold text-[#1E293B] mb-3">Explore Sri Lanka</h2>
+            <p className="text-gray-500 text-xl">Discover great places near where you live</p>
+          </motion.div>
+
+          {/* Live trending indicator */}
+          <motion.div 
+            className="flex justify-end mb-2"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 1 }}
+          >
+            <div className="bg-white px-4 py-2 rounded-full shadow-md flex items-center gap-2 z-20">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </span>
+              <span className="text-sm font-medium text-gray-600">Live trending destinations</span>
+            </div>
+          </motion.div>
+
+          {/* Carousel container with proper overflow handling */}
+          <div className="relative px-10 py-4">
+            <motion.div 
+              className="flex gap-5 pb-6 overflow-visible"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              style={{ 
+                scrollbarWidth: 'none', 
+                msOverflowStyle: 'none',
+                position: 'relative',
+              }}
+            >
+              {/* Use destinations.slice to render only the visible destinations */}
+              {destinations.slice(currentIndex, currentIndex + 4).map((destination, index) => (
+                <motion.div 
+                  key={index}
+                  className="min-w-[calc(25%-16px)] flex-shrink-0 relative z-10"
+                  whileHover={{ y: -8, zIndex: 30 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <div className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full">
+                    <img 
+                      src={destination.image} 
+                      alt={destination.name} 
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-3">
+                      <h3 className="text-lg font-semibold">{destination.name}</h3>
+                      <p className="text-gray-500 text-sm">{destination.time}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Improved Previous button with better animation and click animation */}
+            <motion.button 
+              className="absolute -left-6 top-1/3 bg-white shadow-lg rounded-full w-12 h-12 flex items-center justify-center z-20"
+              initial={{ opacity: 0, x: 10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: 0.7 }}
+              whileHover={{ 
+              scale: 1.05, 
+              boxShadow: "0 8px 25px rgba(0,0,0,0.15)" 
+              }}
+              whileTap={{ scale: 0.85, x: -8, rotate: -15 }}
+              aria-label="See previous destinations"
+              onClick={prevDestinations}
+            >
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </motion.button>
+
+            {/* Improved Next button with better animation and click animation */}
+            <motion.button 
+              className="absolute -right-6 top-1/3 bg-white shadow-lg rounded-full w-12 h-12 flex items-center justify-center z-20"
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: 0.7 }}
+              whileHover={{ 
+              scale: 1.05, 
+              boxShadow: "0 8px 25px rgba(0,0,0,0.15)" 
+              }}
+              whileTap={{ scale: 0.85, x: 8, rotate: 15 }}
+              aria-label="See more destinations"
+              onClick={nextDestinations}
+            >
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </motion.button>
+
+            {/* Pagination indicators */}
+            { <div className="flex justify-center gap-2 mt-6">
+              {Array.from({ length: Math.ceil(destinations.length / 4) }).map((_, idx) => (
+                <motion.button
+                  key={idx}
+                  className={`w-2 h-2 rounded-full ${
+                    Math.floor(currentIndex / 4) === idx ? "bg-blue-500" : "bg-gray-300"
+                  }`}
+                  onClick={() => setCurrentIndex(idx * 4)}
+                  whileHover={{ scale: 1.5 }}
+                  whileTap={{ scale: 0.9 }}
+                />
+              ))}
+            </div>}
+          </div>
+
+          {/* Visual indicator showing which destinations are being displayed */}
+          {<motion.div 
+            className="text-center mt-4 text-sm text-gray-500 mb-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            key={currentIndex}
+          >
+            Showing {currentIndex + 1}-{Math.min(currentIndex + 4, destinations.length)} of {destinations.length} destinations
+          </motion.div>}
         </div>
       </section>
 
