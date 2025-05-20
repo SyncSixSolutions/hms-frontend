@@ -1366,7 +1366,7 @@ const Home: React.FC = () => {
               ))}
             </motion.div>
 
-            {/* Improved Previous button with better animation and click animation */}
+            {/* Previous button */}
             <motion.button 
               className="absolute -left-6 top-1/3 bg-white shadow-lg rounded-full w-12 h-12 flex items-center justify-center z-20"
               initial={{ opacity: 0, x: 10 }}
@@ -1386,7 +1386,7 @@ const Home: React.FC = () => {
               </svg>
             </motion.button>
 
-            {/* Improved Next button with better animation and click animation */}
+            {/* Next button */}
             <motion.button 
               className="absolute -right-6 top-1/3 bg-white shadow-lg rounded-full w-12 h-12 flex items-center justify-center z-20"
               initial={{ opacity: 0, x: -10 }}
@@ -1434,24 +1434,281 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+
       {/* Loyalty Benefits */}
-      <section className="py-16 bg-gray-100 text-center">
-        <h2 className="text-3xl font-semibold mb-8">Loyalty Benefits</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-12">
-          {["Free upgrades", "Late checkout", "Exclusive deals", "Bonus points"].map((benefit, index) => (
-            <div key={index} className="bg-white p-4 rounded shadow">
-              <h3 className="font-semibold text-lg mb-2">{benefit}</h3>
-              <p className="text-sm">Enjoy our premium loyalty rewards and perks</p>
-            </div>
-          ))}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div 
+            className="text-center mb-14"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-5xl font-bold mb-3">
+              <span className="text-[#1E293B]">Loyalty </span>
+              <span className="text-[#5C4DF4]">Benefits</span>
+            </h2>
+            <p className="text-gray-500 text-lg">Rewarding Your Stay, Every Step of the Way</p>
+          </motion.div>
+
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            {/* Exclusive Discount Rates */}
+            <motion.div 
+              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              whileHover={{ y: -5, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+                  <img 
+                  src="https://img.freepik.com/free-photo/young-female-with-red-bottle-yellow-background-facial-fit-sport-gym_140725-158570.jpg?semt=ais_hybrid&w=740"
+                  alt="Discount icon" 
+                  className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-[#1E293B] mb-2">Exclusive Discount Rates</h3>
+                  <p className="text-gray-500">Get special pricing on rooms and suites only available to loyalty members.</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Free Room Upgrades */}
+            <motion.div 
+              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ y: -5, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+                  <img 
+                    src="https://img.freepik.com/free-photo/modern-studio-apartment-design-with-bedroom-living-space_1262-12375.jpg"
+                    alt="Room upgrade icon" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-[#1E293B] mb-2">Free Room Upgrades</h3>
+                  <p className="text-gray-500">Get complimentary upgrades to better rooms when available.</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Complimentary Food Credits */}
+            <motion.div 
+              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              whileHover={{ y: -5, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+                  <img 
+                    src="https://img.freepik.com/free-photo/top-view-table-full-delicious-food-composition_23-2149141352.jpg"
+                    alt="Food icon" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-[#1E293B] mb-2">Complimentary Food Credits</h3>
+                  <p className="text-gray-500">Start your day right or enjoy a free meal on us.</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Loyalty Points Program */}
+            <motion.div 
+              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              whileHover={{ y: -5, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+                  <img 
+                    src="https://img.freepik.com/free-vector/loyalty-program-concept_23-2148453058.jpg"
+                    alt="Points icon" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-[#1E293B] mb-2">Loyalty Points Program</h3>
+                  <p className="text-gray-500">Earn points on every stay and redeem them for rewards or future bookings.</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Personalized Services */}
+            <motion.div 
+              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              whileHover={{ y: -5, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+                  <img 
+                    src="https://img.freepik.com/free-photo/hotel-service-bell_23-2148786173.jpg"
+                    alt="Services icon" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-[#1E293B] mb-2">Personalized Services</h3>
+                  <p className="text-gray-500">Tailored room preferences, amenities, and exclusive concierge assistance.</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Birthday & Anniversary Surprises */}
+            <motion.div 
+              className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              whileHover={{ y: -5, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+                  <img 
+                    src="https://img.freepik.com/free-photo/birthday-cake-with-colorful-candles_144627-16745.jpg"
+                    alt="Celebration icon" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-[#1E293B] mb-2">Birthday & Anniversary Surprises</h3>
+                  <p className="text-gray-500">Special gifts or room decorations to celebrate your important moments.</p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Gallery */}
-      <section className="py-16 text-center">
-        <h2 className="text-3xl font-semibold mb-6">Gallery</h2>
-        <div className="flex justify-center gap-6">
-          <img src="/assets/images/gallery.jpg" alt="Gallery" className="rounded-lg w-96 h-60 object-cover" />
+      <section className="py-10 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <motion.div 
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-5xl font-bold text-[#1E293B] mb-3">Gallery</h2>
+            <p className="text-gray-500 text-lg">Take a visual journey through <span className="italic font-parisienne text-xl">OceanView</span></p>
+          </motion.div>
+          
+          <motion.div 
+            className="bg-[#f0f9f9] rounded-3xl p-8 overflow-hidden"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Main YouTube video player */}
+              <motion.div 
+                className="w-full lg:w-3/4 relative rounded-2xl overflow-hidden"
+                whileHover={{ scale: 1.01 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="relative w-full h-0 pb-[56.25%]">
+                  <iframe
+                    className="absolute top-0 left-0 w-full h-full rounded-2xl"
+                    src="https://www.youtube.com/embed/H1CIBqDeWQ0"
+                    title="OceanView Beach Resort"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </motion.div>
+                      
+              {/* Thumbnails on the right - YouTube videos */}
+              <div className="w-full lg:w-1/4 flex flex-row lg:flex-col gap-4">
+                {[
+                  { id: "UJEUwEJ6gH4", title: "Hotel Introduction" },
+                  { id: "hNN9Q3GuWEM", title: "Hotel Showcase" },
+                  { id: "cmfeMfdYRFs", title: "Luxury Hotel Experience" },
+                  { id: "9I2xta0ahIs", title: "Premium Resort Tour" }
+                ].map((video, idx) => (
+                  <motion.div 
+                    key={idx} 
+                    className="relative rounded-xl overflow-hidden w-full h-[120px] cursor-pointer"
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: 0.3 + (idx * 0.1) }}
+                    whileHover={{ scale: 1.03 }}
+                  >
+                    <div className="relative w-full h-full">
+                      {/* YouTube thumbnail image with play button overlay */}
+                      <img 
+                        src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`} 
+                        alt={`${video.title} thumbnail`}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20">
+                        <motion.div 
+                          className="w-10 h-10 bg-white bg-opacity-80 rounded-full flex items-center justify-center"
+                          whileHover={{ scale: 1.1 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                          onClick={() => {
+                            window.open(`https://www.youtube.com/watch?v=${video.id}`, '_blank');
+                          }}
+                        >
+                          <div className="w-8 h-8 bg-[#5C4DF4] rounded-full flex items-center justify-center pl-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-4 h-4">
+                              <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        </motion.div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+          
+          {/* Browse more button */}
+          <motion.div 
+            className="text-center mt-8"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.7 }}
+          >
+            <button
+              className="bg-white border border-gray-200 text-gray-800 px-8 py-3 rounded-full text-base font-medium shadow-sm hover:bg-gray-50"
+              style={{
+                boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
+              }}
+            >
+              Browse more
+            </button>
+          </motion.div>
         </div>
       </section>
 
