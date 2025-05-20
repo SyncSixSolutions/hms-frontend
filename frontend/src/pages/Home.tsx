@@ -11,8 +11,6 @@ import Vector1 from '../assets/images/Vector 1.png';
 import suite1 from '../assets/images/suite1.jpg';
 import suite2 from '../assets/images/suite2.jpg';
 import suite3 from '../assets/images/suite3.jpg';
-
-// Add these new imports for other sections
 import room1 from '../assets/images/room1.jpg';
 import room2 from '../assets/images/room2.jpg';
 import room3 from '../assets/images/room3.jpg';
@@ -26,7 +24,6 @@ import sri3 from '../assets/images/sri3.jpg';
 import sri4 from '../assets/images/sri4.jpg';
 import galleryImg from '../assets/images/gallery.jpg';
 import contactImg from '../assets/images/contact.jpg';
-
 
 const suiteData = [
   {
@@ -59,6 +56,16 @@ const suiteData = [
       "Free airport pickup"
     ]
   }
+];
+
+// New array for room images
+const roomImages = [
+  [room1, room2, room3, room4, room5],
+  [room2, room3, room4, room5, room6],
+  [room3, room4, room5, room6, room1],
+  [room4, room5, room6, room1, room2],
+  [room5, room6, room1, room2, room3],
+  [room6, room1, room2, room3, room4],
 ];
 
 // Animation variants
@@ -95,13 +102,19 @@ function useScrollAnimation(threshold = 0.2) {
 }
 
 // Update the CounterAnimation component
-const CounterAnimation = ({ end, label, suffix = "+" }) => {
+type CounterAnimationProps = {
+  end: number;
+  label: string;
+  suffix?: string;
+};
+
+const CounterAnimation: React.FC<CounterAnimationProps> = ({ end, label, suffix = "+" }) => {
   const [count, setCount] = useState(0);
   const [ref, inView] = useInView({ triggerOnce: true });
   
   useEffect(() => {
     if (inView) {
-      let startTime = null;
+      let startTime: number | null = null;
       const animationDuration = 2000; // 2 seconds
       
       const animate = (timestamp) => {
@@ -164,6 +177,7 @@ const CounterAnimation = ({ end, label, suffix = "+" }) => {
 
 const Home: React.FC = () => {
   const [centerIdx, setCenterIdx] = useState(1);
+  const [activeImageIndexes, setActiveImageIndexes] = useState(Array(6).fill(0));
 
   const prev = () => setCenterIdx((i) => (i === 0 ? suiteData.length - 1 : i - 1));
   const next = () => setCenterIdx((i) => (i === suiteData.length - 1 ? 0 : i + 1));
@@ -175,7 +189,13 @@ const Home: React.FC = () => {
     return [suiteData[left], suiteData[centerIdx], suiteData[right]];
   };
 
-  
+  // Function to handle image change
+  const handleImageChange = (roomIndex, imageIndex) => {
+    const newIndexes = [...activeImageIndexes];
+    newIndexes[roomIndex] = imageIndex;
+    setActiveImageIndexes(newIndexes);
+  };
+
   return (
     <div className="font-sans">
       {/* Hero Section */}
@@ -777,7 +797,7 @@ const Home: React.FC = () => {
           
           {/* Show more button */}
           <motion.button
-            className="mt-16 bg-white text-[#2D60FF] px-8 py-2 rounded-full text-base font-medium shadow-md hover:bg-blue-50 transition-all"
+            className="mt-16 bg-white text-[#000000] px-8 py-2 rounded-full text-base font-medium shadow-md hover:bg-blue-50 transition-all"
             style={{
               boxShadow: '0 4px 16px #5C4DF420',
               color: '#2D60FF',
@@ -855,257 +875,370 @@ const Home: React.FC = () => {
         </div>
       </motion.section>
 
-      {/* Featured Rooms */}
-      <motion.section 
-        className="py-16"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-      >
-        <motion.h2 
-          className="text-3xl font-semibold text-center mb-8"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
+      {/* Featured Rooms & Suites */}
+      <section className="py-16 flex justify-center">
+        <div 
+          className="w-full max-w-7xl rounded-3xl px-12 py-14"
+          style={{ 
+            background: 'linear-gradient(160deg, #F4F7FD 0%, #F6F8FE 35%, #F8FAFF 70%, #FFFFFF 100%)',
+            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.04)'
+          }}
         >
-          Featured Rooms & Suites
-        </motion.h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-12">
-          {[
-            {img: room1, num: 1},
-            {img: room2, num: 2},
-            {img: room3, num: 3},
-            {img: room4, num: 4},
-            {img: room5, num: 5},
-            {img: room6, num: 6}
-          ].map(({img, num}) => (
-            <motion.div 
-              key={num} 
-              className="border p-4 rounded-lg shadow-md"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: num * 0.1 }}
-              viewport={{ once: true, amount: 0.1 }}
-              whileHover={{ y: -5, boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
-            >
-              <img src={img} alt={`Room ${num}`} className="rounded mb-4" />
-              <h3 className="font-semibold mb-2">Room {num}</h3>
-              <p className="text-sm">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* Why choose us */}
-      <motion.section 
-        className="py-16 bg-gray-100 flex items-center justify-center"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="max-w-5xl flex gap-8 items-center">
-          <motion.div 
-            className="w-1/2"
-            initial={{ x: -40, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl font-semibold mb-4">Why did you choose us?</h2>
-            <ul className="list-disc pl-5 text-left space-y-2">
-              <motion.li 
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1, duration: 0.4 }}
-              >Location in the heart of the city</motion.li>
-              <motion.li 
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2, duration: 0.4 }}
-              >Perfect for business & leisure trips</motion.li>
-              <motion.li 
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3, duration: 0.4 }}
-              >Luxury comfort at affordable rates</motion.li>
-              <motion.li 
-                initial={{ opacity: 0, x: -10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4, duration: 0.4 }}
-              >Personalized concierge service</motion.li>
-            </ul>
-          </motion.div>
-          <motion.div 
-            className="w-1/2"
-            initial={{ x: 40, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <img src={chooseUsImg} alt="Why Choose Us" className="rounded-lg" />
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* Explore Sri Lanka */}
-      <motion.section 
-        className="py-16 text-center"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-      >
-        <motion.h2 
-          className="text-3xl font-semibold mb-6"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          Explore Sri Lanka
-        </motion.h2>
-        <div className="flex justify-center gap-6">
-          {[
-            {img: sri1, num: 1},
-            {img: sri2, num: 2},
-            {img: sri3, num: 3},
-            {img: sri4, num: 4}
-          ].map(({img, num}) => (
-            <motion.img 
-              key={num} 
-              src={img} 
-              alt={`Sri Lanka ${num}`} 
-              className="w-40 h-32 object-cover rounded-lg"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: num * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.05, boxShadow: "0 4px 15px rgba(0,0,0,0.1)" }}
-            />
-          ))}
-        </div>
-      </motion.section>
-
-      {/* Loyalty Benefits */}
-      <section className="py-16 bg-gray-100 text-center">
-        <h2 className="text-3xl font-semibold mb-8">Loyalty Benefits</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-12">
-          {["Free upgrades", "Late checkout", "Exclusive deals", "Bonus points"].map((benefit, index) => (
-            <div key={index} className="bg-white p-4 rounded shadow">
-              <h3 className="font-semibold text-lg mb-2">{benefit}</h3>
-              <p className="text-sm">Enjoy our premium loyalty rewards and perks</p>
+          <div className="flex flex-col">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-3">
+              <div>
+                <h2 className="text-4xl font-semibold text-[#1E293B] mb-2">Featured Rooms & Suites</h2>
+                <p className="text-gray-500">Popular Rooms to stay that Oceanview recommends for you</p>
+              </div>
+              <a href="#" className="flex items-center text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors">
+                Search more 
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
             </div>
-          ))}
+
+            {/* Filter Tabs */}
+            <div className="flex gap-3 mb-10">
+              <button className="bg-green-500 text-white px-5 py-2 rounded-full text-sm font-medium">Luxury suite</button>
+              <button className="bg-white text-gray-700 px-5 py-2 rounded-full text-sm font-medium hover:bg-gray-100">Business suite</button>
+              <button className="bg-white text-gray-700 px-5 py-2 rounded-full text-sm font-medium hover:bg-gray-100">Economy suite</button>
+              <button className="bg-white text-gray-700 px-5 py-2 rounded-full text-sm font-medium hover:bg-gray-100">Seasonal offers</button>
+            </div>
+
+            {/* Room Grid */}
+            <motion.div 
+              className="grid grid-cols-2 gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              {[0, 1, 2, 3, 4, 5].map((num) => (
+                <motion.div
+                  key={num}
+                  className="bg-white rounded-xl overflow-hidden shadow-sm"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: num * 0.05 }}
+                  whileHover={{ y: -5, boxShadow: "0 10px 25px rgba(0,0,0,0.08)" }}
+                >
+                  {/* Room Image Carousel */}
+                  <div className="relative">
+                    <AnimatePresence mode="wait">
+                      {roomImages[num].map((img, imgIndex) => (
+                        imgIndex === activeImageIndexes[num] && (
+                          <motion.img
+                            key={imgIndex}
+                            src={img}
+                            alt={`Room ${num + 1} - Image ${imgIndex + 1}`}
+                            className="w-full h-60 object-cover"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        )
+                      ))}
+                    </AnimatePresence>
+                    
+                    <div className="absolute top-3 left-3 bg-white rounded-md px-2 py-1 flex items-center">
+                      <svg className="w-4 h-4 text-red-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <span className="text-sm font-medium">5.0</span>
+                    </div>
+                    
+                    {/* Tags */}
+                    <div className="absolute top-3 right-12 flex gap-2">
+                      <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded flex items-center">
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.142 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+                        </svg>
+                        4 Network
+                      </span>
+                      <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-1 rounded flex items-center">
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        Family
+                      </span>
+                    </div>
+                    
+                    {/* Favorite Button */}
+                    <button className="absolute top-3 right-3 bg-white p-1.5 rounded-full shadow-sm">
+                      <svg className="w-4 h-4 text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    </button>
+                    
+                    {/* Image navigation arrows */}
+                    <button 
+                      className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white w-8 h-8 flex items-center justify-center rounded-full shadow-md"
+                      onClick={() => handleImageChange(num, (activeImageIndexes[num] - 1 + roomImages[num].length) % roomImages[num].length)}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    
+                    <button 
+                      className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white w-8 h-8 flex items-center justify-center rounded-full shadow-md"
+                      onClick={() => handleImageChange(num, (activeImageIndexes[num] + 1) % roomImages[num].length)}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    
+                    {/* Dots indicator - now interactive */}
+                    <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1">
+                      {roomImages[num].map((_, i) => (
+                        <button 
+                          key={i} 
+                          onClick={() => handleImageChange(num, i)}
+                          className={`w-1.5 h-1.5 rounded-full transition-colors ${i === activeImageIndexes[num] ? 'bg-white' : 'bg-white/50 hover:bg-white/70'}`}
+                          aria-label={`Show image ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Room Details */}
+                  <div className="p-5">
+                    <h3 className="text-base font-medium mb-3">425 Vine St #339, Seattle, WA 97666</h3>
+                    
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="flex gap-4">
+                        <div className="flex items-center text-gray-500 text-sm">
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                          </svg>
+                          3 bathrooms
+                        </div>
+                        <div className="flex items-center text-gray-500 text-sm">
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                          </svg>
+                          3 bedrooms
+                        </div>
+                        <div className="flex items-center text-gray-500 text-sm">
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m-2-2h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                          </svg>
+                          1200 Sq. Ft
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <div className="text-xs text-gray-500">Listing Provided by OceanView</div>
+                      <div className="text-green-600 font-semibold">$288,000</div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+            
+            {/* Show more button */}
+            <div className="flex justify-center mt-12">
+              <motion.button
+                className="bg-white text-gray-800 border border-gray-200 px-8 py-3 rounded-full text-base font-medium shadow-sm hover:bg-gray-50"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
+                whileTap={{ y: 0 }}
+              >
+                Show me more
+              </motion.button>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Gallery */}
-      <motion.section 
-        className="py-16 text-center"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-      >
-        <motion.h2 
-          className="text-3xl font-semibold mb-6"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          Gallery
-        </motion.h2>
-        <div className="flex justify-center gap-6">
-          <motion.img 
-            src={galleryImg} 
-            alt="Gallery" 
-            className="rounded-lg w-96 h-60 object-cover"
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            whileHover={{ scale: 1.03, boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
-          />
-        </div>
-      </motion.section>
 
-      {/* Contact Us */}
+      {/* Why choose us */}
       <motion.section 
-        className="py-16 bg-gray-100"
+        className="py-24 flex justify-center overflow-hidden bg-white"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
       >
-        <div className="max-w-5xl mx-auto flex gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 flex flex-wrap">
+          {/* Left column - Benefits */}
           <motion.div 
-            className="w-1/2"
+            className="w-full lg:w-1/2 pr-8"
             initial={{ x: -40, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl font-semibold mb-4">Contact Us</h2>
-            <form className="space-y-4">
-              <motion.input 
-                type="text" 
-                placeholder="Your Name" 
-                className="w-full p-2 border rounded" 
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1, duration: 0.4 }}
-              />
-              <motion.input 
-                type="email" 
-                placeholder="Your Email" 
-                className="w-full p-2 border rounded" 
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2, duration: 0.4 }}
-              />
-              <motion.textarea 
-                placeholder="Your Message" 
-                rows={4} 
-                className="w-full p-2 border rounded"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3, duration: 0.4 }}
-              ></motion.textarea>
-              <motion.button 
-                className="bg-indigo-600 text-white px-4 py-2 rounded"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4, duration: 0.4 }}
-                whileHover={{ scale: 1.05, backgroundColor: "#4338ca" }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Send Message
-              </motion.button>
-            </form>
+            <motion.p 
+              className="text-sm uppercase tracking-wider text-gray-400 mb-2"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              BENEFITS
+            </motion.p>
+            
+            <motion.h2 
+              className="text-5xl font-bold mb-12 text-[#1E293B]"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Why did you<br />choose us?
+            </motion.h2>
+            
+            {/* Benefit 1 */}
+            <motion.div 
+              className="mb-10"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <span className="inline-block bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded mb-3">
+                Easy access
+              </span>
+              <h3 className="text-xl font-bold mb-2">Located in the Heart of the City</h3>
+              <p className="text-gray-500">Access all key point in the city except wasting time</p>
+            </motion.div>
+            
+            {/* Benefit 2 */}
+            <motion.div 
+              className="mb-10"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <span className="inline-block bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-1 rounded mb-3">
+                Exposure
+              </span>
+              <h3 className="text-xl font-bold mb-2">Perfect for Business & Leisure Stays</h3>
+              <p className="text-gray-500">Millions of people are searching for unique places to stay around the world</p>
+            </motion.div>
+            
+            {/* Benefit 3 */}
+            <motion.div 
+              className="mb-10"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <span className="inline-block bg-pink-100 text-pink-700 text-xs font-medium px-2.5 py-1 rounded mb-3">
+                Caring
+              </span>
+              <h3 className="text-xl font-bold mb-2">Personalized Concierge Service</h3>
+              <p className="text-gray-500">Our dedicated concierge team is here to cater to your unique needs</p>
+            </motion.div>
           </motion.div>
+
+          {/* Right column - Image with testimonials */}
           <motion.div 
-            className="w-1/2"
-            initial={{ x: 40, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
+            className="w-full lg:w-1/2 relative mt-8 lg:mt-0"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <img src={contactImg} alt="Contact" className="rounded-lg" />
+            <div className="relative">
+              {/* Main image */}
+              <motion.div 
+                className="overflow-hidden rounded-[32px]"
+                initial={{ scale: 0.95 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <motion.img 
+                  src={chooseUsImg} 
+                  alt="Why Choose Us" 
+                  className="w-full h-[550px] object-cover rounded-[32px]"
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.5 }}
+                />
+              </motion.div>
+
+              {/* Testimonial 1 */}
+              <motion.div 
+                className="absolute top-[20%] -left-8 bg-white rounded-full px-4 py-2 shadow-lg flex items-center"
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+              >
+                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden mr-3">
+                  <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Janith" className="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Janith prabash</p>
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span className="text-sm ml-1">5.0 <span className="text-gray-400 text-xs">(122)</span></span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Testimonial 2 */}
+              <motion.div 
+                className="absolute top-[45%] -right-8 bg-white rounded-full px-4 py-2 shadow-lg flex items-center"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.9 }}
+              >
+                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden mr-3">
+                  <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Nishagi" className="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Nishagi jeewantha</p>
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span className="text-sm ml-1">5.0 <span className="text-gray-400 text-xs">(122)</span></span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Testimonial 3 */}
+              <motion.div 
+                className="absolute bottom-[20%] left-[10%] bg-white rounded-full px-4 py-2 shadow-lg flex items-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 1.1 }}
+              >
+                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden mr-3">
+                  <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Nimna" className="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Nimna pathum</p>
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span className="text-sm ml-1">5.0 <span className="text-gray-400 text-xs">(122)</span></span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
       </motion.section>
-
       {/* Footer */}
       <footer className="bg-gray-800 text-white text-center py-6">
         <p>&copy; 2025 OceanView. All rights reserved.</p>
