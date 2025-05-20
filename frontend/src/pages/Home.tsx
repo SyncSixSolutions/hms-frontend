@@ -190,7 +190,7 @@ const Home: React.FC = () => {
   };
 
   // Function to handle image change
-  const handleImageChange = (roomIndex, imageIndex) => {
+  const handleImageChange = (roomIndex: number, imageIndex: number) => {
     const newIndexes = [...activeImageIndexes];
     newIndexes[roomIndex] = imageIndex;
     setActiveImageIndexes(newIndexes);
@@ -1106,7 +1106,7 @@ const Home: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <span className="inline-block bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded mb-3">
+              <span className="inline-block bg-green-100 text-green-700 text-xs font-medium px-2.5 py-1 rounded-xl mb-3">
                 Easy access
               </span>
               <h3 className="text-xl font-bold mb-2">Located in the Heart of the City</h3>
@@ -1121,7 +1121,7 @@ const Home: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <span className="inline-block bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-1 rounded mb-3">
+              <span className="inline-block bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-1 rounded-xl mb-3">
                 Exposure
               </span>
               <h3 className="text-xl font-bold mb-2">Perfect for Business & Leisure Stays</h3>
@@ -1136,7 +1136,7 @@ const Home: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              <span className="inline-block bg-pink-100 text-pink-700 text-xs font-medium px-2.5 py-1 rounded mb-3">
+              <span className="inline-block bg-pink-100 text-pink-700 text-xs font-medium px-2.5 py-1 rounded-xl mb-3">
                 Caring
               </span>
               <h3 className="text-xl font-bold mb-2">Personalized Concierge Service</h3>
@@ -1145,100 +1145,177 @@ const Home: React.FC = () => {
           </motion.div>
 
           {/* Right column - Image with testimonials */}
-          <motion.div 
+            <motion.div 
             className="w-full lg:w-1/2 relative mt-8 lg:mt-0"
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
-          >
+            >
             <div className="relative">
-              {/* Main image */}
+              {/* Main image - styled as a D-shaped image like in the reference */}
               <motion.div 
-                className="overflow-hidden rounded-[32px]"
-                initial={{ scale: 0.95 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+              className="overflow-hidden"
+              style={{ 
+                borderTopLeftRadius: "220px",
+                borderTopRightRadius: "0",
+                borderBottomRightRadius: "220px",
+                borderBottomLeftRadius: "0",
+                width: "100%",
+                height: "620px"
+              }}
+              initial={{ scale: 0.95 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
               >
-                <motion.img 
-                  src={chooseUsImg} 
-                  alt="Why Choose Us" 
-                  className="w-full h-[550px] object-cover rounded-[32px]"
-                  whileHover={{ scale: 1.03 }}
-                  transition={{ duration: 0.5 }}
-                />
+              <motion.img 
+                src={chooseUsImg} 
+                alt="Why Choose Us" 
+                className="w-full h-full object-cover"
+                style={{ objectPosition: "right center" }}
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.5 }}
+              />
               </motion.div>
 
-              {/* Testimonial 1 */}
-              <motion.div 
-                className="absolute top-[20%] -left-8 bg-white rounded-full px-4 py-2 shadow-lg flex items-center"
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.7 }}
-              >
-                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden mr-3">
-                  <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Janith" className="w-full h-full object-cover" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm">Janith prabash</p>
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span className="text-sm ml-1">5.0 <span className="text-gray-400 text-xs">(122)</span></span>
+                {/* Testimonial 1 - Top left */}
+                <motion.div 
+                  className="absolute top-[10%] -left-16 bg-white rounded-[2.5rem] pr-8 pl-3 py-2 shadow-lg shadow-black/10 flex items-center"
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.7 }}
+                >
+                  {/* Profile image in left corner */}
+                  <div className="relative flex-shrink-0 mr-5">
+                    <img
+                      src="https://randomuser.me/api/portraits/men/32.jpg"
+                      alt="Janith"
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    {/* Green dot in bottom right, overlapping the image */}
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
                   </div>
-                </div>
-              </motion.div>
+                  <div>
+                    <p className="font-medium text-gray-800 text-sm">Janith prabash</p>
+                    <div className="flex items-center">
+                      <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <span className="text-amber-400 text-sm ml-1">5.0</span>
+                      <span className="text-gray-400 text-xs ml-1">(122)</span>
+                    </div>
+                  </div>
+                </motion.div>
 
-              {/* Testimonial 2 */}
-              <motion.div 
-                className="absolute top-[45%] -right-8 bg-white rounded-full px-4 py-2 shadow-lg flex items-center"
+                {/* Testimonial 2 - Middle right (apply same style as Testimonial 1) */}
+                <motion.div 
+                className="absolute top-[45%] -right-16 bg-white rounded-[2.5rem] pr-8 pl-3 py-2 shadow-lg shadow-black/10 flex items-center"
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.9 }}
-              >
-                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden mr-3">
-                  <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Nishagi" className="w-full h-full object-cover" />
+                >
+                <div className="relative flex-shrink-0 mr-5">
+                <img
+                src="https://randomuser.me/api/portraits/women/44.jpg"
+                alt="Nishagi"
+                className="w-10 h-10 rounded-full object-cover"
+                />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
                 </div>
                 <div>
-                  <p className="font-medium text-sm">Nishagi jeewantha</p>
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span className="text-sm ml-1">5.0 <span className="text-gray-400 text-xs">(122)</span></span>
-                  </div>
+                <p className="font-medium text-gray-800 text-sm">Nishagi jeewantha</p>
+                <div className="flex items-center">
+                <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="text-amber-400 text-sm ml-1">5.0</span>
+                <span className="text-gray-400 text-xs ml-1">(122)</span>
                 </div>
-              </motion.div>
+                </div>
+                </motion.div>
 
-              {/* Testimonial 3 */}
-              <motion.div 
-                className="absolute bottom-[20%] left-[10%] bg-white rounded-full px-4 py-2 shadow-lg flex items-center"
+                {/* Testimonial 3 - Bottom left (apply same style as Testimonial 1) */}
+                <motion.div 
+                className="absolute bottom-[5%] left-[5%] bg-white rounded-[2.5rem] pr-8 pl-3 py-2 shadow-lg shadow-black/10 flex items-center"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 1.1 }}
-              >
-                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden mr-3">
-                  <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Nimna" className="w-full h-full object-cover" />
+                >
+                <div className="relative flex-shrink-0 mr-5">
+                <img
+                src="https://randomuser.me/api/portraits/men/42.jpg"
+                alt="Nimna"
+                className="w-10 h-10 rounded-full object-cover"
+                />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
                 </div>
                 <div>
-                  <p className="font-medium text-sm">Nimna pathum</p>
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span className="text-sm ml-1">5.0 <span className="text-gray-400 text-xs">(122)</span></span>
-                  </div>
+                <p className="font-medium text-gray-800 text-sm">Nimna pathum</p>
+                <div className="flex items-center">
+                <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                <span className="text-amber-400 text-sm ml-1">5.0</span>
+                <span className="text-gray-400 text-xs ml-1">(122)</span>
                 </div>
-              </motion.div>
+                </div>
+                </motion.div>
             </div>
-          </motion.div>
+            </motion.div>
         </div>
       </motion.section>
+       {/* Explore Sri Lanka */}
+      <section className="py-16 text-center">
+        <h2 className="text-3xl font-semibold mb-6">Explore Sri Lanka</h2>
+        <div className="flex justify-center gap-6">
+          {[1, 2, 3, 4].map((num) => (
+            <img key={num} src={`/assets/images/sri${num}.jpg`} alt={`Sri Lanka ${num}`} className="w-40 h-32 object-cover rounded-lg" />
+          ))}
+        </div>
+      </section>
+
+      {/* Loyalty Benefits */}
+      <section className="py-16 bg-gray-100 text-center">
+        <h2 className="text-3xl font-semibold mb-8">Loyalty Benefits</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-12">
+          {["Free upgrades", "Late checkout", "Exclusive deals", "Bonus points"].map((benefit, index) => (
+            <div key={index} className="bg-white p-4 rounded shadow">
+              <h3 className="font-semibold text-lg mb-2">{benefit}</h3>
+              <p className="text-sm">Enjoy our premium loyalty rewards and perks</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Gallery */}
+      <section className="py-16 text-center">
+        <h2 className="text-3xl font-semibold mb-6">Gallery</h2>
+        <div className="flex justify-center gap-6">
+          <img src="/assets/images/gallery.jpg" alt="Gallery" className="rounded-lg w-96 h-60 object-cover" />
+        </div>
+      </section>
+
+      {/* Contact Us */}
+      <section className="py-16 bg-gray-100">
+        <div className="max-w-5xl mx-auto flex gap-12 items-center">
+          <div className="w-1/2">
+            <h2 className="text-3xl font-semibold mb-4">Contact Us</h2>
+            <form className="space-y-4">
+              <input type="text" placeholder="Your Name" className="w-full p-2 border rounded" />
+              <input type="email" placeholder="Your Email" className="w-full p-2 border rounded" />
+              <textarea placeholder="Your Message" rows={4} className="w-full p-2 border rounded"></textarea>
+              <button className="bg-indigo-600 text-white px-4 py-2 rounded">Send Message</button>
+            </form>
+          </div>
+          <div className="w-1/2">
+            <img src="/assets/images/contact.jpg" alt="Contact" className="rounded-lg" />
+          </div>
+        </div>
+      </section>
       {/* Footer */}
       <footer className="bg-gray-800 text-white text-center py-6">
         <p>&copy; 2025 OceanView. All rights reserved.</p>
