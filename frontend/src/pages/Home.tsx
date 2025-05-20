@@ -180,6 +180,10 @@ const CounterAnimation: React.FC<CounterAnimationProps> = ({ end, label, suffix 
 const Home: React.FC = () => {
   const [centerIdx, setCenterIdx] = useState(1);
   const [activeImageIndexes, setActiveImageIndexes] = useState(Array(6).fill(0));
+  const [currentVideo, setCurrentVideo] = useState({
+    id: "H1CIBqDeWQ0", 
+    title: "OceanView Beach Resort"
+  });
 
   const prev = () => setCenterIdx((i) => (i === 0 ? suiteData.length - 1 : i - 1));
   const next = () => setCenterIdx((i) => (i === suiteData.length - 1 ? 0 : i + 1));
@@ -1349,6 +1353,7 @@ const Home: React.FC = () => {
                   key={index}
                   className="min-w-[calc(25%-16px)] flex-shrink-0 relative z-10"
                   whileHover={{ y: -8, zIndex: 30 }}
+
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <div className="rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full">
@@ -1628,7 +1633,7 @@ const Home: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="flex flex-col lg:flex-row gap-6">
-              {/* Main YouTube video player */}
+              {/* Main YouTube video player - now using the currentVideo state */}
               <motion.div 
                 className="w-full lg:w-3/4 relative rounded-2xl overflow-hidden"
                 whileHover={{ scale: 1.01 }}
@@ -1637,8 +1642,8 @@ const Home: React.FC = () => {
                 <div className="relative w-full h-0 pb-[56.25%]">
                   <iframe
                     className="absolute top-0 left-0 w-full h-full rounded-2xl"
-                    src="https://www.youtube.com/embed/H1CIBqDeWQ0"
-                    title="OceanView Beach Resort"
+                    src={`https://www.youtube.com/embed/${currentVideo.id}`}
+                    title={currentVideo.title}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   ></iframe>
@@ -1661,8 +1666,9 @@ const Home: React.FC = () => {
                     viewport={{ once: true }}
                     transition={{ duration: 0.4, delay: 0.3 + (idx * 0.1) }}
                     whileHover={{ scale: 1.03 }}
+                    onClick={() => setCurrentVideo({ id: video.id, title: video.title })}
                   >
-                    <div className="relative w-full h-full">
+                    <div className={`relative w-full h-full ${video.id === currentVideo.id ? "ring-2 ring-[#5C4DF4]" : ""}`}>
                       {/* YouTube thumbnail image with play button overlay */}
                       <img 
                         src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`} 
@@ -1671,15 +1677,12 @@ const Home: React.FC = () => {
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20">
                         <motion.div 
-                          className="w-10 h-10 bg-white bg-opacity-80 rounded-full flex items-center justify-center"
+                          className={`w-10 h-10 ${video.id === currentVideo.id ? "bg-[#5C4DF4]" : "bg-white bg-opacity-80"} rounded-full flex items-center justify-center`}
                           whileHover={{ scale: 1.1 }}
                           transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                          onClick={() => {
-                            window.open(`https://www.youtube.com/watch?v=${video.id}`, '_blank');
-                          }}
                         >
-                          <div className="w-8 h-8 bg-[#5C4DF4] rounded-full flex items-center justify-center pl-0.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-4 h-4">
+                          <div className={`w-8 h-8 ${video.id === currentVideo.id ? "bg-white" : "bg-[#5C4DF4]"} rounded-full flex items-center justify-center pl-0.5`}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={video.id === currentVideo.id ? "#5C4DF4" : "white"} className="w-4 h-4">
                               <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
                             </svg>
                           </div>
