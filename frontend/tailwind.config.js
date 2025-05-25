@@ -8,8 +8,6 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Outfit', 'sans-serif'],
-      },
-      fontFamily: {
         parisienne: ["'Parisienne'", "cursive"],
       },
       colors: {
@@ -19,9 +17,11 @@ export default {
         text: 'var(--color-text)',
         bg: 'var(--color-bg)',
         border: 'var(--color-border)',
+        success: 'var(--color-success)',
+        'success-hover': 'var(--color-success-hover)',
+        'success-ring': 'var(--color-success-ring)',
       },
     },
   },
   plugins: [],
 }
-
