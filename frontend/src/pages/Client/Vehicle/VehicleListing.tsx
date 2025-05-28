@@ -240,8 +240,8 @@ const VehicleListing: React.FC = () => {
                     display: 'block',
                     borderTopLeftRadius: 32,
                     borderTopRightRadius: 8,
-                    borderBottomLeftRadius: 8,
-                    borderBottomRightRadius: 32,
+                    borderBottomLeftRadius: 500,
+                    borderBottomRightRadius: 1000,
                   }}
                   />
                 </Box>
