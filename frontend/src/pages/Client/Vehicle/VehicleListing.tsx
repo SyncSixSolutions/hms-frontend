@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Avatar, Button, Card, Grid, Typography, Box, Paper, TextField, IconButton } from '@mui/material';
+import { Avatar, Button, Card, Grid, Typography, Box, Paper, TextField, IconButton, Fade, Grow } from '@mui/material';
 import nissan from '../../../assets/images/vehicles/alphard.png';
 import tuktuk from '../../../assets/images/vehicles/tuktuk.png';
 import scooty from '../../../assets/images/vehicles/scooty.png';
@@ -9,6 +9,7 @@ import trvl1 from '../../../assets/images/trvl1.png';
 import PersonIcon from '@mui/icons-material/Person';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CloseIcon from '@mui/icons-material/Close';
+import LocalTaxiOutlinedIcon from '@mui/icons-material/LocalTaxiOutlined';
 
 interface VehicleCardProps {
   id: number;
@@ -110,188 +111,308 @@ const BookingSidePanel: React.FC<{
       flexDirection: 'column',
       gap: 2
     }}>
-      <Box sx={{ 
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        mb: 1
-      }}>
-        <Typography variant="h6" fontWeight="600">
-          Select Method
-        </Typography>
-      </Box>
+      {/* Vehicle info with animation */}
+      <Fade in timeout={600}>
+        <Box>
+          <Box 
+            sx={{ 
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mb: 2
+            }}
+          >
+            <Typography variant="h6" fontWeight="700">
+              {selectedVehicle?.name}
+            </Typography>
+            <IconButton 
+              onClick={onClose}
+              sx={{ 
+                bgcolor: 'rgba(0,0,0,0.04)', 
+                '&:hover': { bgcolor: 'rgba(0,0,0,0.08)' } 
+              }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
+          
+          <Box 
+            sx={{
+              mb: 1,
+              pb: 2,
+              borderBottom: '1px solid #eee',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2
+            }}
+          >
+            <Box 
+              sx={{ 
+                width: 100, 
+                height: 85, 
+                borderRadius: 2, 
+                overflow: 'hidden',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                bgcolor: 'rgba(100, 102, 233, 0.05)',
+                animation: 'slideIn 0.5s ease'
+              }}
+            >
+              <img 
+                src={selectedVehicle?.image} 
+                alt={selectedVehicle?.name} 
+                style={{ 
+                  maxWidth: '95%', 
+                  maxHeight: '95%',
+                  objectFit: 'contain'
+                }} 
+              />
+            </Box>
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                <LocalTaxiOutlinedIcon sx={{ color: '#6466e9', fontSize: 18 }} />
+                <Typography sx={{ fontWeight: 500, color: '#555' }}>
+                  {selectedVehicle?.name}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <PersonIcon sx={{ color: '#6466e9', fontSize: 18 }} />
+                <Typography sx={{ color: '#777', fontSize: '0.9rem' }}>
+                  {selectedVehicle?.capacity} {selectedVehicle?.capacity === 1 ? 'Person' : 'People'}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Fade>
 
-      <Box sx={{ 
-        display: 'flex',
-        gap: 2,
-        mb: 2
-      }}>
-        <Button
-          variant={rentalType === 'rent' ? 'contained' : 'outlined'}
-          fullWidth
-          sx={{
-            borderRadius: 2,
-            py: 1.5,
-            bgcolor: rentalType === 'rent' ? '#6466e9' : 'transparent',
-            borderColor: '#6466e9',
-            color: rentalType === 'rent' ? 'white' : '#6466e9',
-            '&:hover': {
-              bgcolor: rentalType === 'rent' ? '#5355c9' : 'rgba(100, 102, 233, 0.1)',
-            }
-          }}
-          onClick={() => setRentalType('rent')}
-        >
-          Rent
-        </Button>
-        <Button
-          variant={rentalType === 'hire' ? 'contained' : 'outlined'}
-          fullWidth
-          sx={{
-            borderRadius: 2,
-            py: 1.5,
-            bgcolor: rentalType === 'hire' ? '#6466e9' : 'transparent',
-            borderColor: '#6466e9',
-            color: rentalType === 'hire' ? 'white' : '#6466e9',
-            '&:hover': {
-              bgcolor: rentalType === 'hire' ? '#5355c9' : 'rgba(100, 102, 233, 0.1)',
-            }
-          }}
-          onClick={() => setRentalType('hire')}
-        >
-          Hire
-        </Button>
-      </Box>
-
-      <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
-        Pickup details
-      </Typography>
-
-      <Box sx={{ mb: 1.5 }}>
-        <Button
-          fullWidth
-          variant="outlined"
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            textAlign: 'left',
-            px: 2,
-            py: 1.5,
-            color: '#555',
-            borderColor: '#ddd',
-            borderRadius: 2
-          }}
-          endIcon={<KeyboardArrowDownIcon />}
-        >
-          <Typography sx={{ fontWeight: 500, color: '#777' }}>
-            Select Date
+      <Grow in timeout={800}>
+        <Box>
+          <Typography variant="h6" fontWeight="600">
+            Select Method
           </Typography>
-        </Button>
-      </Box>
 
-      <Box sx={{ mb: 1.5 }}>
-        <Button
-          fullWidth
-          variant="outlined"
-          sx={{
+          <Box sx={{ 
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            textAlign: 'left',
-            px: 2,
-            py: 1.5,
-            color: '#555',
-            borderColor: '#ddd',
-            borderRadius: 2
-          }}
-          endIcon={<KeyboardArrowDownIcon />}
-        >
-          <Typography sx={{ fontWeight: 500, color: '#777' }}>
-            Select Time
+            gap: 2,
+            mt: 1.5,
+            mb: 2
+          }}>
+            <Button
+              variant={rentalType === 'rent' ? 'contained' : 'outlined'}
+              fullWidth
+              sx={{
+                borderRadius: 2,
+                py: 1.5,
+                bgcolor: rentalType === 'rent' ? '#6466e9' : 'rgba(255, 255, 255, 1)',
+                borderColor: '#6466e9',
+                color: rentalType === 'rent' ? 'white' : '#6466e9',
+                '&:hover': {
+                  bgcolor: rentalType === 'rent' ? '#5355c9' : 'rgba(100, 102, 233, 0.1)',
+                },
+                transition: 'background 0.3s, transform 0.2s',
+                '&:active': {
+                  transform: 'scale(0.98)'
+                }
+              }}
+              onClick={() => setRentalType('rent')}
+            >
+              Rent
+            </Button>
+            <Button
+              variant={rentalType === 'hire' ? 'contained' : 'outlined'}
+              fullWidth
+              sx={{
+                borderRadius: 2,
+                py: 1.5,
+                bgcolor: rentalType === 'hire' ? '#6466e9' : 'rgba(255, 255, 255, 1)',
+                borderColor: '#6466e9',
+                color: rentalType === 'hire' ? 'white' : '#6466e9',
+                '&:hover': {
+                  bgcolor: rentalType === 'hire' ? '#5355c9' : 'rgba(100, 102, 233, 0.1)',
+                },
+                transition: 'background 0.3s, transform 0.2s',
+                '&:active': {
+                  transform: 'scale(0.98)'
+                }
+              }}
+              onClick={() => setRentalType('hire')}
+            >
+              Hire
+            </Button>
+          </Box>
+        </Box>
+      </Grow>
+
+      <Grow in timeout={1000}>
+        <Box>
+          <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
+            Pickup details
           </Typography>
-        </Button>
-      </Box>
 
-      <Box sx={{ mb: 1.5 }}>
-        <Button
-          fullWidth
-          variant="outlined"
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            textAlign: 'left',
-            px: 2,
-            py: 1.5,
-            color: '#555',
-            borderColor: '#ddd',
-            borderRadius: 2
-          }}
-          endIcon={<KeyboardArrowDownIcon />}
-        >
-          <Typography sx={{ fontWeight: 500, color: '#777' }}>
-            Location
+          <Box sx={{ mb: 1.5 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                textAlign: 'left',
+                px: 2,
+                py: 1.5,
+                color: '#555',
+                borderColor: '#ddd',
+                borderRadius: 2,
+                bgcolor: 'rgba(255, 255, 255, 1)',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 1)',
+                }
+              }}
+              endIcon={<KeyboardArrowDownIcon />}
+            >
+              <Typography sx={{ fontWeight: 500, color: '#777' }}>
+                Select Date
+              </Typography>
+            </Button>
+          </Box>
+
+          <Box sx={{ mb: 1.5 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                textAlign: 'left',
+                px: 2,
+                py: 1.5,
+                color: '#555',
+                borderColor: '#ddd',
+                borderRadius: 2,
+                bgcolor: 'rgba(255, 255, 255, 1)',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 1)',
+                }
+              }}
+              endIcon={<KeyboardArrowDownIcon />}
+            >
+              <Typography sx={{ fontWeight: 500, color: '#777' }}>
+                Select Time
+              </Typography>
+            </Button>
+          </Box>
+
+          <Box sx={{ mb: 1.5 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                textAlign: 'left',
+                px: 2,
+                py: 1.5,
+                color: '#555',
+                borderColor: '#ddd',
+                borderRadius: 2,
+                bgcolor: 'rgba(255, 255, 255, 1)',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 1)',
+                }
+              }}
+              endIcon={<KeyboardArrowDownIcon />}
+            >
+              <Typography sx={{ fontWeight: 500, color: '#777' }}>
+                Location
+              </Typography>
+            </Button>
+          </Box>
+        </Box>
+      </Grow>
+
+      <Grow in timeout={1200}>
+        <Box>
+          <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
+            Dropoff details
           </Typography>
-        </Button>
-      </Box>
 
-      <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
-        Dropoff details
-      </Typography>
+          <Box sx={{ mb: 1.5 }}>
+            <Button
+              fullWidth
+              variant="outlined"
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                textAlign: 'left',
+                px: 2,
+                py: 1.5,
+                color: '#555',
+                borderColor: '#ddd',
+                borderRadius: 2,
+                bgcolor: 'rgba(255, 255, 255, 1)',
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 1)',
+                }
+              }}
+              endIcon={<KeyboardArrowDownIcon />}
+            >
+              <Typography sx={{ fontWeight: 500, color: '#777' }}>
+                Location
+              </Typography>
+            </Button>
+          </Box>
+        </Box>
+      </Grow>
 
-      <Box sx={{ mb: 1.5 }}>
-        <Button
-          fullWidth
-          variant="outlined"
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            textAlign: 'left',
-            px: 2,
-            py: 1.5,
-            color: '#555',
-            borderColor: '#ddd',
-            borderRadius: 2
-          }}
-          endIcon={<KeyboardArrowDownIcon />}
-        >
-          <Typography sx={{ fontWeight: 500, color: '#777' }}>
-            Location
-          </Typography>
-        </Button>
-      </Box>
-
-      <Box sx={{ mt: 'auto', display: 'flex', gap: 2 }}>
-        <Button
-          variant="outlined"
-          sx={{
-            borderRadius: 2,
-            py: 1.5,
-            flex: 1,
-            borderColor: '#ddd',
-            color: '#666'
-          }}
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          sx={{
-            borderRadius: 2,
-            py: 1.5,
-            flex: 1,
-            bgcolor: '#6466e9',
-            '&:hover': {
-              bgcolor: '#5355c9'
-            }
-          }}
-          onClick={onConfirm}
-        >
-          Confirm
-        </Button>
-      </Box>
+      <Fade in timeout={1400}>
+        <Box sx={{ mt: 'auto', display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            sx={{
+              borderRadius: 2,
+              py: 1.5,
+              flex: 1,
+              borderColor: '#ddd',
+              color: '#666',
+              bgcolor: 'rgba(255, 255, 255, 1)',
+              transition: 'transform 0.2s',
+              '&:active': {
+                transform: 'scale(0.98)'
+              },
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 1)',
+              }
+            }}
+            onClick={onClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            sx={{
+              borderRadius: 2,
+              py: 1.5,
+              flex: 1,
+              bgcolor: '#6466e9',
+              '&:hover': {
+                bgcolor: '#5355c9'
+              },
+              transition: 'transform 0.2s, background 0.3s',
+              '&:active': {
+                transform: 'scale(0.98)'
+              }
+            }}
+            onClick={onConfirm}
+          >
+            Confirm
+          </Button>
+        </Box>
+      </Fade>
     </Box>
   );
 };
@@ -300,10 +421,10 @@ const VehicleListing: React.FC = () => {
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
   
   const vehicles = [
-    { id: 1, name: 'Nissan GT - R', image: nissan, capacity: 2 },
+    { id: 1, name: 'Toyota Alphard', image: nissan, capacity: 2 },
     { id: 2, name: 'Tuk tuk', image: tuktuk, capacity: 2 },
     { id: 3, name: 'Scooty', image: scooty, capacity: 1 },
-    { id: 4, name: 'Nissan GT - R', image: nissan, capacity: 2 },
+    { id: 4, name: 'Toyota Alphard', image: nissan, capacity: 2 },
     { id: 5, name: 'Tuk tuk', image: tuktuk, capacity: 2 },
     { id: 6, name: 'Scooty', image: scooty, capacity: 1 },
   ];
@@ -430,119 +551,132 @@ const VehicleListing: React.FC = () => {
             </Grid>
 
             <Grid item xs={12} md={4}>
-              {selectedVehicleId ? (
-                <Box sx={{ 
-                  bgcolor: 'white', 
-                  borderRadius: 4, 
-                  p: 3, 
-                  height: '100%',
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.08)'
-                }}>
-                  <BookingSidePanel 
-                    selectedVehicle={selectedVehicle}
-                    onClose={() => setSelectedVehicleId(null)}
-                    onConfirm={handleConfirmBooking}
-                  />
-                </Box>
-              ) : (
-                <Box
-                  sx={{
-                    height: '100%',
-                    borderRadius: 4,
-                    overflow: 'hidden',
-                    position: 'relative',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    background: 'rgba(255,255,255,0.85)', 
-                    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-                    p: 0,
-                    minHeight: 480,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: '100%',
-                      height: '80%',
-                      position: 'relative',
-                      overflow: 'hidden',
-                      borderTopLeftRadius: 32,
-                      borderTopRightRadius: 8,
-                      borderBottomLeftRadius: 500,
-                      borderBottomRightRadius: 1000,
-                    }}
-                  >
-                    <img
-                      src={trvl1}
-                      alt="Discover Sri Lanka"
-                      style={{
-                        width: '100%',
+              <Fade in timeout={300}>
+                <Box>
+                  {selectedVehicleId ? (
+                    <Grow in timeout={400}>
+                        <Box sx={{ 
+                        bgcolor: 'rgba(255, 255, 255, 0.8)', 
+                        borderRadius: 4, 
+                        p: 3, 
                         height: '100%',
-                        objectFit: 'cover',
-                        objectPosition: 'top',
-                        display: 'block',
-                        borderTopLeftRadius: 32,
-                        borderTopRightRadius: 8,
-                        borderBottomLeftRadius: 500,
-                        borderBottomRightRadius: 1000,
-                      }}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      paddingTop: 0,
-                      paddingBottom: 3,
-                      paddingLeft: 3,
-                      paddingRight: 3,
-                      textAlign: 'center',
-                      height: '60%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
+                        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                        animation: 'fadeIn 0.5s ease-in-out',
+                        backdropFilter: 'blur(1px)',
+                        WebkitBackdropFilter: 'blur(1px)',
+                        '@keyframes fadeIn': {
+                          '0%': { opacity: 0, transform: 'translateY(10px)' },
+                          '100%': { opacity: 1, transform: 'translateY(0)' }
+                        }
+                        }}>
+                        <BookingSidePanel 
+                          selectedVehicle={selectedVehicle}
+                          onClose={() => setSelectedVehicleId(null)}
+                          onConfirm={handleConfirmBooking}
+                        />
+                        </Box>
+                    </Grow>
+                  ) : (
+                    <Box
                       sx={{
-                        color: '#8d7c6c',
-                        fontWeight: 700,
-                        letterSpacing: 0.2,
-                        textAlign: 'right',
-                        fontSize: '1.5rem'
+                        height: '100%',
+                        borderRadius: 4,
+                        overflow: 'hidden',
+                        position: 'relative',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'flex-end',
+                        background: 'rgba(255,255,255,0.85)', 
+                        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                        p: 0,
+                        minHeight: 480,
                       }}
                     >
-                      Discover Sri Lanka
-                    </Typography>
-                    <Typography
-                      variant="h4"
-                      sx={{
-                        fontWeight: 800,
-                        color: '#222',
-                        mb: 1.2,
-                        fontSize: { xs: '1.5rem', md: '2.1rem' },
-                        lineHeight: 1.13,
-                        fontFamily: 'Montserrat, Arial, sans-serif',
-                        textAlign: 'right',
-                      }}
-                    >
-                      The Pearl of the <br /> Indian Ocean
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontSize: '1rem',
-                        lineHeight: 1.6,
-                        color: '#6c7a89',
-                        px: 1,
-                        fontWeight: 800,
-                        textShadow: '0 1px 2px rgba(255,255,255,0.15)',
-                        textAlign: 'right',
-                      }}
-                    >
-                      Sri Lanka is a tropical paradise, rich in natural beauty and cultural heritage. With its golden beaches, lush green landscapes, and breathtaking waterfalls, the island offers an unforgettable experience for travelers. Rolling tea plantations, serene lakes, and dense wildlife sanctuaries create a picture-perfect escape. Rent a vehicle and explore its scenic beauty at your own pace, making every moment of your trip truly special.
-                    </Typography>
-                  </Box>
+                      <Box
+                        sx={{
+                          width: '100%',
+                          height: '80%',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          borderTopLeftRadius: 32,
+                          borderTopRightRadius: 8,
+                          borderBottomLeftRadius: 500,
+                          borderBottomRightRadius: 1000,
+                        }}
+                      >
+                        <img
+                          src={trvl1}
+                          alt="Discover Sri Lanka"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            objectPosition: 'top',
+                            display: 'block',
+                            borderTopLeftRadius: 32,
+                            borderTopRightRadius: 8,
+                            borderBottomLeftRadius: 500,
+                            borderBottomRightRadius: 1000,
+                          }}
+                        />
+                      </Box>
+                      <Box
+                        sx={{
+                          paddingTop: 0,
+                          paddingBottom: 3,
+                          paddingLeft: 3,
+                          paddingRight: 3,
+                          textAlign: 'center',
+                          height: '60%',
+                          display: 'flex',
+                          flexDirection: 'column',
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: '#8d7c6c',
+                            fontWeight: 700,
+                            letterSpacing: 0.2,
+                            textAlign: 'right',
+                            fontSize: '1.5rem'
+                          }}
+                        >
+                          Discover Sri Lanka
+                        </Typography>
+                        <Typography
+                          variant="h4"
+                          sx={{
+                            fontWeight: 800,
+                            color: '#222',
+                            mb: 1.2,
+                            fontSize: { xs: '1.5rem', md: '2.1rem' },
+                            lineHeight: 1.13,
+                            fontFamily: 'Montserrat, Arial, sans-serif',
+                            textAlign: 'right',
+                          }}
+                        >
+                          The Pearl of the <br /> Indian Ocean
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontSize: '1rem',
+                            lineHeight: 1.6,
+                            color: '#6c7a89',
+                            px: 1,
+                            fontWeight: 800,
+                            textShadow: '0 1px 2px rgba(255,255,255,0.15)',
+                            textAlign: 'right',
+                          }}
+                        >
+                          Sri Lanka is a tropical paradise, rich in natural beauty and cultural heritage. With its golden beaches, lush green landscapes, and breathtaking waterfalls, the island offers an unforgettable experience for travelers. Rolling tea plantations, serene lakes, and dense wildlife sanctuaries create a picture-perfect escape. Rent a vehicle and explore its scenic beauty at your own pace, making every moment of your trip truly special.
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )}
                 </Box>
-              )}
+              </Fade>
             </Grid>
           </Grid>
         </Box>
