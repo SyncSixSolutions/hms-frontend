@@ -5,6 +5,7 @@ import tuktuk from '../../../assets/images/vehicles/tuktuk.png';
 import scooty from '../../../assets/images/vehicles/scooty.png';
 import userAvatar from '../../../assets/images/avatar.jpg';
 import Travel from '../../../assets/images/travel.png';
+import trvl1 from '../../../assets/images/trvl1.png';
 import PersonIcon from '@mui/icons-material/Person';
 
 interface VehicleCardProps {
@@ -29,7 +30,23 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ name, image, capacity, onRent
       {name}
     </Typography>
     
-    <Box sx={{ textAlign: 'center', mb: 2, width: '100%', height: '120px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <Box
+      sx={{
+        textAlign: 'center',
+        mb: 2,
+        width: '100%',
+        height: '120px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        '& img': {
+          transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s',
+        },
+        '&:hover img': {
+          transform: 'scale(1.08) rotate(-3deg)',
+        }
+      }}
+    >
       <img src={image} alt={name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
     </Box>
     
@@ -121,9 +138,16 @@ const VehicleListing: React.FC = () => {
         }}>
           <Box>
             <Typography variant="h5" sx={{ color: '#444', fontWeight: 600, fontSize: '1.3rem' }}>
-              Welcome, Nishagi
+              Welcome, Janith
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: '0.9rem' }}>
+            <Typography
+              variant="body2"
+              sx={{
+              mt: 1.5,
+              color: 'grey.600',
+              fontSize: '0.9rem'
+              }}
+            >
               {new Date().toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' })}
             </Typography>
           </Box>
@@ -133,7 +157,7 @@ const VehicleListing: React.FC = () => {
               width: 38, 
               height: 38,
               border: '2px solid white',
-              boxShadow: '0px 2px 8px rgba(0,0,0,0.1)'
+              boxShadow: '0px 2px 8px rgba(95, 95, 95, 0.1)'
             }} 
           />
         </Box>
@@ -158,7 +182,7 @@ const VehicleListing: React.FC = () => {
           <Grid container spacing={4}>
             <Grid item xs={12} md={8}>
               <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.8)', p: 3, borderRadius: 4 }}>
-                <Typography variant="h6" fontWeight="500" mb={3} color="#444">
+                <Typography variant="h3" fontWeight="800" mb={3} color="grey.700" sx={{ fontSize: '1.3rem' }}>
                   Select the vehicle
                 </Typography>
 
@@ -178,44 +202,100 @@ const VehicleListing: React.FC = () => {
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <Box 
-                sx={{ 
+              <Box
+                sx={{
                   height: '100%',
-                  borderRadius: 4, 
+                  borderRadius: 4,
                   overflow: 'hidden',
                   position: 'relative',
                   display: 'flex',
-                  alignItems: 'flex-end',
-                  backgroundImage: `url(${Travel})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-end',
+                  background: '#fff',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
                   p: 0,
-                  boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 12px'
+                  minHeight: 480,
                 }}
               >
-                <Box 
-                  sx={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                    p: 3, 
-                    borderRadius: 2,
-                    textAlign: 'center',
-                    width: '100%'
+                <Box
+                  sx={{
+                  width: '100%',
+                  height: '80%',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  borderTopLeftRadius: 32,
+                  borderTopRightRadius: 8,
+                  borderBottomLeftRadius: 500,
+                  borderBottomRightRadius: 1000,
                   }}
                 >
-                  <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                    Discover Sri Lanka
-                  </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#333', my: 1 }}>
-                    The Pearl of the Indian Ocean
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
-                    Sri Lanka is a tropical paradise, rich in natural beauty and cultural heritage. 
-                    With its golden beaches, lush green landscapes, and breathtaking waterfalls, 
-                    the island offers an unforgettable experience for travelers. Rolling tea plantations, 
-                    serene lakes, and dense wildlife sanctuaries create a picture-perfect escape. Rent a 
-                    vehicle and explore its scenic beauty at your own pace, making every moment of 
-                    your trip truly special.
-                  </Typography>
+                  <img
+                  src={trvl1}
+                  alt="Discover Sri Lanka"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'top',
+                    display: 'block',
+                    borderTopLeftRadius: 32,
+                    borderTopRightRadius: 8,
+                    borderBottomLeftRadius: 8,
+                    borderBottomRightRadius: 32,
+                  }}
+                  />
+                </Box>
+                <Box
+                  sx={{
+                    background: '#fff',
+                    p: 3,
+                    textAlign: 'center',
+                    height: '60%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: '#8d7c6c',
+                        mb: 1.5,
+                        fontWeight: 700,
+                        letterSpacing: 0.2,
+                        textAlign: 'right',
+                        fontSize: '1.2rem'
+                      }}
+                    >
+                      Discover Sri Lanka
+                    </Typography>
+                    <Typography
+                    variant="h4"
+                    sx={{
+                      fontWeight: 900,
+                      color: '#222',
+                      mb: 1.2,
+                      fontSize: { xs: '1.5rem', md: '2.1rem' },
+                      lineHeight: 1.13,
+                      fontFamily: 'Montserrat, Arial, sans-serif',
+                      textAlign: 'right',
+                    }}
+                    >
+                    The Pearl of the <br /> Indian Ocean
+                    </Typography>
+                    <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: '1rem',
+                      lineHeight: 1.6,
+                      color: '#6c7a89',
+                      px: 1,
+                      fontWeight: 500,
+                      textShadow: '0 1px 2px rgba(255,255,255,0.15)',
+                      textAlign: 'right',
+                    }}
+                    >
+                    Sri Lanka is a tropical paradise, rich in natural beauty and cultural heritage. With its golden beaches, lush green landscapes, and breathtaking waterfalls, the island offers an unforgettable experience for travelers. Rolling tea plantations, serene lakes, and dense wildlife sanctuaries create a picture-perfect escape. Rent a vehicle and explore its scenic beauty at your own pace, making every moment of your trip truly special.
+                    </Typography>
                 </Box>
               </Box>
             </Grid>
