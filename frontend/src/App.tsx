@@ -1,10 +1,12 @@
-import Home from './pages/Home';
+// import Home from './pages/Home';
+import FoodClient from './pages/Client/Food/ShowFoods'
 
 function App() {
 
   return (
     <div>
-          <Home />
+      {/* <Home/> */}
+      <FoodClient/>
     </div>
   )
 }
