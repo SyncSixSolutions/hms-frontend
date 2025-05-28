@@ -203,100 +203,102 @@ const VehicleListing: React.FC = () => {
 
             <Grid item xs={12} md={4}>
               <Box
+              sx={{
+                height: '100%',
+                borderRadius: 4,
+                overflow: 'hidden',
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                background: 'rgba(255,255,255,0.85)', 
+                boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                p: 0,
+                minHeight: 480,
+              }}
+              >
+              <Box
                 sx={{
-                  height: '100%',
-                  borderRadius: 4,
-                  overflow: 'hidden',
-                  position: 'relative',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                  background: '#fff',
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-                  p: 0,
-                  minHeight: 480,
+                width: '100%',
+                height: '80%',
+                position: 'relative',
+                overflow: 'hidden',
+                borderTopLeftRadius: 32,
+                borderTopRightRadius: 8,
+                borderBottomLeftRadius: 500,
+                borderBottomRightRadius: 1000,
                 }}
               >
-                <Box
+                <img
+                src={trvl1}
+                alt="Discover Sri Lanka"
+                style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'top',
+                display: 'block',
+                borderTopLeftRadius: 32,
+                borderTopRightRadius: 8,
+                borderBottomLeftRadius: 500,
+                borderBottomRightRadius: 1000,
+                }}
+                />
+              </Box>
+              <Box
+                sx={{
+                paddingTop: 0,
+                paddingBottom: 3,
+                paddingLeft: 3,
+                paddingRight: 3,
+                textAlign: 'center',
+                height: '60%',
+                display: 'flex',
+                flexDirection: 'column',
+                }}
+              >
+                <Typography
+                  variant="body2"
                   sx={{
-                  width: '100%',
-                  height: '80%',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  borderTopLeftRadius: 32,
-                  borderTopRightRadius: 8,
-                  borderBottomLeftRadius: 500,
-                  borderBottomRightRadius: 1000,
+                  color: '#8d7c6c',
+                  // mb: 1.5,
+                  fontWeight: 700,
+                  letterSpacing: 0.2,
+                  textAlign: 'right',
+                  fontSize: '1.5rem'
                   }}
                 >
-                  <img
-                  src={trvl1}
-                  alt="Discover Sri Lanka"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    objectPosition: 'top',
-                    display: 'block',
-                    borderTopLeftRadius: 32,
-                    borderTopRightRadius: 8,
-                    borderBottomLeftRadius: 500,
-                    borderBottomRightRadius: 1000,
-                  }}
-                  />
-                </Box>
-                <Box
-                  sx={{
-                    background: '#fff',
-                    p: 3,
-                    textAlign: 'center',
-                    height: '60%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
+                  Discover Sri Lanka
+                </Typography>
+                <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 800,
+                  color: '#222',
+                  mb: 1.2,
+                  fontSize: { xs: '1.5rem', md: '2.1rem' },
+                  lineHeight: 1.13,
+                  fontFamily: 'Montserrat, Arial, sans-serif',
+                  textAlign: 'right',
+                }}
                 >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: '#8d7c6c',
-                        mb: 1.5,
-                        fontWeight: 700,
-                        letterSpacing: 0.2,
-                        textAlign: 'right',
-                        fontSize: '1.2rem'
-                      }}
-                    >
-                      Discover Sri Lanka
-                    </Typography>
-                    <Typography
-                    variant="h4"
-                    sx={{
-                      fontWeight: 900,
-                      color: '#222',
-                      mb: 1.2,
-                      fontSize: { xs: '1.5rem', md: '2.1rem' },
-                      lineHeight: 1.13,
-                      fontFamily: 'Montserrat, Arial, sans-serif',
-                      textAlign: 'right',
-                    }}
-                    >
-                    The Pearl of the <br /> Indian Ocean
-                    </Typography>
-                    <Typography
-                    variant="body2"
-                    sx={{
-                      fontSize: '1rem',
-                      lineHeight: 1.6,
-                      color: '#6c7a89',
-                      px: 1,
-                      fontWeight: 500,
-                      textShadow: '0 1px 2px rgba(255,255,255,0.15)',
-                      textAlign: 'right',
-                    }}
-                    >
-                    Sri Lanka is a tropical paradise, rich in natural beauty and cultural heritage. With its golden beaches, lush green landscapes, and breathtaking waterfalls, the island offers an unforgettable experience for travelers. Rolling tea plantations, serene lakes, and dense wildlife sanctuaries create a picture-perfect escape. Rent a vehicle and explore its scenic beauty at your own pace, making every moment of your trip truly special.
-                    </Typography>
-                </Box>
+                The Pearl of the <br /> Indian Ocean
+                </Typography>
+                <Typography
+                variant="body2"
+                sx={{
+                  fontSize: '1rem',
+                  lineHeight: 1.6,
+                  color: '#6c7a89',
+                  px: 1,
+                  fontWeight: 800,
+                  textShadow: '0 1px 2px rgba(255,255,255,0.15)',
+                  textAlign: 'right',
+                }}
+                >
+                Sri Lanka is a tropical paradise, rich in natural beauty and cultural heritage. With its golden beaches, lush green landscapes, and breathtaking waterfalls, the island offers an unforgettable experience for travelers. Rolling tea plantations, serene lakes, and dense wildlife sanctuaries create a picture-perfect escape. Rent a vehicle and explore its scenic beauty at your own pace, making every moment of your trip truly special.
+                </Typography>
+              </Box>
               </Box>
             </Grid>
           </Grid>
