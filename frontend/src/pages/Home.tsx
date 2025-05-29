@@ -176,6 +176,276 @@ const CounterAnimation: React.FC<CounterAnimationProps> = ({ end, label, suffix 
   );
 };
 
+// Calendar Component
+const Calendar: React.FC<{
+  selectedDate: Date;
+  onDateSelect: (date: Date) => void;
+  minDate?: Date;
+}> = ({ selectedDate, onDateSelect, minDate = new Date() }) => {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  
+  const getDaysInMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+  
+  const getFirstDayOfMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
+  
+  const generateCalendarDays = () => {
+    const daysInMonth = getDaysInMonth(currentMonth);
+    const firstDay = getFirstDayOfMonth(currentMonth);
+    const days = [];
+    
+    // Previous month's trailing days
+    for (let i = 0; i < firstDay; i++) {
+      days.push(null);
+    }
+    
+    // Current month's days
+    for (let day = 1; day <= daysInMonth; day++) {
+      days.push(day);
+    }
+    
+    return days;
+  };
+  
+  const isDateDisabled = (day: number) => {
+    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    return date < minDate;
+  };
+  
+  const isSelectedDate = (day: number) => {
+    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    return date.toDateString() === selectedDate.toDateString();
+  };
+  
+  const handleDateClick = (day: number) => {
+    if (isDateDisabled(day)) return;
+    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    onDateSelect(date);
+  };
+  
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    setCurrentMonth(prev => {
+      const newMonth = new Date(prev);
+      if (direction === 'prev') {
+        newMonth.setMonth(prev.getMonth() - 1);
+      } else {
+        newMonth.setMonth(prev.getMonth() + 1);
+      }
+      return newMonth;
+    });
+  };
+  
+  return (
+    <motion.div 
+      className="bg-white rounded-2xl shadow-xl border p-6 w-80"
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <button 
+          onClick={() => navigateMonth('prev')}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        
+        <h3 className="text-lg font-semibold text-gray-800">
+          {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+        </h3>
+        
+        <button 
+          onClick={() => navigateMonth('next')}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+      
+      {/* Days of week */}
+      <div className="grid grid-cols-7 gap-1 mb-2">
+        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
+          <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+            {day}
+          </div>
+        ))}
+      </div>
+      
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-1">
+        {generateCalendarDays().map((day, index) => (
+          <motion.button
+            key={index}
+            onClick={() => day && handleDateClick(day)}
+            disabled={!day || isDateDisabled(day)}
+            className={`
+              h-10 w-10 rounded-lg text-sm font-medium transition-all duration-200
+              ${!day ? 'invisible' : ''}
+              ${isDateDisabled(day) ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-blue-50'}
+              ${isSelectedDate(day) ? 'bg-[#5C4DF4] text-white shadow-lg' : 'text-gray-700'}
+              ${day && !isDateDisabled(day) && !isSelectedDate(day) ? 'hover:bg-blue-50 hover:text-blue-600' : ''}
+            `}
+            whileHover={day && !isDateDisabled(day) ? { scale: 1.05 } : {}}
+            whileTap={day && !isDateDisabled(day) ? { scale: 0.95 } : {}}
+          >
+            {day}
+          </motion.button>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+// Room Selection Component
+const RoomSelector: React.FC<{
+  selectedRoom: string;
+  onRoomSelect: (room: string, roomNumber: string) => void;
+}> = ({ selectedRoom, onRoomSelect }) => {
+  const rooms = [
+    { name: "Standard Room", price: "$99", roomNumbers: ["101", "102", "103", "201", "202"] },
+    { name: "Deluxe Room", price: "$149", roomNumbers: ["301", "302", "303", "401", "402"] },
+    { name: "Luxury Suite", price: "$299", roomNumbers: ["501", "502", "601", "602"] },
+    { name: "Presidential Suite", price: "$499", roomNumbers: ["701", "801"] }
+  ];
+  
+  return (
+    <motion.div 
+      className="bg-white rounded-2xl shadow-xl border p-6 w-80 max-h-96 overflow-y-auto"
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+    >
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Select Room</h3>
+      <div className="space-y-3">
+        {rooms.map((room) => (
+          <div key={room.name} className="border border-gray-100 rounded-lg p-3">
+            <div className="flex justify-between items-center mb-2">
+              <span className="font-medium text-gray-800">{room.name}</span>
+              <span className="text-[#5C4DF4] font-semibold">{room.price}/night</span>
+            </div>
+            <div className="grid grid-cols-5 gap-2">
+              {room.roomNumbers.map((roomNum) => (
+                <motion.button
+                  key={roomNum}
+                  onClick={() => onRoomSelect(room.name, roomNum)}
+                  className={`
+                    px-3 py-2 rounded-lg text-sm font-medium transition-all
+                    ${selectedRoom === `${room.name} - Room ${roomNum}` 
+                      ? 'bg-[#5C4DF4] text-white' 
+                      : 'bg-gray-50 text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                    }
+                  `}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {roomNum}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+// Guests Selector Component
+const GuestsSelector: React.FC<{
+  adults: number;
+  children: number;
+  onGuestsChange: (adults: number, children: number) => void;
+}> = ({ adults, children, onGuestsChange }) => {
+  return (
+    <motion.div 
+      className="bg-white rounded-2xl shadow-xl border p-6 w-72"
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+    >
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Guests</h3>
+      
+      <div className="space-y-4">
+        {/* Adults */}
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="font-medium text-gray-800">Adults</span>
+            <p className="text-sm text-gray-500">Ages 13 or above</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <motion.button
+              onClick={() => onGuestsChange(Math.max(1, adults - 1), children)}
+              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+              </svg>
+            </motion.button>
+            <span className="w-8 text-center font-medium">{adults}</span>
+            <motion.button
+              onClick={() => onGuestsChange(Math.min(10, adults + 1), children)}
+              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </motion.button>
+          </div>
+        </div>
+        
+        {/* Children */}
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="font-medium text-gray-800">Children</span>
+            <p className="text-sm text-gray-500">Ages 2-12</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <motion.button
+              onClick={() => onGuestsChange(adults, Math.max(0, children - 1))}
+              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+              </svg>
+            </motion.button>
+            <span className="w-8 text-center font-medium">{children}</span>
+            <motion.button
+              onClick={() => onGuestsChange(adults, Math.min(8, children + 1))}
+              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </motion.button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const Home: React.FC = () => {
   const [centerIdx, setCenterIdx] = useState(1);
   const [activeImageIndexes, setActiveImageIndexes] = useState(Array(6).fill(0));
@@ -183,6 +453,23 @@ const Home: React.FC = () => {
     id: "H1CIBqDeWQ0", 
     title: "OceanView Beach Resort"
   });
+
+  // Booking form state
+  const [checkInDate, setCheckInDate] = useState(new Date());
+  const [checkOutDate, setCheckOutDate] = useState(new Date(Date.now() + 24 * 60 * 60 * 1000));
+  const [selectedRoom, setSelectedRoom] = useState("Luxury suite");
+  const [selectedRoomNumber, setSelectedRoomNumber] = useState("14");
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(3);
+  
+  // Dropdown states
+  const [showCheckInCalendar, setShowCheckInCalendar] = useState(false);
+  const [showCheckOutCalendar, setShowCheckOutCalendar] = useState(false);
+  const [showRoomSelector, setShowRoomSelector] = useState(false);
+  const [showGuestsSelector, setShowGuestsSelector] = useState(false);
+  
+  // Check if any dropdown is open
+  const isAnyDropdownOpen = showCheckInCalendar || showCheckOutCalendar || showRoomSelector || showGuestsSelector;
 
   const prev = () => setCenterIdx((i) => (i === 0 ? suiteData.length - 1 : i - 1));
   const next = () => setCenterIdx((i) => (i === suiteData.length - 1 ? 0 : i + 1));
@@ -226,6 +513,42 @@ const Home: React.FC = () => {
     } else {
       setCurrentIndex(prev => prev - 4);
     }
+  };
+  // Close dropdowns when clicking outside or when search button is clicked
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      // Close dropdowns only if clicking outside booking-dropdown or if clicking the search button
+      if (!target.closest('.booking-dropdown') || target.closest('.search-button')) {
+        setShowCheckInCalendar(false);
+        setShowCheckOutCalendar(false);
+        setShowRoomSelector(false);
+        setShowGuestsSelector(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  const calculateNights = () => {
+    const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+  const handleRoomSelect = (roomName: string, roomNumber: string) => {
+    setSelectedRoom(roomName);
+    setSelectedRoomNumber(roomNumber);
+    // Don't automatically close the dropdown
+  };
+  const handleGuestsChange = (newAdults: number, newChildren: number) => {
+    setAdults(newAdults);
+    setChildren(newChildren);
+    // Don't automatically close the dropdown
   };
 
   return (
@@ -282,25 +605,33 @@ const Home: React.FC = () => {
         </motion.button>
       </motion.nav>
 
-      <header
-        className="relative h-[90vh] overflow-hidden bg-cover bg-center"
-        style={{
-          backgroundImage: `url(${HomeHeader})`,
-          marginTop : '-10px',
-          marginLeft: '2px',
-          marginRight: '2px',
-          borderRadius: '80px 80px 35px 35px',
-        }}
-      >
-        {/* Hero Content */}
-        <motion.div 
-          className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+        <motion.header
+          className="relative overflow-hidden bg-cover bg-center transition-all duration-700 ease-out"
+          style={{
+            backgroundImage: `url(${HomeHeader})`,
+            marginTop: '-10px',
+            marginLeft: '2px',
+            marginRight: '2px',
+            borderRadius: '80px 80px 35px 35px',
+          }}
+          animate={{ 
+            height: isAnyDropdownOpen ? 'auto' : '90vh', 
+            minHeight: isAnyDropdownOpen ? '100vh' : '90vh',
+            paddingBottom: isAnyDropdownOpen ? '350px' : '0px'
+          }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
         >
+        {/* Hero Content */}
+          <motion.div 
+            className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4"
+            animate={{ 
+              y: isAnyDropdownOpen ? -220 : 0,  
+              opacity: isAnyDropdownOpen ? 0.8 : 1
+            }}
+            transition={{ duration: 0.5 }}
+          >
           <h2 className="text-9xl font-extrabold font-parisienne mb-4">
-            Ocean View
+            OceanView
           </h2>
           <p className="text-xl font-light" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             Experience luxury, comfort, and hospitality like never before!
@@ -310,41 +641,144 @@ const Home: React.FC = () => {
         {/* Booking Panel */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{
+            opacity: 1,
+            // Move up if hero section is extended (dropdown open)
+            y: isAnyDropdownOpen ? -100 : 0
+          }}
           transition={{ duration: 0.8, delay: 1, type: "spring", stiffness: 120 }}
-          className="absolute left-0 right-0 bottom-8 mx-auto w-[80%] max-w-5xl bg-white shadow-2xl rounded-[32px] px-10 py-4 flex items-center justify-between"
+          className="absolute left-0 right-0 bottom-8 mx-auto w-[80%] max-w-5xl bg-white shadow-2xl rounded-[32px] px-10 py-4 flex items-center justify-between booking-dropdown"
           style={{
             boxShadow: '0px 4px 24px 0px #00000026',
             borderRadius: '40px',
+            zIndex: 10,
+            bottom: isAnyDropdownOpen ? '280px' : '2rem'
           }}
         >
           {/* Booking fields */}
           <div className="flex flex-1 items-center justify-between relative gap-6">
             {/* Check-in */}
-            <div className="flex items-center gap-2 min-w-[140px]">
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </span>
-              <div>
-                <div className="text-xs text-[#6B7280] mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>Check-in</div>
-                <div className="text-sm text-[#232323] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>Feb 25, 2025</div>
-              </div>
+            <div className="flex items-center gap-2 min-w-[140px] relative">              
+              <motion.button
+                onClick={() => {
+                  // If already open, keep it open
+                  if (!showCheckInCalendar) {
+                    setShowCheckInCalendar(true);
+                    setShowCheckOutCalendar(false);
+                    setShowRoomSelector(false);
+                    setShowGuestsSelector(false);
+                  }
+                }}
+                className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                    >
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-xs text-[#6B7280] mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>Check-in</div>
+                  <div className="text-sm text-[#232323] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>{formatDate(checkInDate)}</div>
+                </div>
+              </motion.button>
+              
+              <AnimatePresence>
+                {showCheckInCalendar && (
+                  <div className="absolute top-12 left-0 mt-2 z-50">
+                    <Calendar
+                      selectedDate={checkInDate}                
+                      onDateSelect={(date) => {
+                      setCheckInDate(date);
+                      if (date >= checkOutDate) {
+                          setCheckOutDate(new Date(date.getTime() + 24 * 60 * 60 * 1000));
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </AnimatePresence>
             </div>
+
             {/* Divider & Nights */}
             <div className="h-12 w-px bg-[#E5E7EB] mx-2 relative">
-              <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#EDEDED] text-[#B1B1B1] text-xs px-4 py-0.5 rounded-full shadow font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>1night</span>
+                <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#EDEDED] text-[#B1B1B1] w-24 text-xs px-2 py-0.5 rounded-full shadow font-medium text-center" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                {/* Animate value increase */}
+                <motion.span
+                  key={calculateNights()}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {calculateNights()}
+                </motion.span>
+                {" "}
+                {calculateNights() === 1 ? 'night' : 'nights'}
+                </span>
             </div>
+
             {/* Check-out */}
-            <div className="flex flex-col min-w-[140px]">
-              <div className="text-xs text-[#6B7280] mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>Check-out</div>
-              <div className="text-sm text-[#232323] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>Mar 2, 2025</div>
+            <div className="flex items-center gap-2 min-w-[140px] relative">              
+              <motion.button
+                onClick={() => {
+                  // If already open, keep it open
+                  if (!showCheckOutCalendar) {
+                    setShowCheckOutCalendar(true);
+                    setShowCheckInCalendar(false);
+                    setShowRoomSelector(false);
+                    setShowGuestsSelector(false);
+                  }
+                }}
+                className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                >
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-xs text-[#6B7280] mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>Check-out</div>
+                  <div className="text-sm text-[#232323] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>{formatDate(checkOutDate)}</div>
+                </div>
+              </motion.button>
+              
+              <AnimatePresence>
+                {showCheckOutCalendar && (
+                  <div className="absolute top-12 left-0 mt-2 z-50">
+                    <Calendar
+                      selectedDate={checkOutDate}                
+                      onDateSelect={(date) => {
+                        setCheckOutDate(date);
+                      }}
+                      minDate={new Date(checkInDate.getTime() + 24 * 60 * 60 * 1000)}
+                    />
+                  </div>
+                )}
+              </AnimatePresence>
             </div>
+
             {/* Divider */}
             <div className="h-12 w-px bg-[#E5E7EB] mx-2" />
+
             {/* Room */}
-            <div className="flex items-center gap-2 min-w-[160px]">
+            <div className="flex items-center gap-2 min-w-[160px] relative">              
+              <motion.button
+              onClick={() => {
+                // If already open, keep it open
+                if (!showRoomSelector) {
+                  setShowRoomSelector(true);
+                  setShowCheckInCalendar(false);
+                  setShowCheckOutCalendar(false);
+                  setShowGuestsSelector(false);
+                }
+              }}
+              className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+                  >
               <span>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -353,38 +787,84 @@ const Home: React.FC = () => {
               <div>
                 <div className="text-xs text-[#6B7280] mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>Room</div>
                 <div className="text-sm text-[#232323] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  Luxury suite <span className="text-[#6B7280] text-xs font-normal ml-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>Room no : 14</span>
+                  {selectedRoom} <span className="text-[#6B7280] text-xs font-normal ml-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>Room no : {selectedRoomNumber}</span>
                 </div>
               </div>
-            </div>
-            {/* Divider */}
-            <div className="h-12 w-px bg-[#E5E7EB] mx-2" />
-            {/* Guests */}
-            <div className="flex items-center gap-2 min-w-[140px]">
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </span>
-              <div>
-                <div className="text-xs text-[#6B7280] mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>Guests</div>
-                <div className="text-sm text-[#232323] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>2 Adult, 3 Children</div>
-              </div>
+              </motion.button>
+              
+              <AnimatePresence>
+                {showRoomSelector && (
+                  <div className="absolute top-12 left-0 mt-2 z-50">
+                    <RoomSelector
+                      selectedRoom={`${selectedRoom} - Room ${selectedRoomNumber}`}
+                      onRoomSelect={handleRoomSelect}
+                    />
+                  </div>
+                )}
+                </AnimatePresence>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="h-12 w-px bg-[#E5E7EB] mx-2" />
+
+                  {/* Guests */}
+                  <div className="flex items-center gap-2 min-w-[140px] relative">              
+                  <motion.button
+                  onClick={() => {
+                  // If already open, keep it open
+                  if (!showGuestsSelector) {
+                    setShowGuestsSelector(true);
+                    setShowCheckInCalendar(false);
+                    setShowCheckOutCalendar(false);
+                    setShowRoomSelector(false);
+                  }
+                }}
+                className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                    >
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </span>
+                <div>
+                  <div className="text-xs text-[#6B7280] mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>Guests</div>
+                  <div className="text-sm text-[#232323] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    {adults} Adult{adults !== 1 ? 's' : ''}{children > 0 ? `, ${children} Children` : ''}
+                  </div>
+                </div>
+              </motion.button>
+              
+              <AnimatePresence>
+                {showGuestsSelector && (
+                  <div className="absolute top-12 right-0 mt-2 z-50">
+                    <GuestsSelector
+                      adults={adults}
+                      children={children}
+                      onGuestsChange={handleGuestsChange}
+                    />
+                  </div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
-          {/* Search button */}
-          <button
+
+          {/* Search button */}          
+          <motion.button
             type="button"
             title="Search"
-            className="bg-[#5C4DF4] hover:bg-[#2D60FF] text-white rounded-full w-12 h-12 flex items-center justify-center ml-6 shadow-lg"
+            className="bg-[#5C4DF4] hover:bg-[#2D60FF] text-white rounded-full w-12 h-12 flex items-center justify-center ml-6 shadow-lg search-button"
             style={{ boxShadow: '0px 2px 12px 0px #5C4DF440' }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-          </button>
+          </motion.button>
         </motion.div>
-      </header>      
+      </motion.header>      
       
       {/* How it works */}
       <section className="py-20 text-center">
@@ -1021,7 +1501,7 @@ const Home: React.FC = () => {
                       onClick={() => handleImageChange(num, (activeImageIndexes[num] + 1) % roomImages[num].length)}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7  7-7" />
                       </svg>
                     </button>
                     
@@ -1046,13 +1526,13 @@ const Home: React.FC = () => {
                       <div className="flex gap-4">
                         <div className="flex items-center text-gray-500 text-sm">
                           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M8 3v4m4-4v4m4-4v4m4-4v4m-9 4v4m-4-4v4m-4-4v4" />
                           </svg>
                           3 bathrooms
                         </div>
                         <div className="flex items-center text-gray-500 text-sm">
                           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h4" />
                           </svg>
                           3 bedrooms
                         </div>
@@ -1846,25 +2326,23 @@ const Home: React.FC = () => {
                   <div className="flex items-center">
                     <div className="mr-3">
                       <svg className="w-5 h-5 text-[#5C4DF4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <div>
-                      <div className="text-sm font-medium text-[#1E293B]">E-MAIL</div>
-                      <div className="text-sm text-gray-500">info@oceanview.com</div>
-                    </div>
+                    <a href="mailto:oceanView@gmail.com" className="text-sm hover:text-[#5C4DF4]">
+                      oceanView@gmail.com
+                    </a>
                   </div>
                   
                   <div className="flex items-center">
                     <div className="mr-3">
                       <svg className="w-5 h-5 text-[#5C4DF4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
                     </div>
-                    <div>
-                      <div className="text-sm font-medium text-[#1E293B]">HELPDESK</div>
-                      <div className="text-sm text-gray-500">https://helpdesk.com</div>
-                    </div>
+                    <a href="tel:+94119486389" className="text-sm hover:text-[#5C4DF4]">
+                      +94 71 123 5174
+                    </a>
                   </div>
                 </motion.div>
               </div>
@@ -1900,7 +2378,7 @@ const Home: React.FC = () => {
                 <div className="flex items-start space-x-3">
                   <svg className="w-5 h-5 text-gray-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <p className="text-sm leading-relaxed">
                     No 104/A, Colombo 10,<br />
@@ -1910,7 +2388,7 @@ const Home: React.FC = () => {
                 
                 <div className="flex items-center space-x-3">
                   <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <a href="mailto:oceanView@gmail.com" className="text-sm hover:text-[#5C4DF4]">
                     oceanView@gmail.com
@@ -1975,12 +2453,12 @@ const Home: React.FC = () => {
                 </a>
                 <a href="#" className="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
                   </svg>
                 </a>
                 <a href="#" className="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
                   </svg>
                 </a>
                 <a href="#" className="bg-gray-200 p-2 rounded-full hover:bg-gray-300 transition-colors">
