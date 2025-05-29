@@ -20,6 +20,7 @@ import treatment_2 from '../../../assets/images/theraphy/treatment_2.png';
 import treatment_3 from '../../../assets/images/theraphy/treatment_3.png';
 import treatment_4 from '../../../assets/images/theraphy/treatment_4.png';
 import details_food from '../../../assets/images/theraphy/details_food.png';
+import bgphoto from '../../../assets/images/theraphy/background.png';
 
 
 const spaPromoImage = '/api/placeholder/400/300';
@@ -44,21 +45,22 @@ interface Treatment {
 }
 
 // Treatment Card Component - Updated to show only images without text
-const TreatmentCard: React.FC<TreatmentCardProps> = ({ 
-  id, 
-  name, 
-  image, 
-  description, 
-  onSelect, 
-  isSelected, 
-  bgColor 
+const TreatmentCard: React.FC<TreatmentCardProps> = ({
+  id,
+  name,
+  image,
+  description,
+  onSelect,
+  isSelected,
+  bgColor
 }) => (
-  <Card 
-    sx={{ 
+  <Card
+    sx={{
       position: 'relative',
-      borderRadius: 3, 
+      borderRadius: 3,
       boxShadow: 'rgba(0, 0, 0, 0.08) 0px 4px 12px',
-      height: '200px',
+      height: '260px',
+      width: '350px',
       cursor: 'pointer',
       overflow: 'hidden',
       border: isSelected ? '3px solid #fff' : 'none',
@@ -81,7 +83,7 @@ const TreatmentCard: React.FC<TreatmentCardProps> = ({
         backgroundRepeat: 'no-repeat',
       }}
     />
-    
+
     {/* Optional: Light overlay for better hover effect */}
     <Box
       sx={{
@@ -111,7 +113,7 @@ const BookingSidePanel: React.FC<{
   // Available time slots
   const timeSlots = [
     '08:00 AM',
-    '10:00 AM', 
+    '10:00 AM',
     '12:00 PM',
     '02:00 PM',
     '04:00 PM',
@@ -133,7 +135,7 @@ const BookingSidePanel: React.FC<{
   };
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       height: '100%',
       display: 'flex',
       flexDirection: 'column',
@@ -146,10 +148,10 @@ const BookingSidePanel: React.FC<{
           <Fade in timeout={600}>
             <Box sx={{ textAlign: 'center' }}>
               {/* Treatment Image */}
-              <Box 
+              <Box
                 sx={{
                   width: '100%',
-                  height: 200,
+                  height: 280,
                   borderRadius: 3,
                   backgroundImage: `url(${selectedTreatment?.image})`,
                   backgroundSize: 'cover',
@@ -157,23 +159,23 @@ const BookingSidePanel: React.FC<{
                   mb: 3
                 }}
               />
-              
+
               {/* Treatment Name */}
-              <Typography 
-                variant="h5" 
+              <Typography
+                variant="h5"
                 fontWeight="700"
-                sx={{ 
+                sx={{
                   mb: 2,
                   color: '#333'
                 }}
               >
                 {selectedTreatment?.name?.replace(/\n/g, ' ')}
               </Typography>
-              
+
               {/* Small Description */}
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: '#666',
                   lineHeight: 1.6,
                   mb: 4
@@ -210,35 +212,31 @@ const BookingSidePanel: React.FC<{
       ) : (
         // Date and time selection view
         <Grow in timeout={400}>
-          <Box sx={{ 
+          <Box sx={{
             display: 'flex',
             flexDirection: 'column',
             height: '100%',
             gap: 3
           }}>
-            
+
             {/* Treatment summary */}
-            <Box sx={{ 
-              p: 2, 
-              bgcolor: '#fce4ec', 
-              borderRadius: 2,
+            <Box sx={{
               mb: 2,
-              border: '1px solid #f8bbd9'
             }}>
-              <Typography variant="subtitle1" fontWeight="600" sx={{ mb: 1, color: '#ad1457' }}>
+              <Typography variant="subtitle1" fontWeight="800" sx={{ mb: 1, color: '#000' }}>
                 {selectedTreatment?.name?.replace(/\n/g, ' ')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#880e4f' }}>
+              <Typography variant="body2" sx={{ color: '#000' }}>
                 Professional spa treatment
               </Typography>
             </Box>
 
             {/* Calendar Date Selection */}
             <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle1" fontWeight="600" sx={{ mb: 2, color: '#e91e63' }}>
-                Select a Date:
+              <Typography variant="subtitle1" fontWeight="400" sx={{ mb: 2, color: '#000' }}>
+                Select a Date
               </Typography>
-              
+
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker
                   value={selectedDate}
@@ -248,7 +246,7 @@ const BookingSidePanel: React.FC<{
                   slotProps={{
                     textField: {
                       fullWidth: true,
-                      sx: { 
+                      sx: {
                         borderRadius: 2,
                         '& .MuiOutlinedInput-root': {
                           '&:hover fieldset': {
@@ -270,11 +268,11 @@ const BookingSidePanel: React.FC<{
 
             {/* Time Selection Boxes */}
             <Box sx={{ flex: 1, overflow: 'auto' }}>
-              <Typography variant="subtitle1" fontWeight="600" sx={{ mb: 2, color: '#e91e63' }}>
-                Select a Time:
+              <Typography variant="subtitle1" fontWeight="400" sx={{ mb: 2, color: '#000' }}>
+                Select a Time
               </Typography>
-              
-              <Box sx={{ 
+
+              <Box sx={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
                 gap: 1,
@@ -287,32 +285,37 @@ const BookingSidePanel: React.FC<{
                     onClick={() => setSelectedTime(time)}
                     sx={{
                       p: 1,
-                      border: selectedTime === time ? '2px solid #e91e63' : '1px solid #f8bbd9',
+                      border: selectedTime === time ? '2px solid #e91e63' : '1px solid #e91e63',
                       borderRadius: 1.5,
                       textAlign: 'center',
                       cursor: 'pointer',
-                      bgcolor: selectedTime === time ? '#fce4ec' : '#fff',
+                      bgcolor: selectedTime === time ? '#e91e63' : '#fff',
                       transition: 'all 0.2s ease',
                       minHeight: '40px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       '&:hover': {
-                        bgcolor: selectedTime === time ? '#fce4ec' : '#fdf2f8',
-                        borderColor: '#e91e63'
+                        bgcolor: '#e91e63',
+                        borderColor: '#e91e63',
+                        '& .time-text': {
+                        color: '#fff'
+                        }
                       }
                     }}
                   >
-                    <Typography 
-                      variant="body2" 
-                      fontWeight={selectedTime === time ? 600 : 400}
-                      sx={{ 
-                        color: selectedTime === time ? '#e91e63' : '#333',
-                        fontSize: '0.875rem'
-                      }}
-                    >
-                      {time}
-                    </Typography>
+                   <Typography 
+          className="time-text"
+          variant="body2" 
+          fontWeight={selectedTime === time ? 600 : 400}
+          sx={{ 
+            color: selectedTime === time ? '#fff' : '#e91e63',
+            fontSize: '0.875rem',
+            transition: 'color 0.2s ease'
+          }}
+        >
+          {time}
+        </Typography>
                   </Box>
                 ))}
               </Box>
@@ -352,33 +355,33 @@ const BookingSidePanel: React.FC<{
 
 const SpaDashboard: React.FC = () => {
   const [selectedTreatmentId, setSelectedTreatmentId] = useState<number | null>(null);
-  
+
   const treatments: Treatment[] = [
-    { 
-      id: 1, 
-      name: 'Massage\nRituals', 
-      image: treatment_1, 
+    {
+      id: 1,
+      name: 'Massage\nRituals',
+      image: treatment_1,
       bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       description: 'Relaxing full body massage'
     },
-    { 
-      id: 2, 
-      name: 'Manicure\n&\nPedicure', 
-      image: treatment_2, 
+    {
+      id: 2,
+      name: 'Manicure\n&\nPedicure',
+      image: treatment_2,
       bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
       description: 'Professional nail care'
     },
-    { 
-      id: 3, 
-      name: 'Beauty\nTreatments', 
-      image: treatment_3, 
+    {
+      id: 3,
+      name: 'Beauty\nTreatments',
+      image: treatment_3,
       bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
       description: 'Rejuvenating facial treatments'
     },
-    { 
-      id: 4, 
-      name: 'Body\nTreatments', 
-      image: treatment_4, 
+    {
+      id: 4,
+      name: 'Body\nTreatments',
+      image: treatment_4,
       bgColor: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
       description: 'Full body wellness treatments'
     },
@@ -393,16 +396,51 @@ const SpaDashboard: React.FC = () => {
     setSelectedTreatmentId(null);
   };
 
-  const selectedTreatment = selectedTreatmentId 
-    ? treatments.find(t => t.id === selectedTreatmentId) || null 
+  const selectedTreatment = selectedTreatmentId
+    ? treatments.find(t => t.id === selectedTreatmentId) || null
     : null;
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
+    <Box sx={{
+      display: 'flex',
+      minHeight: '100vh',
+      backgroundImage: `url(${bgphoto})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'fixed'
+
+    }}>
+      {/* Spa Title Background
+      <Box sx={{
+        position: 'absolute',
+        top: 20,
+        left: 0,
+        right: 0,
+        zIndex: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        pt: 8
+      }}>
+        <Typography 
+          variant="h2" 
+          sx={{ 
+            color: '#fff', 
+            fontWeight: 300, 
+            fontSize: '3rem',
+            textShadow: '2px 2px 8px rgba(0,0,0,0.5)',
+            opacity: 0.8
+          }}
+        >
+          Spa
+        </Typography>
+      </Box> */}
+
       {/* Sidebar */}
-      <Box sx={{ 
-        width: 80, 
-        bgcolor: '#fff', 
+      <Box sx={{
+        width: 80,
+        bgcolor: '#fff',
         boxShadow: '2px 0 8px rgba(0,0,0,0.05)',
         display: 'flex',
         flexDirection: 'column',
@@ -410,10 +448,10 @@ const SpaDashboard: React.FC = () => {
         py: 3,
         gap: 3
       }}>
-        <Box sx={{ 
-          width: 40, 
-          height: 40, 
-          bgcolor: '#e8e5ff', 
+        <Box sx={{
+          width: 40,
+          height: 40,
+          bgcolor: '#e8e5ff',
           borderRadius: 2,
           display: 'flex',
           alignItems: 'center',
@@ -427,7 +465,7 @@ const SpaDashboard: React.FC = () => {
       </Box>
 
       {/* Main Content */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <Box sx={{
           p: 3,
@@ -435,7 +473,8 @@ const SpaDashboard: React.FC = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          bgcolor: '#fff',
+          bgcolor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(10px)',
           boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
         }}>
           <Box>
@@ -448,10 +487,10 @@ const SpaDashboard: React.FC = () => {
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box sx={{ position: 'relative' }}>
-              <SearchIcon sx={{ 
-                position: 'absolute', 
-                left: 12, 
-                top: '50%', 
+              <SearchIcon sx={{
+                position: 'absolute',
+                left: 12,
+                top: '50%',
                 transform: 'translateY(-50%)',
                 color: '#ccc',
                 fontSize: 20
@@ -463,7 +502,7 @@ const SpaDashboard: React.FC = () => {
                   '& .MuiOutlinedInput-root': {
                     pl: 5,
                     borderRadius: 2,
-                    bgcolor: '#f8f9fa'
+                    bgcolor: 'rgba(248, 249, 250, 0.9)'
                   }
                 }}
               />
@@ -477,30 +516,31 @@ const SpaDashboard: React.FC = () => {
           <Grid container spacing={4}>
             {/* Left Side - Treatments */}
             <Grid item xs={12} md={selectedTreatmentId ? 8 : 8}>
-              <Box sx={{ 
-                bgcolor: '#d4d4d8', 
-                borderRadius: 4, 
+              <Box sx={{
+                bgcolor: 'rgba(212, 212, 216, 0.9)',
+                backdropFilter: 'blur(10px)',
+                borderRadius: 4,
                 p: 4,
                 minHeight: '600px'
               }}>
-                <Typography 
-                  variant="h2" 
-                  sx={{ 
-                    color: '#fff', 
-                    fontWeight: 300, 
+                {/* <Typography
+                  variant="h2"
+                  sx={{
+                    color: '#fff',
+                    fontWeight: 300,
                     fontSize: '3rem',
                     mb: 4
                   }}
                 >
                   Spa
-                </Typography>
-                
-                <Typography 
-                  variant="h5" 
-                  sx={{ 
-                    color: '#333', 
-                    fontWeight: 600, 
-                    mb: 3 
+                </Typography> */}
+
+                <Typography
+                  variant="h5"
+                  sx={{
+                    color: '#333',
+                    fontWeight: 600,
+                    mb: 3
                   }}
                 >
                   Treatments
@@ -529,14 +569,15 @@ const SpaDashboard: React.FC = () => {
               <Box sx={{ height: '600px' }}>
                 {selectedTreatmentId ? (
                   <Grow in timeout={400}>
-                    <Box sx={{ 
-                      bgcolor: '#fff', 
-                      borderRadius: 4, 
-                      p: 3, 
+                    <Box sx={{
+                      bgcolor: 'rgba(255, 255, 255, 0.95)',
+                      backdropFilter: 'blur(10px)',
+                      borderRadius: 4,
+                      p: 3,
                       height: '100%',
                       boxShadow: '0 4px 24px rgba(0,0,0,0.08)'
                     }}>
-                      <BookingSidePanel 
+                      <BookingSidePanel
                         selectedTreatment={selectedTreatment}
                         onClose={() => setSelectedTreatmentId(null)}
                         onConfirm={handleConfirmBooking}
@@ -545,73 +586,23 @@ const SpaDashboard: React.FC = () => {
                   </Grow>
                 ) : (
                   <Box sx={{
-                    bgcolor: '#fff',
+                    bgcolor: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(10px)',
                     borderRadius: 4,
                     overflow: 'hidden',
                     height: '100%',
                     boxShadow: '0 4px 24px rgba(0,0,0,0.08)'
                   }}>
-                    <Box sx={{ 
-                      height: '60%', 
-                      background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-                      position: 'relative',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
+                    <Box sx={{
+                      height: '100%',
+                      backgroundImage: `url(${details_food})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat'
                     }}>
-                      {/* Spa elements illustration */}
-                      <Box sx={{ textAlign: 'center' }}>
-                        <Box sx={{ 
-                          width: 60, 
-                          height: 60, 
-                          bgcolor: '#fff', 
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          mb: 2,
-                          mx: 'auto'
-                        }}>
-                          <SpaIcon sx={{ color: '#fcb69f', fontSize: 32 }} />
-                        </Box>
-                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
-                          <Box sx={{ width: 40, height: 20, bgcolor: '#fff', borderRadius: 2 }} />
-                          <Box sx={{ width: 40, height: 20, bgcolor: '#fff', borderRadius: 2 }} />
-                        </Box>
-                      </Box>
+
                     </Box>
-                    
-                    <Box sx={{ p: 3, height: '40%' }}>
-                      <Typography 
-                        variant="h6" 
-                        sx={{ 
-                          fontWeight: 700, 
-                          textAlign: 'center', 
-                          mb: 2,
-                          color: '#333'
-                        }}
-                      >
-                        Relax and Rejuvenate<br />
-                        at Our Luxury Spa
-                      </Typography>
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          color: '#666', 
-                          textAlign: 'center',
-                          lineHeight: 1.6,
-                          fontSize: '0.875rem'
-                        }}
-                      >
-                        Indulge in a world of relaxation at our hotel's luxury spa, 
-                        where tranquility meets ultimate comfort. Experience 
-                        rejuvenating massages, refreshing facials, and soothing 
-                        aromatherapy treatments designed to restore balance to 
-                        your mind and body. Our expert therapists use natural 
-                        ingredients and traditional techniques to ensure deep 
-                        relaxation and wellness.
-                      </Typography>
-                    </Box>
+
                   </Box>
                 )}
               </Box>
