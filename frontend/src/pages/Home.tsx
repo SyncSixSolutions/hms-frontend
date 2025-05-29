@@ -514,12 +514,12 @@ const Home: React.FC = () => {
       setCurrentIndex(prev => prev - 4);
     }
   };
-
-  // Close dropdowns when clicking outside
+  // Close dropdowns when clicking outside or when search button is clicked
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
-      if (!target.closest('.booking-dropdown')) {
+      // Close dropdowns only if clicking outside booking-dropdown or if clicking the search button
+      if (!target.closest('.booking-dropdown') || target.closest('.search-button')) {
         setShowCheckInCalendar(false);
         setShowCheckOutCalendar(false);
         setShowRoomSelector(false);
@@ -540,16 +540,15 @@ const Home: React.FC = () => {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
   };
-
   const handleRoomSelect = (roomName: string, roomNumber: string) => {
     setSelectedRoom(roomName);
     setSelectedRoomNumber(roomNumber);
-    setShowRoomSelector(false);
+    // Don't automatically close the dropdown
   };
-
   const handleGuestsChange = (newAdults: number, newChildren: number) => {
     setAdults(newAdults);
     setChildren(newChildren);
+    // Don't automatically close the dropdown
   };
 
   return (
@@ -617,8 +616,8 @@ const Home: React.FC = () => {
           }}
           animate={{ 
             height: isAnyDropdownOpen ? 'auto' : '90vh', 
-            minHeight: isAnyDropdownOpen ? '120vh' : '90vh', 
-            paddingBottom: isAnyDropdownOpen ? '250px' : '0px' 
+            minHeight: isAnyDropdownOpen ? '100vh' : '90vh',
+            paddingBottom: isAnyDropdownOpen ? '350px' : '0px'
           }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
         >
@@ -626,13 +625,13 @@ const Home: React.FC = () => {
           <motion.div 
             className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4"
             animate={{ 
-              y: isAnyDropdownOpen ? -120 : 0,  // Move content higher when dropdown is open
+              y: isAnyDropdownOpen ? -220 : 0,  
               opacity: isAnyDropdownOpen ? 0.8 : 1
             }}
             transition={{ duration: 0.5 }}
           >
           <h2 className="text-9xl font-extrabold font-parisienne mb-4">
-            Ocean View
+            OceanView
           </h2>
           <p className="text-xl font-light" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             Experience luxury, comfort, and hospitality like never before!
@@ -642,30 +641,38 @@ const Home: React.FC = () => {
         {/* Booking Panel */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{
+            opacity: 1,
+            // Move up if hero section is extended (dropdown open)
+            y: isAnyDropdownOpen ? -100 : 0
+          }}
           transition={{ duration: 0.8, delay: 1, type: "spring", stiffness: 120 }}
           className="absolute left-0 right-0 bottom-8 mx-auto w-[80%] max-w-5xl bg-white shadow-2xl rounded-[32px] px-10 py-4 flex items-center justify-between booking-dropdown"
           style={{
             boxShadow: '0px 4px 24px 0px #00000026',
             borderRadius: '40px',
-            zIndex: 10
+            zIndex: 10,
+            bottom: isAnyDropdownOpen ? '280px' : '2rem'
           }}
         >
           {/* Booking fields */}
           <div className="flex flex-1 items-center justify-between relative gap-6">
             {/* Check-in */}
-            <div className="flex items-center gap-2 min-w-[140px] relative">
+            <div className="flex items-center gap-2 min-w-[140px] relative">              
               <motion.button
                 onClick={() => {
-                  setShowCheckInCalendar(!showCheckInCalendar);
-                  setShowCheckOutCalendar(false);
-                  setShowRoomSelector(false);
-                  setShowGuestsSelector(false);
+                  // If already open, keep it open
+                  if (!showCheckInCalendar) {
+                    setShowCheckInCalendar(true);
+                    setShowCheckOutCalendar(false);
+                    setShowRoomSelector(false);
+                    setShowGuestsSelector(false);
+                  }
                 }}
                 className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-              >
+                    >
                 <span>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -681,13 +688,12 @@ const Home: React.FC = () => {
                 {showCheckInCalendar && (
                   <div className="absolute top-12 left-0 mt-2 z-50">
                     <Calendar
-                      selectedDate={checkInDate}
+                      selectedDate={checkInDate}                
                       onDateSelect={(date) => {
-                        setCheckInDate(date);
-                        if (date >= checkOutDate) {
+                      setCheckInDate(date);
+                      if (date >= checkOutDate) {
                           setCheckOutDate(new Date(date.getTime() + 24 * 60 * 60 * 1000));
                         }
-                        setShowCheckInCalendar(false);
                       }}
                     />
                   </div>
@@ -697,24 +703,37 @@ const Home: React.FC = () => {
 
             {/* Divider & Nights */}
             <div className="h-12 w-px bg-[#E5E7EB] mx-2 relative">
-              <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#EDEDED] text-[#B1B1B1] text-xs px-4 py-0.5 rounded-full shadow font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                {calculateNights()} {calculateNights() === 1 ? 'night' : 'nights'}
-              </span>
+                <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#EDEDED] text-[#B1B1B1] w-24 text-xs px-2 py-0.5 rounded-full shadow font-medium text-center" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                {/* Animate value increase */}
+                <motion.span
+                  key={calculateNights()}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {calculateNights()}
+                </motion.span>
+                {" "}
+                {calculateNights() === 1 ? 'night' : 'nights'}
+                </span>
             </div>
 
             {/* Check-out */}
-            <div className="flex items-center gap-2 min-w-[140px] relative">
+            <div className="flex items-center gap-2 min-w-[140px] relative">              
               <motion.button
                 onClick={() => {
-                  setShowCheckOutCalendar(!showCheckOutCalendar);
-                  setShowCheckInCalendar(false);
-                  setShowRoomSelector(false);
-                  setShowGuestsSelector(false);
+                  // If already open, keep it open
+                  if (!showCheckOutCalendar) {
+                    setShowCheckOutCalendar(true);
+                    setShowCheckInCalendar(false);
+                    setShowRoomSelector(false);
+                    setShowGuestsSelector(false);
+                  }
                 }}
                 className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-              >
+                >
                 <span>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -730,10 +749,9 @@ const Home: React.FC = () => {
                 {showCheckOutCalendar && (
                   <div className="absolute top-12 left-0 mt-2 z-50">
                     <Calendar
-                      selectedDate={checkOutDate}
+                      selectedDate={checkOutDate}                
                       onDateSelect={(date) => {
                         setCheckOutDate(date);
-                        setShowCheckOutCalendar(false);
                       }}
                       minDate={new Date(checkInDate.getTime() + 24 * 60 * 60 * 1000)}
                     />
@@ -746,29 +764,32 @@ const Home: React.FC = () => {
             <div className="h-12 w-px bg-[#E5E7EB] mx-2" />
 
             {/* Room */}
-            <div className="flex items-center gap-2 min-w-[160px] relative">
+            <div className="flex items-center gap-2 min-w-[160px] relative">              
               <motion.button
-                onClick={() => {
-                  setShowRoomSelector(!showRoomSelector);
+              onClick={() => {
+                // If already open, keep it open
+                if (!showRoomSelector) {
+                  setShowRoomSelector(true);
                   setShowCheckInCalendar(false);
                   setShowCheckOutCalendar(false);
                   setShowGuestsSelector(false);
-                }}
-                className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </span>
-                <div>
-                  <div className="text-xs text-[#6B7280] mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>Room</div>
-                  <div className="text-sm text-[#232323] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    {selectedRoom} <span className="text-[#6B7280] text-xs font-normal ml-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>Room no : {selectedRoomNumber}</span>
-                  </div>
+                }
+              }}
+              className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+                  >
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </span>
+              <div>
+                <div className="text-xs text-[#6B7280] mb-0.5" style={{ fontFamily: 'Montserrat, sans-serif' }}>Room</div>
+                <div className="text-sm text-[#232323] font-medium" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  {selectedRoom} <span className="text-[#6B7280] text-xs font-normal ml-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>Room no : {selectedRoomNumber}</span>
                 </div>
+              </div>
               </motion.button>
               
               <AnimatePresence>
@@ -780,25 +801,28 @@ const Home: React.FC = () => {
                     />
                   </div>
                 )}
-              </AnimatePresence>
-            </div>
+                </AnimatePresence>
+                  </div>
 
-            {/* Divider */}
-            <div className="h-12 w-px bg-[#E5E7EB] mx-2" />
+                  {/* Divider */}
+                  <div className="h-12 w-px bg-[#E5E7EB] mx-2" />
 
-            {/* Guests */}
-            <div className="flex items-center gap-2 min-w-[140px] relative">
-              <motion.button
-                onClick={() => {
-                  setShowGuestsSelector(!showGuestsSelector);
-                  setShowCheckInCalendar(false);
-                  setShowCheckOutCalendar(false);
-                  setShowRoomSelector(false);
+                  {/* Guests */}
+                  <div className="flex items-center gap-2 min-w-[140px] relative">              
+                  <motion.button
+                  onClick={() => {
+                  // If already open, keep it open
+                  if (!showGuestsSelector) {
+                    setShowGuestsSelector(true);
+                    setShowCheckInCalendar(false);
+                    setShowCheckOutCalendar(false);
+                    setShowRoomSelector(false);
+                  }
                 }}
                 className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-              >
+                    >
                 <span>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -826,11 +850,11 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Search button */}
+          {/* Search button */}          
           <motion.button
             type="button"
             title="Search"
-            className="bg-[#5C4DF4] hover:bg-[#2D60FF] text-white rounded-full w-12 h-12 flex items-center justify-center ml-6 shadow-lg"
+            className="bg-[#5C4DF4] hover:bg-[#2D60FF] text-white rounded-full w-12 h-12 flex items-center justify-center ml-6 shadow-lg search-button"
             style={{ boxShadow: '0px 2px 12px 0px #5C4DF440' }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
