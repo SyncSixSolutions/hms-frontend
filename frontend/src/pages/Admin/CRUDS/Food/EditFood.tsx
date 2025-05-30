@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -16,7 +16,8 @@ import {
   Drawer,
   AppBar,
   Toolbar,
-  Container
+  Container,
+  CircularProgress
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import InfoIcon from '@mui/icons-material/Info';
@@ -24,8 +25,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
-// Import your admin avatar if you have one or use a placeholder
-// import adminAvatar from '../../../../assets/images/admin-avatar.png';
+import { useParams, useNavigate } from 'react-router-dom';
+// Import your food service
+// import { foodService } from '../../../../services/foodService';
 
 interface FoodFormData {
   foodNumber: string;
@@ -38,11 +40,15 @@ interface FoodFormData {
   images: string[];
 }
 
-const AddFood: React.FC = () => {
+const EditFood: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FoodFormData>({
     foodNumber: '',
@@ -55,11 +61,43 @@ const AddFood: React.FC = () => {
     images: []
   });
 
-  // Sample images for demonstration - replace with your actual food images
-  const [sampleImages] = useState<string[]>([
-    'https://source.unsplash.com/random/200x200/?salad',
-    'https://source.unsplash.com/random/200x200/?food'
-  ]);
+  // Fetch food data on component mount
+  useEffect(() => {
+    const fetchFoodData = async () => {
+      if (!id) return;
+      
+      setLoading(true);
+      try {
+        // Replace with your actual API call
+        // const foodData = await foodService.getFoodById(id);
+        
+        // Mock data for demonstration
+        const foodData = {
+          foodNumber: 'F001',
+          foodName: 'Greek Salad',
+          availableTimes: 'lunch',
+          foodNature: 'veg',
+          price: '450',
+          foodType: 'appetizer',
+          foodDescription: 'Fresh Greek salad with feta cheese, olives, tomatoes, and cucumber.',
+          images: [
+            'https://source.unsplash.com/random/200x200/?greek-salad',
+            'https://source.unsplash.com/random/200x200/?salad'
+          ]
+        };
+        
+        setFormData(foodData);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch food data:', err);
+        setError('Failed to load food information. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFoodData();
+  }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -80,15 +118,42 @@ const AddFood: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting food data:', formData);
-    // Call API to save data
+    if (!id) return;
+
+    setLoading(true);
+    try {
+      // Replace with your actual API call
+      // await foodService.updateFood(id, formData);
+      
+      console.log('Updating food data:', formData);
+      // Mock successful update
+      setError(null);
+      alert('Food updated successfully!');
+      // Redirect to food list
+      // navigate('/admin/foods');
+    } catch (err) {
+      console.error('Failed to update food:', err);
+      setError('Failed to update food. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
-    // Handle cancellation logic
+    // Navigate back to food list
+    // navigate('/admin/foods');
     console.log('Cancelled');
+  };
+
+  const handleDeleteImage = (index: number) => {
+    const newImages = [...formData.images];
+    newImages.splice(index, 1);
+    setFormData({
+      ...formData,
+      images: newImages
+    });
   };
 
   const currentDate = new Date().toLocaleDateString('en-US', {
@@ -114,6 +179,20 @@ const AddFood: React.FC = () => {
     </Box>
   );
 
+  if (loading && !formData.foodName) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        height: '100vh'
+      }}>
+        <CircularProgress color="primary" />
+        <Typography sx={{ ml: 2 }}>Loading food data...</Typography>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Mobile App Bar */}
@@ -129,7 +208,7 @@ const AddFood: React.FC = () => {
               <MenuIcon sx={{ color: '#334155' }} />
             </IconButton>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: '#334155' }}>
-              Add Food
+              Edit Food
             </Typography>
             <Avatar sx={{ bgcolor: '#6366f1', width: 35, height: 35 }} />
           </Toolbar>
@@ -229,11 +308,23 @@ const AddFood: React.FC = () => {
           {/* Page Title */}
           <Box sx={{ bgcolor: '#6366f1', color: 'white', p: 2 }}>
             <Typography variant="h6" fontWeight="600">
-              Add a new food
+              Edit Food
             </Typography>
           </Box>
 
           <Box sx={{ p: { xs: 2, sm: 3 } }}>
+            {error && (
+              <Box sx={{ 
+                bgcolor: '#FEE2E2', 
+                color: '#B91C1C', 
+                p: 2, 
+                borderRadius: 1,
+                mb: 3 
+              }}>
+                <Typography>{error}</Typography>
+              </Box>
+            )}
+
             <form onSubmit={handleSubmit}>
               {/* Food Picture Section */}
               <Box sx={{ mb: 4 }}>
@@ -252,21 +343,39 @@ const AddFood: React.FC = () => {
                 </Box>
 
                 <Grid container spacing={2}>
-                  {/* Sample food images */}
-                  {sampleImages.map((img, index) => (
+                  {/* Existing food images */}
+                  {formData.images.map((img, index) => (
                     <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
-                      <Box
-                        component="img"
-                        src={img}
-                        alt={`Food preview ${index + 1}`}
-                        sx={{
-                          width: '100%',
-                          aspectRatio: '1/1',
-                          objectFit: 'cover',
-                          borderRadius: 2,
-                          border: '1px solid #e2e8f0'
-                        }}
-                      />
+                      <Box sx={{ position: 'relative' }}>
+                        <Box
+                          component="img"
+                          src={img}
+                          alt={`Food preview ${index + 1}`}
+                          sx={{
+                            width: '100%',
+                            aspectRatio: '1/1',
+                            objectFit: 'cover',
+                            borderRadius: 2,
+                            border: '1px solid #e2e8f0'
+                          }}
+                        />
+                        <IconButton
+                          size="small"
+                          sx={{
+                            position: 'absolute',
+                            top: -8,
+                            right: -8,
+                            bgcolor: 'white',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                            '&:hover': {
+                              bgcolor: '#f1f5f9',
+                            }
+                          }}
+                          onClick={() => handleDeleteImage(index)}
+                        >
+                          <CloseIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
                     </Grid>
                   ))}
 
@@ -452,6 +561,7 @@ const AddFood: React.FC = () => {
                   variant="contained"
                   fullWidth={isMobile}
                   startIcon={<SaveIcon />}
+                  disabled={loading}
                   sx={{
                     bgcolor: '#6366f1',
                     borderRadius: 2,
@@ -462,7 +572,7 @@ const AddFood: React.FC = () => {
                     }
                   }}
                 >
-                  Save Changes
+                  {loading ? 'Saving...' : 'Update Food'}
                 </Button>
                 <Button
                   type="button"
@@ -492,4 +602,4 @@ const AddFood: React.FC = () => {
   );
 };
 
-export default AddFood;
+export default EditFood;
