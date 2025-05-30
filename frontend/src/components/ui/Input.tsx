@@ -5,7 +5,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input: React.FC<InputProps> = ({ label, ...props }) => (
-  <div className="mb-4 p-2">
+  <div className="mb-2 p-2">
     {label && (
       <label className="block mb-1 text-sm font-medium text-text">
         {label}
