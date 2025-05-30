@@ -57,59 +57,64 @@ const AddFood: React.FC = () => {
   });
 
   // Sample images for demonstration - replace with your actual food images
-  const [sampleImages] = useState<string[]>([
-    'https://source.unsplash.com/random/200x200/?salad',
-    'https://source.unsplash.com/random/200x200/?food'
-  ]);
+    const [sampleImages] = useState<string[]>([
+        'https://source.unsplash.com/random/200x200/?salad',
+        'https://source.unsplash.com/random/200x200/?food'
+    ]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData({
+        ...formData,
+        [name]: value,
+        });
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  const foodFormData = new FormData();
-  foodFormData.append('foodNumber', formData.foodNumber);
-  foodFormData.append('foodName', formData.foodName);
-  foodFormData.append('availableTimes', formData.availableTimes);
-  foodFormData.append('foodNature', formData.foodNature);
-  foodFormData.append('price', formData.price);
-  foodFormData.append('foodType', formData.foodType);
-  foodFormData.append('foodDescription', formData.foodDescription);
-
-  // Append only the first image (if you only support one)
-  if (formData.images.length > 0) {
-    foodFormData.append('image', formData.images[0]); // 'image' is the backend field name
-  }
-
-  try {
-    const response = await fetch('http://localhost:9000/foods-service/foods/add', {
-      method: 'POST',
-      body: foodFormData,
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      console.log('Food added successfully:', result);
-    } else {
-      console.error('Failed to add food');
-    }
-  } catch (err) {
-    console.error('Error during submission:', err);
-  }
-};
-
-
-  const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting food data:', formData);
-    // Call API to save data
-  };
+
+    const foodFormData = new FormData();
+    foodFormData.append('foodNumber', formData.foodNumber);
+    foodFormData.append('foodName', formData.foodName);
+    foodFormData.append('availableTimes', formData.availableTimes);
+    foodFormData.append('foodNature', formData.foodNature);
+    foodFormData.append('price', formData.price);
+    foodFormData.append('foodType', formData.foodType);
+    foodFormData.append('foodDescription', formData.foodDescription);
+
+    // Append only the first image (if you only support one)
+    if (formData.images.length > 0) {
+        foodFormData.append('image', formData.images[0]); // 'image' is the backend field name
+    }
+
+    try {
+        const response = await fetch('http://localhost:9000/foods-service/foods/add', {
+        method: 'POST',
+        body: foodFormData,
+        });
+
+        if (response.ok) {
+        const result = await response.json();
+        console.log('Food added successfully:', result);
+        } else {
+        console.error('Failed to add food');
+        }
+    } catch (err) {
+        console.error('Error during submission:', err);
+    }
+    };
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setFormData({
+            ...formData,
+            images: [file]
+            });
+        }
+    };
+
+
 
   const handleCancel = () => {
     // Handle cancellation logic
