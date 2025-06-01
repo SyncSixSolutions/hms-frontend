@@ -17,6 +17,33 @@ interface AddItemProps {
   onNavigateBack?: () => void;
 }
 
+// Helper function to get today's date in YYYY-MM-DD format
+const getTodayDate = (): string => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+};
+
+// Helper function to format time to 12-hour format
+const formatTime = (time: string): string => {
+  if (!time) return '';
+  const [hours, minutes] = time.split(':');
+  const hour = parseInt(hours);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minutes} ${ampm}`;
+};
+
+// Helper function to format date to readable format
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { 
+    weekday: 'short', 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric' 
+  });
+};
+
 const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
   const [selectedImages, setSelectedImages] = useState<string[]>([
     "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&h=300&fit=crop",
@@ -37,6 +64,7 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
   });
 
   const [newTimeSlot, setNewTimeSlot] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
 
   const therapyTypes = [
     'Chinese Body Massage',
@@ -59,10 +87,35 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
     handleInputChange('image', imageUrl);
   };
 
+  const handlePriceChange = (value: string) => {
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue >= 0) {
+      handleInputChange('price', numValue);
+    } else if (value === '') {
+      handleInputChange('price', 0);
+    }
+    // Ignore negative values - don't update state
+  };
+
+  const addDate = () => {
+    if (selectedDate && !formData.availableDates.some(date => date.includes(selectedDate))) {
+      const formattedDate = formatDate(selectedDate);
+      handleInputChange('availableDates', [...formData.availableDates, formattedDate]);
+      setSelectedDate('');
+    }
+  };
+
+  const removeDate = (dateToRemove: string) => {
+    handleInputChange('availableDates', formData.availableDates.filter(date => date !== dateToRemove));
+  };
+
   const addTimeSlot = () => {
-    if (newTimeSlot.trim() && !formData.availableTimeSlots.includes(newTimeSlot.trim())) {
-      handleInputChange('availableTimeSlots', [...formData.availableTimeSlots, newTimeSlot.trim()]);
-      setNewTimeSlot('');
+    if (newTimeSlot.trim()) {
+      const formattedTime = formatTime(newTimeSlot);
+      if (!formData.availableTimeSlots.includes(formattedTime)) {
+        handleInputChange('availableTimeSlots', [...formData.availableTimeSlots, formattedTime]);
+        setNewTimeSlot('');
+      }
     }
   };
 
@@ -71,16 +124,29 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
   };
 
   const handleSave = () => {
-    if (formData.name && formData.price > 0) {
-      console.log('Therapy saved:', formData);
-      alert('Therapy saved successfully!');
-      
-      // Navigate back to TherapyAdmin
-      if (onNavigateBack) {
-        onNavigateBack();
-      }
-    } else {
-      alert('Please fill in all required fields');
+    // Validation
+    if (!formData.name.trim()) {
+      alert('Please select a therapy type');
+      return;
+    }
+    
+    if (formData.price <= 0) {
+      alert('Please enter a valid price greater than 0');
+      return;
+    }
+    
+    if (!formData.description.trim()) {
+      alert('Please enter a description');
+      return;
+    }
+
+    // Log the therapy data (in a real app, you'd send this to your backend)
+    console.log('Therapy saved:', formData);
+    alert('Therapy saved successfully!');
+    
+    // Navigate back to TherapyAdmin
+    if (onNavigateBack) {
+      onNavigateBack();
     }
   };
 
@@ -89,6 +155,8 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
       onNavigateBack();
     }
   };
+
+  const isFormValid = formData.name.trim() && formData.price > 0 && formData.description.trim();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -105,7 +173,7 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
               </button>
               <div>
                 <h1 className="text-xl font-semibold text-gray-800">Add New Therapy</h1>
-                <p className="text-sm text-gray-500 mt-1">Tue, 07 June 2022</p>
+                <p className="text-sm text-gray-500 mt-1">{new Date().toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' })}</p>
               </div>
             </div>
             
@@ -137,6 +205,7 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
         {/* Page Title */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 mb-8">
           <h2 className="text-2xl font-bold text-white">Add a Therapy</h2>
+          <p className="text-blue-100 mt-2">Create a new therapy service for your clients</p>
         </div>
 
         {/* Form Card */}
@@ -211,12 +280,39 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Available dates
                   </label>
-                  <div className="relative">
-                    <input
-                      type="date"
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+                  <div className="flex gap-2 mb-3">
+                    <div className="relative flex-1">
+                      <input
+                        type="date"
+                        value={selectedDate}
+                        min={getTodayDate()}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+                    </div>
+                    <button
+                      onClick={addDate}
+                      disabled={!selectedDate}
+                      className="px-6 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Add +
+                    </button>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {formData.availableDates.map((date, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
+                      >
+                        {date}
+                        <X 
+                          className="w-3 h-3 cursor-pointer hover:text-green-600"
+                          onClick={() => removeDate(date)}
+                        />
+                      </span>
+                    ))}
                   </div>
                 </div>
 
@@ -233,7 +329,8 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
                     />
                     <button
                       onClick={addTimeSlot}
-                      className="px-6 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                      disabled={!newTimeSlot}
+                      className="px-6 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Add +
                     </button>
@@ -257,15 +354,26 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Price *
+                    Price * (USD)
                   </label>
                   <input
                     type="number"
                     placeholder="Enter price"
                     value={formData.price || ''}
-                    onChange={(e) => handleInputChange('price', Number(e.target.value))}
+                    min="0"
+                    step="0.01"
+                    onChange={(e) => handlePriceChange(e.target.value)}
+                    onKeyDown={(e) => {
+                      // Prevent entering negative sign
+                      if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                        e.preventDefault();
+                      }
+                    }}
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Price must be greater than $0
+                  </p>
                 </div>
               </div>
 
@@ -275,12 +383,16 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
                   Description *
                 </label>
                 <textarea
-                  placeholder="Enter therapy description"
+                  placeholder="Enter therapy description, benefits, and what clients can expect..."
                   value={formData.description}
                   onChange={(e) => handleInputChange('description', e.target.value)}
                   rows={12}
+                  maxLength={1000}
                   className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 />
+                <p className="text-sm text-gray-500 mt-2">
+                  {formData.description.length}/1000 characters
+                </p>
               </div>
             </div>
           </div>
@@ -289,7 +401,12 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
           <div className="flex justify-start gap-4">
             <button
               onClick={handleSave}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-lg font-medium hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
+              disabled={!isFormValid}
+              className={`px-8 py-3 rounded-lg font-medium flex items-center gap-2 transition-all duration-200 ${
+                isFormValid 
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg transform hover:scale-105' 
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
             >
               <span>💾</span>
               Save Changes
@@ -301,6 +418,15 @@ const AddItem: React.FC<AddItemProps> = ({ onNavigateBack }) => {
             >
               Cancel
             </button>
+          </div>
+
+          {/* Form Validation Status */}
+          <div className="mt-4 text-sm text-gray-600">
+            <p>Required fields: 
+              <span className={formData.name ? 'text-green-600' : 'text-red-500'}> Therapy Type</span>,
+              <span className={formData.price > 0 ? 'text-green-600' : 'text-red-500'}> Price</span>,
+              <span className={formData.description.trim() ? 'text-green-600' : 'text-red-500'}> Description</span>
+            </p>
           </div>
         </div>
       </div>
