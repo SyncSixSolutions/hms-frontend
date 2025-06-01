@@ -1,12 +1,14 @@
-import Home from './pages/Home';
-import AddItem from './pages/Admin/CRUDS/Therapy/AddItem';
+// import Home from './pages/Home';
+import AddTherapyPage from './pages/Admin/CRUDS/Therapy/AddTherapy';
+import ViewTherapiesPage from './pages/Admin/CRUDS/Therapy/ViewTherapies';
 
 function App() {
 
   return (
     <div>
-          <Home />
-          {<AddItem />}
+          {/* <Home /> */}
+          {<AddTherapyPage />}
+          {<ViewTherapiesPage />}
     </div>
   )
 }
