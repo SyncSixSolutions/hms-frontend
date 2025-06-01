@@ -1,6 +1,7 @@
 // import Home from './pages/Home';
 import AddTherapyPage from './pages/Admin/CRUDS/Therapy/AddTherapy';
 import ViewTherapiesPage from './pages/Admin/CRUDS/Therapy/ViewTherapies';
+import EditTherapyPage from './pages/Admin/CRUDS/Therapy/EditTherapy';
 
 function App() {
 
@@ -9,6 +10,7 @@ function App() {
           {/* <Home /> */}
           {<AddTherapyPage />}
           {<ViewTherapiesPage />}
+          {<EditTherapyPage/>}
     </div>
   )
 }

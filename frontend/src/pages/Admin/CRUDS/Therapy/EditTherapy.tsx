@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Plus, Image as ImageIcon, Info } from 'lucide-react';
-import {NavBarComponent} from '../../../../components/layout';
+import { NavBarComponent } from '../../../../components/layout';
 
-const AddTherapyPage = () => {
+const EditTherapyPage = ({ therapyId = "23242" }) => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [therapyType, setTherapyType] = useState('');
   const [description, setDescription] = useState('');
@@ -10,64 +10,68 @@ const AddTherapyPage = () => {
   const [timeSlots, setTimeSlots] = useState(['']);
   const [price, setPrice] = useState('');
 
-  // Default therapy images
-  const [defaultImages, setDefaultImages] = useState([
+  // Default therapy images (existing images)
+  const existingImages = [
     'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=300&h=200&fit=crop',
     'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop',
     'https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=300&h=200&fit=crop'
-  ]);
+  ];
 
-const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-        const files = Array.from(event.target.files);
-        const newImages = files.map(file => URL.createObjectURL(file));
-        setSelectedImages([...selectedImages, ...newImages]);
-    }
-};
+  // Sample existing therapy data - replace with actual API call
+  useEffect(() => {
+    // Simulate loading existing therapy data
+    const loadTherapyData = () => {
+      setTherapyType('massage');
+      setDescription('Traditional full-body massage therapy with pressure points, energy flow, and deep muscle relief. Includes acupressure and stretching techniques.');
+      setSelectedDate('2022-06-08');
+      setTimeSlots(['17:00']); // 5:00 PM
+      setPrice('2000');
+    };
 
-  const removeDefaultImage = (index: number) => {
-    const newDefaultImages = defaultImages.filter((_, i) => i !== index);
-    setDefaultImages(newDefaultImages);
-  };
+    loadTherapyData();
+  }, [therapyId]);
 
-  const removeSelectedImage = (index: number) => {
-    const newSelectedImages = selectedImages.filter((_, i) => i !== index);
-    setSelectedImages(newSelectedImages);
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    const newImages = files.map(file => URL.createObjectURL(file));
+    setSelectedImages([...selectedImages, ...newImages]);
   };
 
   const addTimeSlot = () => {
     setTimeSlots([...timeSlots, '']);
   };
 
-const updateTimeSlot = (index: number, value: string): void => {
+  const updateTimeSlot = (index: number, value: string) => {
     const newTimeSlots = [...timeSlots];
     newTimeSlots[index] = value;
     setTimeSlots(newTimeSlots);
-};
+  };
 
-const removeTimeSlot = (index: number): void => {
+  const removeTimeSlot = (index: number) => {
     if (timeSlots.length > 1) {
-        const newTimeSlots = timeSlots.filter((_, i) => i !== index);
-        setTimeSlots(newTimeSlots);
+      const newTimeSlots = timeSlots.filter((_, i) => i !== index);
+      setTimeSlots(newTimeSlots);
     }
-};
+  };
 
   const handleSave = () => {
     const therapyData = {
+      id: therapyId,
       therapyType,
       description,
       selectedDate,
       timeSlots: timeSlots.filter(slot => slot.trim() !== ''),
       price,
-      images: [...defaultImages, ...selectedImages]
+      existingImages,
+      selectedImages
     };
-    console.log('Saving therapy data:', therapyData);
-    // Handle save logic here
+    console.log('Updating therapy data:', therapyData);
+    // Handle update logic here
   };
 
   const handleCancel = () => {
     // Handle cancel logic here
-    console.log('Cancelled');
+    console.log('Cancelled editing');
   };
 
   return (
@@ -81,16 +85,36 @@ const removeTimeSlot = (index: number): void => {
       
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, Admin</h1>
-          <p className="text-gray-600">Tue, 07 June 2022</p>
+        <div className="flex justify-between items-start mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, Admin</h1>
+            <p className="text-gray-600">Tue, 07 June 2022</p>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search"
+                className="pl-4 pr-4 py-2 w-80 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            {/* Profile Image */}
+            <img
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+              alt="Admin Profile"
+              className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md"
+            />
+          </div>
         </div>
 
         {/* Main Content */}
         <div className="bg-white rounded-lg shadow-sm">
           {/* Page Title */}
-          <div className="bg-[#6B72D6] text-white p-6 rounded-t-lg">
-            <h2 className="text-2xl font-bold">Add a Therapy</h2>
+          <div className="text-white p-6 rounded-t-lg" style={{ backgroundColor: '#6B72D6' }}>
+            <h2 className="text-2xl font-bold">Edit Therapy #{therapyId}</h2>
           </div>
 
           <div className="p-6">
@@ -102,8 +126,8 @@ const removeTimeSlot = (index: number): void => {
               </div>
               
               <div className="flex gap-4 flex-wrap">
-                {/* Default Images */}
-                {defaultImages.map((img, index) => (
+                {/* Existing Images */}
+                {existingImages.map((img, index) => (
                   <div key={index} className="w-36 h-28 rounded-lg overflow-hidden bg-gray-200 relative group">
                     <img 
                       src={img} 
@@ -111,29 +135,23 @@ const removeTimeSlot = (index: number): void => {
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
-                      <button 
-                        onClick={() => removeDefaultImage(index)}
-                        className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm bg-red-500 px-2 py-1 rounded"
-                      >
+                      <button className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm bg-red-500 px-2 py-1 rounded">
                         Remove
                       </button>
                     </div>
                   </div>
                 ))}
                 
-                {/* Selected Images */}
+                {/* Selected New Images */}
                 {selectedImages.map((img, index) => (
                   <div key={`selected-${index}`} className="w-36 h-28 rounded-lg overflow-hidden bg-gray-200 relative group">
                     <img 
                       src={img} 
-                      alt={`Selected ${index + 1}`}
+                      alt={`New ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
-                      <button 
-                        onClick={() => removeSelectedImage(index)}
-                        className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm bg-red-500 px-2 py-1 rounded"
-                      >
+                      <button className="text-white opacity-0 group-hover:opacity-100 transition-opacity text-sm bg-red-500 px-2 py-1 rounded">
                         Remove
                       </button>
                     </div>
@@ -241,12 +259,11 @@ const removeTimeSlot = (index: number): void => {
                       Price
                     </label>
                     <input 
-                      type="number"
+                      type="text"
                       value={price}
-                      min={0}
                       onChange={(e) => setPrice(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Select price"
+                      placeholder="2000lkr"
                     />
                   </div>
                 </div>
@@ -271,9 +288,10 @@ const removeTimeSlot = (index: number): void => {
             <div className="flex gap-4 pt-6 border-t border-gray-200">
               <button 
                 onClick={handleSave}
-                className="flex items-center gap-2 px-6 py-2 bg-[#6B72D6] text-white rounded-lg hover:bg-[#5F66C3] transition-colors"
+                className="flex items-center gap-2 px-6 py-2 text-white rounded-lg transition-colors"
+                style={{ backgroundColor: '#6B72D6' }}
               >
-                Save therapy
+                Save Changes
               </button>
               <button 
                 onClick={handleCancel}
@@ -289,4 +307,4 @@ const removeTimeSlot = (index: number): void => {
   );
 };
 
-export default AddTherapyPage;
+export default EditTherapyPage;
