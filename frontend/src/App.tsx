@@ -1,3 +1,5 @@
+// import Home from './pages/Home';
+import ClientDashboard from "./pages/Client/ClientDashboard";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ShowRooms from './pages/Client/Booking/ShowRooms';
 import Home from './pages/Home';
@@ -14,7 +16,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/rooms" element={<ShowRooms />} />
-        <Route path="/signup" element={<SignUp/>} ></Route>
+        <Route path="/signup" element={<SignUp />} ></Route>
+        <Route path="/dashboard" element={<ClientDashboard />} />
+        <Route path="/vehicles" element={<VehicleListing />} />
+        <Route path="/therapy" element={<ShowTherapyItems />} />
       </Routes>
     </Router>
   );
