@@ -16,10 +16,13 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/rooms" element={<ShowRooms />} />
-        <Route path="/signup" element={<SignUp/>} ></Route>
+        <Route path="/signup" element={<SignUp />} ></Route>
+        <Route path="/dashboard" element={<ClientDashboard />} />
+        <Route path="/vehicles" element={<VehicleListing />} />
+        <Route path="/therapy" element={<ShowTherapyItems />} />
       </Routes>
     </Router>
   );
 }
 
-export default App;;
+export default App;
