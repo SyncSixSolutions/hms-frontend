@@ -1,6 +1,7 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { CartItem as CartItemType } from "../types";
 import CartItem from "./CartItem";
+import RatingPage from "./RatingPage";
 
 interface CartProps {
   items: CartItemType[];
@@ -16,6 +17,8 @@ const Cart: React.FC<CartProps> = ({
   onRemove,
 }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showRating, setShowRating] = useState(false);
+  const [orderedItems, setOrderedItems] = useState<CartItemType[]>([]);
   const [deliveryType, setDeliveryType] = useState<"cafeteria" | "room">(
     "cafeteria"
   );
@@ -32,53 +35,108 @@ const Cart: React.FC<CartProps> = ({
     acc[item.mealType].push(item);
     return acc;
   }, {} as Record<string, CartItemType[]>);
+
+    const handleConfirmOrder = () => {
+    // Store the ordered items for rating
+    setOrderedItems([...items]);
+    setShowConfirmation(false);
+    setShowRating(true);
+  };
+
+  const handleRatingComplete = () => {
+    // Reset all states and clear cart
+    setShowRating(false);
+    setShowConfirmation(false);
+    setOrderedItems([]);
+    // Clear all items from cart
+    items.forEach(item => onRemove(item.id));
+  };
+
+   // Show rating page
+  if (showRating) {
+    return (
+      <RatingPage 
+        orderedItems={orderedItems}
+        onComplete={handleRatingComplete}
+      />
+    );
+  }
+   // Show confirmation page
   if (showConfirmation) {
     return (
-      <div className="bg-white/50 rounded-lg p-4 shadow-sm min-h-96 max-h-full flex flex-col">
+      <div className="bg-white rounded-lg p-4 shadow-sm h-full flex flex-col">
         <h2 className="text-xl font-semibold mb-6">Confirm Order</h2>
-
+        
         <div className="mb-6">
           <p className="text-gray-600 mb-3">Delivery Location</p>
           <div className="flex gap-3">
             <button
               className={`px-4 py-2 rounded-lg ${
-                deliveryType === "cafeteria"
-                  ? "bg-orange-400 text-white"
-                  : "border border-orange-400 text-orange-400"
+                deliveryType === 'cafeteria'
+                  ? 'bg-orange-400 text-white'
+                  : 'border border-orange-400 text-orange-400'
               }`}
-              onClick={() => setDeliveryType("cafeteria")}
+              onClick={() => setDeliveryType('cafeteria')}
             >
               Cafeteria Pickup
             </button>
             <button
               className={`px-4 py-2 rounded-lg ${
-                deliveryType === "room"
-                  ? "bg-orange-400 text-white"
-                  : "border border-orange-400 text-orange-400"
+                deliveryType === 'room'
+                  ? 'bg-orange-400 text-white'
+                  : 'border border-orange-400 text-orange-400'
               }`}
-              onClick={() => setDeliveryType("room")}
+              onClick={() => setDeliveryType('room')}
             >
               Room Service
             </button>
           </div>
         </div>
+
         <div className="mb-6">
-          <p className="text-gray-600 mb-3">Special Note</p>
-          <textarea className="w-full rounded-lg border border-orange-500 border-spacing-1.5"></textarea>
+          <p className="text-gray-600 mb-3">Time of Delivery</p>
+          {Object.entries(groupedItems).map(([mealType, items]) => (
+            <div key={mealType} className="mb-4">
+              <h3 className="text-lg font-medium capitalize mb-2">{mealType}</h3>
+              <select 
+                className="w-full p-2 border border-gray-200 rounded-lg"
+                defaultValue=""
+              >
+                <option value="" disabled>Select Time</option>
+                {mealType === 'breakfast' && (
+                  <>
+                    <option value="7:00">7:00 AM</option>
+                    <option value="8:00">8:00 AM</option>
+                    <option value="9:00">9:00 AM</option>
+                  </>
+                )}
+                {mealType === 'lunch' && (
+                  <>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="13:00">1:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                  </>
+                )}
+                {mealType === 'dinner' && (
+                  <>
+                    <option value="19:00">7:00 PM</option>
+                    <option value="20:00">8:00 PM</option>
+                    <option value="21:00">9:00 PM</option>
+                  </>
+                )}
+              </select>
+            </div>
+          ))}
         </div>
+
         <div className="mt-auto">
           <div className="flex justify-between items-center mb-4">
             <span className="text-lg font-medium">Total:</span>
-            <span className="text-xl font-semibold">
-              ${totalPrice.toFixed(2)}
-            </span>
+            <span className="text-xl font-semibold">${totalPrice.toFixed(2)}</span>
           </div>
-          <button
+          <button 
             className="w-full py-3 bg-orange-400 text-white rounded-lg font-medium hover:bg-orange-500 transition-colors duration-200"
-            onClick={() => {
-              // Handle order confirmation
-              console.log("Order confirmed");
-            }}
+            onClick={handleConfirmOrder}
           >
             Confirm Order
           </button>
@@ -147,7 +205,10 @@ const Cart: React.FC<CartProps> = ({
               ${totalPrice.toFixed(2)}
             </span>
           </div>
-          <button className="w-full py-3 bg-orange-400 text-white rounded-lg font-medium hover:bg-orange-500 transition-colors duration-200" onClick={() => setShowConfirmation(true)}>
+          <button
+            className="w-full py-3 bg-orange-400 text-white rounded-lg font-medium hover:bg-orange-500 transition-colors duration-200"
+            onClick={() => setShowConfirmation(true)}
+          >
             Order
           </button>
         </div>
