@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Typography, 
@@ -36,14 +36,16 @@ interface FoodFormData {
   foodType: string;
   foodDescription: string;
   images: File[];
+  imagePreviews: string[];  
 }
-
 
 const AddFood: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<FoodFormData>({
     foodNumber: '',
@@ -53,25 +55,60 @@ const AddFood: React.FC = () => {
     price: '',
     foodType: '',
     foodDescription: '',
-    images: []
+    images: [],
+    imagePreviews: []
   });
 
-  // Sample images for demonstration - replace with your actual food images
-    const [sampleImages] = useState<string[]>([
-        'https://source.unsplash.com/random/200x200/?salad',
-        'https://source.unsplash.com/random/200x200/?food'
-    ]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData({
-        ...formData,
-        [name]: value,
-        });
+  // Cleanup function for image preview URLs
+  useEffect(() => {
+    return () => {
+      // Clean up the object URLs when component unmounts
+      formData.imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
     };
+  }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const previewUrl = URL.createObjectURL(file);
+      
+      setFormData({
+        ...formData,
+        images: [file],
+        imagePreviews: [previewUrl]
+      });
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const newImages = [...formData.images];
+    const newPreviews = [...formData.imagePreviews];
+    
+    // Revoke the URL to prevent memory leaks
+    URL.revokeObjectURL(newPreviews[index]);
+    
+    newImages.splice(index, 1);
+    newPreviews.splice(index, 1);
+    
+    setFormData({
+      ...formData,
+      images: newImages,
+      imagePreviews: newPreviews
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     const foodFormData = new FormData();
     foodFormData.append('foodNumber', formData.foodNumber);
@@ -84,41 +121,36 @@ const AddFood: React.FC = () => {
 
     // Append only the first image (if you only support one)
     if (formData.images.length > 0) {
-        foodFormData.append('image', formData.images[0]); // 'image' is the backend field name
+      foodFormData.append('image', formData.images[0]); // 'image' is the backend field name
     }
 
     try {
-        const response = await fetch('http://localhost:9000/foods-service/foods/add', {
+      const response = await fetch('http://localhost:9000/foods-service/foods/add', {
         method: 'POST',
         body: foodFormData,
-        });
+      });
 
-        if (response.ok) {
+      if (response.ok) {
         const result = await response.json();
         console.log('Food added successfully:', result);
-        } else {
+        // Reset form or navigate away
+        alert('Food added successfully!');
+      } else {
         console.error('Failed to add food');
-        }
+        setError('Failed to add food. Please try again.');
+      }
     } catch (err) {
-        console.error('Error during submission:', err);
+      console.error('Error during submission:', err);
+      setError('Error connecting to server. Please try again later.');
+    } finally {
+      setLoading(false);
     }
-    };
-
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setFormData({
-            ...formData,
-            images: [file]
-            });
-        }
-    };
-
-
+  };
 
   const handleCancel = () => {
     // Handle cancellation logic
     console.log('Cancelled');
+    // You could navigate back or reset the form
   };
 
   const currentDate = new Date().toLocaleDateString('en-US', {
@@ -264,6 +296,18 @@ const AddFood: React.FC = () => {
           </Box>
 
           <Box sx={{ p: { xs: 2, sm: 3 } }}>
+            {error && (
+              <Box sx={{ 
+                bgcolor: '#FEE2E2', 
+                color: '#B91C1C', 
+                p: 2, 
+                borderRadius: 1,
+                mb: 3 
+              }}>
+                <Typography>{error}</Typography>
+              </Box>
+            )}
+            
             <form onSubmit={handleSubmit}>
               {/* Food Picture Section */}
               <Box sx={{ mb: 4 }}>
@@ -282,21 +326,39 @@ const AddFood: React.FC = () => {
                 </Box>
 
                 <Grid container spacing={2}>
-                  {/* Sample food images */}
-                  {sampleImages.map((img, index) => (
+                  {/* Uploaded image previews */}
+                  {formData.imagePreviews.map((preview, index) => (
                     <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
-                      <Box
-                        component="img"
-                        src={img}
-                        alt={`Food preview ${index + 1}`}
-                        sx={{
-                          width: '100%',
-                          aspectRatio: '1/1',
-                          objectFit: 'cover',
-                          borderRadius: 2,
-                          border: '1px solid #e2e8f0'
-                        }}
-                      />
+                      <Box sx={{ position: 'relative' }}>
+                        <Box
+                          component="img"
+                          src={preview}
+                          alt={`Food preview ${index + 1}`}
+                          sx={{
+                            width: '100%',
+                            aspectRatio: '1/1',
+                            objectFit: 'cover',
+                            borderRadius: 2,
+                            border: '1px solid #e2e8f0'
+                          }}
+                        />
+                        <IconButton
+                          size="small"
+                          onClick={() => handleRemoveImage(index)}
+                          sx={{
+                            position: 'absolute',
+                            top: -8,
+                            right: -8,
+                            bgcolor: 'white',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                            '&:hover': {
+                              bgcolor: '#f1f5f9',
+                            }
+                          }}
+                        >
+                          <CloseIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
                     </Grid>
                   ))}
 
@@ -330,7 +392,7 @@ const AddFood: React.FC = () => {
                       />
                       <AddPhotoAlternateIcon sx={{ fontSize: 24, color: '#94a3b8', mb: 1 }} />
                       <Typography variant="caption" color="#64748b" align="center">
-                        Add image
+                        {formData.imagePreviews.length > 0 ? 'Change image' : 'Add image'}
                       </Typography>
                     </Box>
                   </Grid>
@@ -482,6 +544,7 @@ const AddFood: React.FC = () => {
                   variant="contained"
                   fullWidth={isMobile}
                   startIcon={<SaveIcon />}
+                  disabled={loading}
                   sx={{
                     bgcolor: '#6366f1',
                     borderRadius: 2,
@@ -492,7 +555,7 @@ const AddFood: React.FC = () => {
                     }
                   }}
                 >
-                  Save Changes
+                  {loading ? 'Saving...' : 'Save Changes'}
                 </Button>
                 <Button
                   type="button"
