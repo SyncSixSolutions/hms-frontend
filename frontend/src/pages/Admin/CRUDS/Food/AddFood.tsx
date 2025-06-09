@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { foodService } from '../../../../services/foodService';
+
 import { 
   Box, 
   Typography, 
@@ -112,7 +114,7 @@ const AddFood: React.FC = () => {
     setError(null);
 
     try {
-      // Create a data object that matches your backend DTO structure
+      // Create a food data object that matches your backend expectations
       const foodDataForBackend = {
         foodNumber: formData.foodNumber,
         foodName: formData.foodName,
@@ -121,39 +123,15 @@ const AddFood: React.FC = () => {
         price: formData.price,
         foodType: formData.foodType,
         foodDescription: formData.foodDescription
-        // Image is not included in the JSON data
       };
 
-      // If there's an image, we need to handle it with FormData
+      // If there's an image, log that it's not handled yet
       if (formData.images.length > 0) {
-        // For now, we're assuming the backend doesn't handle image uploads
-        // If your backend is updated to handle images, you would implement that here
         console.log("Image upload is not implemented in the backend yet");
       }
 
-      // Make the API call to add the food item
-      const response = await fetch('http://localhost:8080/api/services/meals/addMeal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(foodDataForBackend),
-      });
-
-      if (!response.ok) {
-        // Try to get error message from response
-        let errorMsg = 'Failed to add food. Please try again.';
-        try {
-          const errorData = await response.json();
-          errorMsg = errorData.message || errorMsg;
-        } catch (e) {
-          // If parsing JSON fails, use the default error message
-        }
-        throw new Error(errorMsg);
-      }
-
-      const result = await response.json();
-      console.log('Food added successfully:', result);
+      // Use the service to add the food
+      await foodService.addFood(foodDataForBackend);
       
       // Show success message
       alert('Food added successfully!');
