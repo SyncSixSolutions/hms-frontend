@@ -18,16 +18,16 @@ import {
   Container,
   CircularProgress
 } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
 import SaveIcon from '@mui/icons-material/Save';
 import InfoIcon from '@mui/icons-material/Info';
 import CloseIcon from '@mui/icons-material/Close';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useParams, useNavigate } from 'react-router-dom';
-// Import your food service
-// import { foodService } from '../../../../services/foodService';
+import { foodService } from '../../../../services/foodService';
 
+// Define the form data interface
 interface FoodFormData {
   foodNumber: string;
   foodName: string;
@@ -36,19 +36,19 @@ interface FoodFormData {
   price: string;
   foodType: string;
   foodDescription: string;
-  images: string[];
+  images: File[];
+  imagePreviews: string[];  
 }
 
 const EditFood: React.FC = () => {
+  const theme = useTheme();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [formData, setFormData] = useState<FoodFormData>({
     foodNumber: '',
     foodName: '',
@@ -57,45 +57,66 @@ const EditFood: React.FC = () => {
     price: '',
     foodType: '',
     foodDescription: '',
-    images: []
+    images: [],
+    imagePreviews: []
   });
 
-  // Fetch food data on component mount
+  // Cleanup function for image preview URLs
   useEffect(() => {
-    const fetchFoodData = async () => {
-      if (!id) return;
-      
-      setLoading(true);
+    return () => {
+      // Clean up the object URLs when component unmounts
+      formData.imagePreviews.forEach(preview => {
+        // Only revoke if it's an object URL (starts with blob:)
+        if (preview.startsWith('blob:')) {
+          URL.revokeObjectURL(preview);
+        }
+      });
+    };
+  }, [formData.imagePreviews]);
+
+  // Load food data when component mounts
+  useEffect(() => {
+    const loadFoodData = async () => {
+      if (!id) {
+        setError('No food ID provided');
+        setLoading(false);
+        return;
+      }
+
       try {
-        // Replace with your actual API call
-        // const foodData = await foodService.getFoodById(id);
+        setLoading(true);
+        // Convert id from string to number
+        const foodId = parseInt(id, 10);
         
-        // Mock data for demonstration
-        const foodData = {
-          foodNumber: 'F001',
-          foodName: 'Greek Salad',
-          availableTimes: 'lunch',
-          foodNature: 'veg',
-          price: '450',
-          foodType: 'appetizer',
-          foodDescription: 'Fresh Greek salad with feta cheese, olives, tomatoes, and cucumber.',
-          images: [
-            'https://source.unsplash.com/random/200x200/?greek-salad',
-            'https://source.unsplash.com/random/200x200/?salad'
-          ]
-        };
+        if (isNaN(foodId)) {
+          throw new Error('Invalid food ID');
+        }
         
-        setFormData(foodData);
+        const foodData = await foodService.getFoodById(foodId);
+        
+        // Populate the form with the fetched food data
+        setFormData({
+          foodNumber: foodData.foodNumber,
+          foodName: foodData.foodName,
+          availableTimes: foodData.availableTimes,
+          foodNature: foodData.foodNature,
+          price: foodData.price,
+          foodType: foodData.foodType,
+          foodDescription: foodData.foodDescription,
+          images: [],
+          imagePreviews: foodData.image ? [foodData.image] : []
+        });
+        
         setError(null);
-      } catch (err) {
-        console.error('Failed to fetch food data:', err);
-        setError('Failed to load food information. Please try again.');
+      } catch (err: any) {
+        console.error('Error loading food data:', err);
+        setError(err.message || 'Failed to load food data. Please try again.');
       } finally {
         setLoading(false);
       }
     };
-
-    fetchFoodData();
+    
+    loadFoodData();
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -109,50 +130,71 @@ const EditFood: React.FC = () => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const imageUrl = URL.createObjectURL(file);
+      const previewUrl = URL.createObjectURL(file);
+      
       setFormData({
         ...formData,
-        images: [...formData.images, imageUrl]
+        images: [file],
+        imagePreviews: [previewUrl]
       });
     }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const newImages = [...formData.images];
+    const newPreviews = [...formData.imagePreviews];
+    
+    // Only revoke if it's an object URL (starts with blob:)
+    if (newPreviews[index].startsWith('blob:')) {
+      URL.revokeObjectURL(newPreviews[index]);
+    }
+    
+    newImages.splice(index, 1);
+    newPreviews.splice(index, 1);
+    
+    setFormData({
+      ...formData,
+      images: newImages,
+      imagePreviews: newPreviews
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
-
+    
     setLoading(true);
     try {
-      // Replace with your actual API call
-      // await foodService.updateFood(id, formData);
+      const foodId = parseInt(id, 10);
       
-      console.log('Updating food data:', formData);
-      // Mock successful update
-      setError(null);
+      if (isNaN(foodId)) {
+        throw new Error('Invalid food ID');
+      }
+      
+      const foodDataForUpdate = {
+        foodNumber: formData.foodNumber,
+        foodName: formData.foodName,
+        availableTimes: formData.availableTimes,
+        foodNature: formData.foodNature,
+        price: formData.price,
+        foodType: formData.foodType,
+        foodDescription: formData.foodDescription
+      };
+      
+      await foodService.updateFood(foodId, foodDataForUpdate);
+      
       alert('Food updated successfully!');
-      // Redirect to food list
-      // navigate('/admin/foods');
-    } catch (err) {
-      console.error('Failed to update food:', err);
-      setError('Failed to update food. Please try again.');
+      navigate('/admin/foods');
+    } catch (err: any) {
+      console.error('Error updating food:', err);
+      setError(err.message || 'Failed to update food. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = () => {
-    // Navigate back to food list
-    // navigate('/admin/foods');
-    console.log('Cancelled');
-  };
-
-  const handleDeleteImage = (index: number) => {
-    const newImages = [...formData.images];
-    newImages.splice(index, 1);
-    setFormData({
-      ...formData,
-      images: newImages
-    });
+    navigate('/admin/foods');
   };
 
   const currentDate = new Date().toLocaleDateString('en-US', {
@@ -171,23 +213,28 @@ const EditFood: React.FC = () => {
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Button variant="text" sx={{ justifyContent: 'flex-start' }}>Dashboard</Button>
-        <Button variant="text" sx={{ justifyContent: 'flex-start' }}>Food Management</Button>
+        <Button 
+          variant="text" 
+          sx={{ 
+            justifyContent: 'flex-start',
+            bgcolor: 'rgba(99, 102, 241, 0.08)',
+            color: '#6366f1'
+          }}
+          onClick={() => navigate('/admin/foods')}
+        >
+          Food Management
+        </Button>
         <Button variant="text" sx={{ justifyContent: 'flex-start' }}>User Management</Button>
         <Button variant="text" sx={{ justifyContent: 'flex-start' }}>Settings</Button>
       </Box>
     </Box>
   );
 
+  // Show loading state
   if (loading && !formData.foodName) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        height: '100vh'
-      }}>
-        <CircularProgress color="primary" />
-        <Typography sx={{ ml: 2 }}>Loading food data...</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
       </Box>
     );
   }
@@ -247,7 +294,7 @@ const EditFood: React.FC = () => {
                 variant={isTablet ? "h6" : "h5"} 
                 sx={{ color: '#334155', fontWeight: 600 }}
               >
-                Welcome, Admin
+                Edit Food Item
               </Typography>
               <Typography
                 variant="body2"
@@ -281,7 +328,6 @@ const EditFood: React.FC = () => {
                 }}
               />
               <Avatar 
-                // src={adminAvatar} 
                 sx={{ 
                   width: 40, 
                   height: 40,
@@ -307,7 +353,7 @@ const EditFood: React.FC = () => {
           {/* Page Title */}
           <Box sx={{ bgcolor: '#6366f1', color: 'white', p: 2 }}>
             <Typography variant="h6" fontWeight="600">
-              Edit Food
+              Edit Food Item: {formData.foodName}
             </Typography>
           </Box>
 
@@ -323,7 +369,7 @@ const EditFood: React.FC = () => {
                 <Typography>{error}</Typography>
               </Box>
             )}
-
+            
             <form onSubmit={handleSubmit}>
               {/* Food Picture Section */}
               <Box sx={{ mb: 4 }}>
@@ -342,13 +388,13 @@ const EditFood: React.FC = () => {
                 </Box>
 
                 <Grid container spacing={2}>
-                  {/* Existing food images */}
-                  {formData.images.map((img, index) => (
+                  {/* Uploaded image previews */}
+                  {formData.imagePreviews.map((preview, index) => (
                     <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
                       <Box sx={{ position: 'relative' }}>
                         <Box
                           component="img"
-                          src={img}
+                          src={preview}
                           alt={`Food preview ${index + 1}`}
                           sx={{
                             width: '100%',
@@ -360,6 +406,7 @@ const EditFood: React.FC = () => {
                         />
                         <IconButton
                           size="small"
+                          onClick={() => handleRemoveImage(index)}
                           sx={{
                             position: 'absolute',
                             top: -8,
@@ -370,7 +417,6 @@ const EditFood: React.FC = () => {
                               bgcolor: '#f1f5f9',
                             }
                           }}
-                          onClick={() => handleDeleteImage(index)}
                         >
                           <CloseIcon fontSize="small" />
                         </IconButton>
@@ -408,7 +454,7 @@ const EditFood: React.FC = () => {
                       />
                       <AddPhotoAlternateIcon sx={{ fontSize: 24, color: '#94a3b8', mb: 1 }} />
                       <Typography variant="caption" color="#64748b" align="center">
-                        Add image
+                        {formData.imagePreviews.length > 0 ? 'Change image' : 'Add image'}
                       </Typography>
                     </Box>
                   </Grid>
