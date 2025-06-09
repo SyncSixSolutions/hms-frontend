@@ -17,6 +17,7 @@ import {
   Toolbar,
   Container
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import SaveIcon from '@mui/icons-material/Save';
 import InfoIcon from '@mui/icons-material/Info';
 import CloseIcon from '@mui/icons-material/Close';
@@ -40,6 +41,7 @@ interface FoodFormData {
 
 const AddFood: React.FC = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -109,47 +111,66 @@ const AddFood: React.FC = () => {
     setLoading(true);
     setError(null);
 
-    const foodFormData = new FormData();
-    foodFormData.append('foodNumber', formData.foodNumber);
-    foodFormData.append('foodName', formData.foodName);
-    foodFormData.append('availableTimes', formData.availableTimes);
-    foodFormData.append('foodNature', formData.foodNature);
-    foodFormData.append('price', formData.price);
-    foodFormData.append('foodType', formData.foodType);
-    foodFormData.append('foodDescription', formData.foodDescription);
-
-    // Append only the first image (if you only support one)
-    if (formData.images.length > 0) {
-      foodFormData.append('image', formData.images[0]); // 'image' is the backend field name
-    }
-
     try {
-      const response = await fetch('http://localhost:9000/foods-service/foods/add', {
+      // Create a data object that matches your backend DTO structure
+      const foodDataForBackend = {
+        foodNumber: formData.foodNumber,
+        foodName: formData.foodName,
+        availableTimes: formData.availableTimes,
+        foodNature: formData.foodNature,
+        price: formData.price,
+        foodType: formData.foodType,
+        foodDescription: formData.foodDescription
+        // Image is not included in the JSON data
+      };
+
+      // If there's an image, we need to handle it with FormData
+      if (formData.images.length > 0) {
+        // For now, we're assuming the backend doesn't handle image uploads
+        // If your backend is updated to handle images, you would implement that here
+        console.log("Image upload is not implemented in the backend yet");
+      }
+
+      // Make the API call to add the food item
+      const response = await fetch('http://localhost:8080/api/services/meals/addMeal', {
         method: 'POST',
-        body: foodFormData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(foodDataForBackend),
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Food added successfully:', result);
-        // Reset form or navigate away
-        alert('Food added successfully!');
-      } else {
-        console.error('Failed to add food');
-        setError('Failed to add food. Please try again.');
+      if (!response.ok) {
+        // Try to get error message from response
+        let errorMsg = 'Failed to add food. Please try again.';
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || errorMsg;
+        } catch (e) {
+          // If parsing JSON fails, use the default error message
+        }
+        throw new Error(errorMsg);
       }
-    } catch (err) {
+
+      const result = await response.json();
+      console.log('Food added successfully:', result);
+      
+      // Show success message
+      alert('Food added successfully!');
+      
+      // Navigate back to the food list
+      navigate('/admin/foods');
+    } catch (err: any) {
       console.error('Error during submission:', err);
-      setError('Error connecting to server. Please try again later.');
+      setError(err.message || 'Error connecting to server. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = () => {
-    // Handle cancellation logic
-    console.log('Cancelled');
-    // You could navigate back or reset the form
+    // Navigate back to the food list page
+    navigate('/admin/foods');
   };
 
   const currentDate = new Date().toLocaleDateString('en-US', {
@@ -168,7 +189,17 @@ const AddFood: React.FC = () => {
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Button variant="text" sx={{ justifyContent: 'flex-start' }}>Dashboard</Button>
-        <Button variant="text" sx={{ justifyContent: 'flex-start' }}>Food Management</Button>
+        <Button 
+          variant="text" 
+          sx={{ 
+            justifyContent: 'flex-start',
+            bgcolor: 'rgba(99, 102, 241, 0.08)',
+            color: '#6366f1'
+          }}
+          onClick={() => navigate('/admin/foods')}
+        >
+          Food Management
+        </Button>
         <Button variant="text" sx={{ justifyContent: 'flex-start' }}>User Management</Button>
         <Button variant="text" sx={{ justifyContent: 'flex-start' }}>Settings</Button>
       </Box>
