@@ -125,5 +125,19 @@ export const foodService = {
       console.error(`Error fetching ${type} foods:`, error);
       throw error;
     }
+  
+  },
+
+  getFoodById: async (id: number): Promise<FoodItem> => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/${id}`);
+        if (!response.ok) {
+        throw new Error(`Error fetching food: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error(`Error fetching food with id ${id}:`, error);
+        throw error;
+    }
   },
 };
