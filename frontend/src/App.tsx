@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ShowRooms from './pages/Client/Booking/ShowRooms';
 import Home from './pages/Home';
-
 import SignUp from "./pages/Auth/SignUp";
 import VehicleListing from './pages/Client/Vehicle/VehicleListing';
 import ShowTherapyItems from './pages/Client/Therapy/ShowTherapyItems';
@@ -9,7 +8,6 @@ import ShowTherapyItems from './pages/Client/Therapy/ShowTherapyItems';
 
 function App() {
   return (
-
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
