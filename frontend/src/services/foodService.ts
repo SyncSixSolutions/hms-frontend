@@ -1,7 +1,7 @@
 // Food service for API calls related to food items
 
 // Define the base URL for the API
-const API_BASE_URL = 'http://localhost:8080/api/services/meals';
+const API_BASE_URL = 'http://localhost:13505/api/services/meals';
 
 // Define interfaces for the data types
 export interface FoodItem {
@@ -116,16 +116,15 @@ export const foodService = {
   // Get foods by type (breakfast, lunch, dinner)
   getFoodsByType: async (type: 'breakfast' | 'lunch' | 'dinner'): Promise<FoodItem[]> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/${type}`);
-      if (!response.ok) {
+        const response = await fetch(`${API_BASE_URL}/${type}`);
+        if (!response.ok) {
         throw new Error(`Error fetching ${type} foods: ${response.status}`);
-      }
-      return await response.json();
+        }
+        return await response.json();
     } catch (error) {
-      console.error(`Error fetching ${type} foods:`, error);
-      throw error;
+        console.error(`Error fetching ${type} foods:`, error);
+        throw error;
     }
-  
   },
 
   getFoodById: async (id: number): Promise<FoodItem> => {

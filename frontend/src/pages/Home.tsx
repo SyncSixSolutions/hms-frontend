@@ -23,15 +23,12 @@ import sri3 from '../assets/images/sri3.jpg';
 import sri4 from '../assets/images/sri4.jpg';
 import sri5 from '../assets/images/sri5.jpg';
 import sri6 from '../assets/images/sri6.jpg';
-<<<<<<< HEAD
-=======
 import h1 from '../assets/images/h1.jpg';
 import h2 from '../assets/images/h2.jpg';
 import h3 from '../assets/images/h3.jpg';
 import h5 from '../assets/images/h5.jpg';
 import h6 from '../assets/images/h6.jpg';
 import h4 from '../assets/images/h4.jpg';
->>>>>>> 955790b5c0165d4826111486a95dfb70509f1373
 import galleryImg from '../assets/images/gallery.jpg';
 import contactImg from '../assets/images/contact.png';
 
@@ -458,14 +455,11 @@ const GuestsSelector: React.FC<{
 const Home: React.FC = () => {
   const [centerIdx, setCenterIdx] = useState(1);
   const [activeImageIndexes, setActiveImageIndexes] = useState(Array(6).fill(0));
-<<<<<<< HEAD
-=======
   
   // Hero image slider state
   const [currentHeroImage, setCurrentHeroImage] = useState(0);
   const heroImages = [h1, h2, h3, h5, h6, h4]; 
   
->>>>>>> 955790b5c0165d4826111486a95dfb70509f1373
   const [currentVideo, setCurrentVideo] = useState({
     id: "H1CIBqDeWQ0", 
     title: "OceanView Beach Resort"
@@ -486,9 +480,6 @@ const Home: React.FC = () => {
   const [showGuestsSelector, setShowGuestsSelector] = useState(false);
   
   // Check if any dropdown is open
-<<<<<<< HEAD
-  const isAnyDropdownOpen = showCheckInCalendar || showCheckOutCalendar || showRoomSelector || showGuestsSelector;
-=======
   const isAnyDropdownOpen = showCheckInCalendar || showCheckOutCalendar || showRoomSelector || showGuestsSelector;  // Auto-slide effect for hero images
   useEffect(() => {
     const interval = setInterval(() => {
@@ -496,7 +487,6 @@ const Home: React.FC = () => {
     }, 8000); // Changed to 8 seconds
     return () => clearInterval(interval);
   }, [heroImages.length]);
->>>>>>> 955790b5c0165d4826111486a95dfb70509f1373
 
   const prev = () => setCenterIdx((i) => (i === 0 ? suiteData.length - 1 : i - 1));
   const next = () => setCenterIdx((i) => (i === suiteData.length - 1 ? 0 : i + 1));
@@ -515,8 +505,6 @@ const Home: React.FC = () => {
     setActiveImageIndexes(newIndexes);
   };
 
-<<<<<<< HEAD
-=======
   // Function to handle manual hero image navigation
   const nextHeroImage = () => {
     setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
@@ -526,7 +514,6 @@ const Home: React.FC = () => {
     setCurrentHeroImage((prev) => (prev - 1 + heroImages.length) % heroImages.length);
   };
 
->>>>>>> 955790b5c0165d4826111486a95dfb70509f1373
   const destinations = [
     { name: "Galle forte", time: "19 minutes drive", image: sri4 },
     { name: "Ella", time: "7 hours drive", image: sri5 },
@@ -605,79 +592,6 @@ const Home: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
           className="text-4xl font-parisienne text-[#000957]"
-<<<<<<< HEAD
-        >
-          OceanView
-        </motion.h1>
-        <motion.ul 
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-          className="flex space-x-8 font-regular" 
-          style={{ fontFamily: 'Poppins, sans-serif' }}
-        >
-          {["Home", "Rooms", "Services & Foods", "Contact Us", "Hotel Policies", "About Us"].map((item, i) => (
-            <motion.li 
-              key={item}
-              variants={{
-                hidden: { opacity: 0, y: -10 },
-                visible: { 
-                  opacity: 1, 
-                  y: 0, 
-                  transition: { delay: 0.1 * i, duration: 0.4 } 
-                }
-              }}
-              className={`cursor-pointer ${item === "Home" ? "text-white" : "hover:text-blue-500 text-[#6B7280]"}`}
-            >
-              {item}
-            </motion.li>
-          ))}
-        </motion.ul>
-        <motion.button 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          whileHover={{ scale: 1.05, backgroundColor: "#254FCF" }}
-          whileTap={{ scale: 0.95 }}
-          className="bg-[#2D60FF] text-white px-6 py-3 rounded-full text-sm"
-        >
-          Sign up
-        </motion.button>
-      </motion.nav>
-
-        <motion.header
-          className="relative overflow-hidden bg-cover bg-center transition-all duration-700 ease-out"
-          style={{
-            backgroundImage: `url(${HomeHeader})`,
-            marginTop: '-10px',
-            marginLeft: '2px',
-            marginRight: '2px',
-            borderRadius: '80px 80px 35px 35px',
-          }}
-          animate={{ 
-            height: isAnyDropdownOpen ? 'auto' : '90vh', 
-            minHeight: isAnyDropdownOpen ? '100vh' : '90vh',
-            paddingBottom: isAnyDropdownOpen ? '350px' : '0px'
-          }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-        >
-        {/* Hero Content */}
-          <motion.div 
-            className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4"
-            animate={{ 
-              y: isAnyDropdownOpen ? -220 : 0,  
-              opacity: isAnyDropdownOpen ? 0.8 : 1
-            }}
-            transition={{ duration: 0.5 }}
-          >
-          <h2 className="text-9xl font-extrabold font-parisienne mb-4">
-            OceanView
-          </h2>
-          <p className="text-xl font-light" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            Experience luxury, comfort, and hospitality like never before!
-          </p>
-        </motion.div>
-=======
         >
           OceanView
         </motion.h1>
@@ -872,7 +786,6 @@ const Home: React.FC = () => {
             </motion.div>
           </AnimatePresence>
         </div>
->>>>>>> 955790b5c0165d4826111486a95dfb70509f1373
 
         {/* Enhanced Navigation Arrows */}
         <motion.button
@@ -1907,11 +1820,7 @@ const Home: React.FC = () => {
                       onClick={() => handleImageChange(num, (activeImageIndexes[num] + 1) % roomImages[num].length)}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-<<<<<<< HEAD
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7  7-7" />
-=======
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7  7-7 7-7" />
->>>>>>> 955790b5c0165d4826111486a95dfb70509f1373
                       </svg>
                     </button>
                     
