@@ -6,6 +6,11 @@ import VehicleListing from './pages/Client/Vehicle/VehicleListing';
 import ShowTherapyItems from './pages/Client/Therapy/ShowTherapyItems';
 import AddFood from './pages/Admin/CRUDS/Food/AddFood';
 import EditFood from './pages/Admin/CRUDS/Food/EditFood';
+import ViewTherapiesPage from "./pages/Admin/CRUDS/Therapy/ViewTherapies";
+import AddTherapyPage from "./pages/Admin/CRUDS/Therapy/AddTherapy";
+import EditTherapyPage from "./pages/Admin/CRUDS/Therapy/EditTherapy";
+import FoodClient from './pages/Client/Food/ShowFoods'
+
 
 function App() {
   return (
@@ -23,6 +28,11 @@ function App() {
         {/* Admin Food Routes */}
         <Route path="/admin/foods/add" element={<AddFood />} />
         <Route path="/admin/foods/edit/:id" element={<EditFood />} />
+        <Route path="/signup" element={<SignUp/>} ></Route>
+        <Route path="/therapies" element={<ViewTherapiesPage />} />
+        <Route path="/addtherapy" element={<AddTherapyPage />} />
+        <Route path="/edittherapy" element={<EditTherapyPage />} />
+        <Route path="/food" element={<FoodClient/>} />
       </Routes>
     </Router>
   );
