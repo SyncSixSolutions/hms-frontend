@@ -5,6 +5,7 @@ import SignUp from "./pages/Auth/SignUp";
 import ViewTherapiesPage from "./pages/Admin/CRUDS/Therapy/ViewTherapies";
 import AddTherapyPage from "./pages/Admin/CRUDS/Therapy/AddTherapy";
 import EditTherapyPage from "./pages/Admin/CRUDS/Therapy/EditTherapy";
+import FoodClient from './pages/Client/Food/ShowFoods'
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/therapies" element={<ViewTherapiesPage />} />
         <Route path="/addtherapy" element={<AddTherapyPage />} />
         <Route path="/edittherapy" element={<EditTherapyPage />} />
+        <Route path="/food" element={<FoodClient/>} />
       </Routes>
     </Router>
   );
