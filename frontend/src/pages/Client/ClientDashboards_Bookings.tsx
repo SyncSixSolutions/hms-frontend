@@ -51,7 +51,7 @@ const ClientDashboards_Bookings: React.FC = () => {
                 <div className="flex-1 flex flex-col justify-between h-full">
                     <div>
                         <div className="text-lg text-[#7F87DC] font-medium mb-1">Main Floor Lounge</div>
-                        <div className="text-3xl font-extrabold text-grey-900 mb-2">Room near the ocean end</div>
+                        <div className="text-3xl font-bold text-blue-900 mb-2">Room near the ocean end</div>
                         <ul className="list-disc ml-5 text-gray-700 mb-2 text-base">
                             <li>Breakfast and Dinner ( Gold meal plan )</li>
                             <li>Room 2 Beds 1 Bath</li>
