@@ -42,7 +42,7 @@ const ClientDashboard: React.FC = () => {
       <div className="space-y-4">          
         
         {/* Bookings and Reservations */}
-        <Card className="bg-white rounded-2xl shadow-lg p-6">
+        <Card className="bg-white rounded-2xl shadow-lg p-6 border-0">
           <h3 className="text-2xl font-semibold text-gray-500 mb-6">Your bookings and reservations</h3>
           
           <div className="flex flex-col md:flex-row items-center justify-center py-8 gap-12">
@@ -71,7 +71,7 @@ const ClientDashboard: React.FC = () => {
         {/* Bottom Row - Payment and Vehicle Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Payment Methods */}
-          <Card className="bg-white rounded-2xl shadow-lg p-6">
+          <Card className="bg-white rounded-2xl shadow-lg p-6 border-0">
                 <h3 className="text-xl font-semibold text-gray-700 mb-6">Payment methods</h3>
                 <div className="flex items-center space-x-4 mb-8">
                     <Wallet className="text-blue-900 w-7 h-7" />
@@ -86,7 +86,7 @@ const ClientDashboard: React.FC = () => {
            </Card>
 
           {/* Vehicle Rental */}
-          <Card className="bg-white rounded-2xl shadow-lg p-6">
+          <Card className="bg-white rounded-2xl shadow-lg p-6 border-0">
             <h3 className="text-xl font-semibold text-gray-700 mb-3">Need to rent / hire a vehicle?</h3>
             <div className="mb-8">
               <p className="text-base text-gray-600">Do you need to rent vehicle for the days you stay</p>
