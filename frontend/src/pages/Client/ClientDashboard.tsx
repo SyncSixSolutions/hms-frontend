@@ -6,7 +6,7 @@ import tripGlobe from '../../assets/images/tripGlobe.png';
 
 const ClientDashboard: React.FC = () => {
   return (    
-  <div className="min-h-screen bg-gray-100 p-8">
+  <div className="min-h-screen bg-gray-100 p-8 pl-16 pr-16">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -43,7 +43,7 @@ const ClientDashboard: React.FC = () => {
         
         {/* Bookings and Reservations */}
         <Card className="bg-white rounded-2xl shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-6">Your bookings and reservations</h3>
+          <h3 className="text-2xl font-semibold text-gray-500 mb-6">Your bookings and reservations</h3>
           
           <div className="flex flex-col md:flex-row items-center justify-center py-8 gap-12">
             {/* Globe Image on the left */}
@@ -101,7 +101,7 @@ const ClientDashboard: React.FC = () => {
         </div>
       </div>      
       {/* Due Payments */}
-    <div className="bg-[#6B72D6]/10 px-8 py-6 flex justify-end items-center mt-8 -mb-8 -ml-8 -mr-8">
+    <div className="bg-[#6B72D6]/10 px-8 py-6 flex justify-end items-center mt-8 -mb-8 -ml-16 -mr-16 pl-8 pr-8">
         <span className="text-gray-600 text-lg font-medium mr-2">Due Payments :</span>
         <span className="font-semibold text-green-600 text-lg">0 lkr</span>
     </div>
