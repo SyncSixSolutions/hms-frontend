@@ -8,6 +8,7 @@ import EditTherapyPage from "./pages/Admin/CRUDS/Therapy/EditTherapy";
 import FoodClient from './pages/Client/Food/ShowFoods'
 import ClientDashboard_Bookings from "./pages/Client/ClientDashboards_Bookings";
 import ClientDashboard from "./pages/Client/ClientDashboard";
+import Profile from "./pages/Client/UserProfile";
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/dashboardbooking" element={<ClientDashboard_Bookings />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/dashboard" element={<ClientDashboard />} />
         <Route path="/rooms" element={<ShowRooms />} />
         <Route path="/signup" element={<SignUp/>} ></Route>
