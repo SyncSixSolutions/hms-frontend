@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import ShowRooms from './pages/Client/Booking/ShowRooms';
+import ShowRooms from './pages/Client/Booking/BookingCalendar';
 import Home from './pages/Home';
 import SignUp from "./pages/Auth/SignUp";
 import ViewTherapiesPage from "./pages/Admin/CRUDS/Therapy/ViewTherapies";
@@ -9,6 +9,8 @@ import FoodClient from './pages/Client/Food/ShowFoods'
 import ClientDashboard_Bookings from "./pages/Client/ClientDashboards_Bookings";
 import ClientDashboard from "./pages/Client/ClientDashboard";
 import Profile from "./pages/Client/UserProfile";
+import BookingCalendar from './pages/Client/Booking/BookingCalendar'
+
 
 
 function App() {
@@ -25,6 +27,7 @@ function App() {
         <Route path="/addtherapy" element={<AddTherapyPage />} />
         <Route path="/edittherapy" element={<EditTherapyPage />} />
         <Route path="/food" element={<FoodClient/>} />
+        <Route path="/calendar" element={<BookingCalendar/>} />
       </Routes>
     </Router>
   );
