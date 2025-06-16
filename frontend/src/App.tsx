@@ -1,5 +1,6 @@
 import Home from './pages/Home';
 import VehicleListing from './pages/Client/Vehicle/VehicleListing';
+import ShowBookings from './pages/Admin/Management/Booking/ShowBookings';
 import AddVehicle from './pages/Admin/CRUDS/Vehicle/AddVehicle';
 import ViewAllVehicle from './pages/Admin/CRUDS/Vehicle/ViewAllVehicle';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
