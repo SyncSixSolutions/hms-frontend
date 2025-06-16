@@ -36,6 +36,9 @@ function App() {
         <Route path="/calendar" element={<BookingCalendar />} />
         <Route path="/recieptionist-view-rentings" element={<ViewRentings />} />
         <Route path="/dashboard-admin" element={<AdminDashboard />} />
+        <Route path="/vehicle-listing" element={<VehicleListing />} />
+        <Route path="/add-vehicle" element={<AddVehicle />} />
+        <Route path="/view-all-vehicles" element={<ViewAllVehicle />} />
       </Routes>
     </Router>
   );
