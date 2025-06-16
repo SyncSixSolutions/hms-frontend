@@ -10,6 +10,7 @@ import ClientDashboard_Bookings from "./pages/Client/ClientDashboards_Bookings";
 import ClientDashboard from "./pages/Client/ClientDashboard";
 import Profile from "./pages/Client/UserProfile";
 import BookingCalendar from './pages/Client/Booking/BookingCalendar'
+import ViewRentings from "./pages/Receiptionist/ViewRentings";
 
 
 
@@ -27,7 +28,8 @@ function App() {
         <Route path="/addtherapy" element={<AddTherapyPage />} />
         <Route path="/edittherapy" element={<EditTherapyPage />} />
         <Route path="/food" element={<FoodClient/>} />
-        <Route path="/calendar" element={<BookingCalendar/>} />
+        <Route path="/calendar" element={<BookingCalendar />} />
+        <Route path="/recieptionist-view-rentings" element={<ViewRentings />} />
       </Routes>
     </Router>
   );
