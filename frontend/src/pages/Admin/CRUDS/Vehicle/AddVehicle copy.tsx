@@ -1,84 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Image, HelpCircle, ChevronDown } from 'lucide-react';
-
-interface Owner {
-  id: string;
-  name: string;
-  contactNumber: string;
-  nic: string;
-}
+import React, { useState } from 'react';
+import { Calendar, Image, HelpCircle } from 'lucide-react';
 
 const AddVehicle = () => {
   const [formData, setFormData] = useState({
     vehicleNumber: '',
     passengerCount: '',
     vehicleType: '',
-    pricePerKm: '',
-    basePrice: '', 
+    pricePerKM: '',
+    priceBase: '',
     availabilityFrom: '',
     availabilityTo: '',
-    description: '', 
     ownerName: '',
     contactNumber: '',
     ownerNIC: ''
   });
 
-  const [owners, setOwners] = useState<Owner[]>([]);
-  const [filteredOwners, setFilteredOwners] = useState<Owner[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [vehicleImages, setVehicleImages] = useState<string[]>([]);
 
-  useEffect(() => {
-    const fetchOwners = async () => {
-      try {
-        const response = await fetch('http://localhost:14399/api/v1/vehicle/getOwners');
-        if (!response.ok) {
-          console.error('Failed to fetch owners:', response.statusText);
-          return;
-        }
-
-        const ownersData = await response.json();
-        console.log('Owners data:', ownersData);
-        setOwners(ownersData);
-
-      } catch (e) {
-        console.error('Error fetching owners:', e);
-      }
-    };
-
-    fetchOwners();
-  }, []);
-
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-
-    // Handle owner name autocomplete
-    if (field === 'ownerName') {
-      if (value.trim() === '') {
-        setFilteredOwners([]);
-        setShowSuggestions(false);
-      } else {
-        const filtered = owners.filter(owner => 
-          owner.name.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredOwners(filtered);
-        setShowSuggestions(filtered.length > 0);
-      }
-    }
-  };
-
-  const handleOwnerSelect = (selectedOwner: Owner) => {
-    setFormData(prev => ({
-      ...prev,
-      ownerName: selectedOwner.name,
-      contactNumber: selectedOwner.contactNumber,
-      ownerNIC: selectedOwner.nic
-    }));
-    setShowSuggestions(false);
-    setFilteredOwners([]);
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,6 +35,7 @@ const AddVehicle = () => {
         reader.readAsDataURL(file);
       });
     }
+    // Reset input value to allow selecting the same file again
     event.target.value = '';
   };
 
@@ -99,55 +43,35 @@ const AddVehicle = () => {
     setVehicleImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async () => {
-    try {
-      const payload = {
-        vehicle: {
-          vehicleNumber: formData.vehicleNumber,
-          passengerCount: parseInt(formData.passengerCount),
-          vehicleType: formData.vehicleType,
-          pricePerKm: parseFloat(formData.pricePerKm),
-          basePrice: parseFloat(formData.basePrice),
-          availabilityFrom: formData.availabilityFrom,
-          availabilityTo: formData.availabilityTo,
-          description: formData.description || "Vehicle description"
-        },
-        availability: {
-          availabilityFrom: formData.availabilityFrom,
-          availabilityTo: formData.availabilityTo
-        },
-        owner: {
-          name: formData.ownerName,
-          contactNumber: formData.contactNumber,
-          nic: formData.ownerNIC
-        },
-        images: vehicleImages.map((_, index) => ({
-          imageUrl: `https://example.com/images/${formData.vehicleNumber}_${index + 1}.jpg`,
-          uploadedAt: new Date().toISOString()
-        }))
-      };
 
-      const response = await fetch('http://localhost:14399/api/v1/vehicle/addVehicle', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (response.ok) {
-        console.log('Vehicle added successfully');
-        // Reset form or redirect
-      } else {
-        console.error('Failed to add vehicle');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      {/* <div className="bg-white px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-medium text-gray-800">Welcome, Admin</h1>
+            <p className="text-sm text-gray-500 mt-1">Tue, 07 June 2022</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search"
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <svg className="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+              <div className="w-8 h-8 bg-orange-200 rounded-md"></div>
+            </div>
+          </div>
+        </div>
+      </div> */}
+
       <div className="p-6">
         {/* Title Bar */}
         <div className="bg-indigo-500 text-white px-6 py-4 rounded-t-lg">
@@ -254,28 +178,32 @@ const AddVehicle = () => {
             <div className="grid grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Price per KM*
+                  Price - 1KM*
                 </label>
                 <input
                   type="text"
                   placeholder="price"
-                  value={formData.pricePerKm}
-                  onChange={(e) => handleInputChange('pricePerKm', e.target.value)}
+                  value={formData.pricePerKM}
+                  onChange={(e) => handleInputChange('pricePerKM', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Base Price*
+                  Price - Base*
                 </label>
-                <input
-                  type="text"
-                  placeholder="base price"
-                  value={formData.basePrice}
-                  onChange={(e) => handleInputChange('basePrice', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                <select
+                  value={formData.priceBase}
+                  onChange={(e) => handleInputChange('priceBase', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">price</option>
+                  <option value="hourly">Hourly</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
               </div>
               
               <div>
@@ -285,19 +213,23 @@ const AddVehicle = () => {
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <input
-                      type="date"
+                      type="text"
+                      placeholder="from"
                       value={formData.availabilityFrom}
                       onChange={(e) => handleInputChange('availabilityFrom', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
+                    <Calendar className="w-4 h-4 text-gray-400 absolute right-3 top-4" />
                   </div>
                   <div className="relative flex-1">
                     <input
-                      type="date"
+                      type="text"
+                      placeholder="to"
                       value={formData.availabilityTo}
                       onChange={(e) => handleInputChange('availabilityTo', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
+                    <Calendar className="w-4 h-4 text-gray-400 absolute right-3 top-4" />
                   </div>
                 </div>
               </div>
@@ -312,8 +244,7 @@ const AddVehicle = () => {
             </div>
             
             <div className="grid grid-cols-3 gap-6">
-              {/* Owner Name with Autocomplete */}
-              <div className="relative">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Owner Name*
                 </label>
@@ -322,36 +253,11 @@ const AddVehicle = () => {
                   placeholder="name"
                   value={formData.ownerName}
                   onChange={(e) => handleInputChange('ownerName', e.target.value)}
-                  onFocus={() => {
-                    if (formData.ownerName && filteredOwners.length > 0) {
-                      setShowSuggestions(true);
-                    }
-                  }}
-                  onBlur={() => {
-                    // Delay hiding suggestions to allow for clicks
-                    setTimeout(() => setShowSuggestions(false), 200);
-                  }}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                
-                {/* Suggestions Dropdown */}
-                {showSuggestions && filteredOwners.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {filteredOwners.map((owner) => (
-                      <div
-                        key={owner.id}
-                        onClick={() => handleOwnerSelect(owner)}
-                        className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                      >
-                        <div className="font-medium text-gray-900">{owner.name}</div>
-                        <div className="text-sm text-gray-500">{owner.contactNumber}</div>
-                        <div className="text-xs text-gray-400">NIC: {owner.nic}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
-                            <div>
+              
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contact Number*
                 </label>
@@ -376,28 +282,12 @@ const AddVehicle = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-
-              <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  placeholder="Vehicle description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={3}
-                />
-              </div>
             </div>
           </div>
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-6">
-            <button 
-              onClick={handleSubmit}
-              className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2"
-            >
+            <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
               </svg>
