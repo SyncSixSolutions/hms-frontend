@@ -1,3 +1,5 @@
+import Home from './pages/Home';
+import VehicleListing from './pages/Client/Vehicle/VehicleListing';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ShowRooms from './pages/Client/Booking/BookingCalendar';
 import Home from './pages/Home';
@@ -14,6 +16,7 @@ import BookingCalendar from './pages/Client/Booking/BookingCalendar'
 
 
 function App() {
+
   return (
     <Router>
       <Routes>
@@ -33,4 +36,4 @@ function App() {
   );
 }
 
-export default App;
+export default App
