@@ -9,6 +9,9 @@ interface Therapy {
   equipment: string;
   attachedFacilities: string;
   price: number;
+  description?: string;
+  availableDates?: string[];
+  availableTimeSlots?: string[];
 }
 
 interface TherapyAdminProps {
@@ -37,6 +40,12 @@ const TherapyCard: React.FC<{
             <p><span className="font-medium text-gray-700">Room Size:</span> {therapy.roomSize}</p>
             <p><span className="font-medium text-gray-700">Equipment & Furniture:</span> {therapy.equipment}</p>
             <p><span className="font-medium text-gray-700">Attached Facilities:</span> {therapy.attachedFacilities}</p>
+            {therapy.availableDates && therapy.availableDates.length > 0 && (
+              <p><span className="font-medium text-gray-700">Available Dates:</span> {therapy.availableDates.slice(0, 3).join(', ')}{therapy.availableDates.length > 3 ? '...' : ''}</p>
+            )}
+            {therapy.availableTimeSlots && therapy.availableTimeSlots.length > 0 && (
+              <p><span className="font-medium text-gray-700">Time Slots:</span> {therapy.availableTimeSlots.slice(0, 3).join(', ')}{therapy.availableTimeSlots.length > 3 ? '...' : ''}</p>
+            )}
           </div>
         </div>
       </div>
@@ -67,7 +76,10 @@ const TherapyAdmin: React.FC<TherapyAdminProps> = ({ onNavigateToAdd }) => {
       roomSize: "6m x 10m Therapy Room",
       equipment: "Therapy Bed, Recliner Chair, Consultation Desk & Chair",
       attachedFacilities: "Private Washroom with Shower & Sink",
-      price: 49
+      price: 49,
+      description: "Traditional Chinese massage therapy focusing on pressure points and energy flow.",
+      availableDates: ["Mon, Jun 02, 2025", "Tue, Jun 03, 2025"],
+      availableTimeSlots: ["9:00 AM", "2:00 PM", "4:00 PM"]
     },
     {
       id: 2,
@@ -76,16 +88,22 @@ const TherapyAdmin: React.FC<TherapyAdminProps> = ({ onNavigateToAdd }) => {
       roomSize: "6m x 10m Therapy Room",
       equipment: "Therapy Bed, Recliner Chair, Consultation Desk & Chair",
       attachedFacilities: "Private Washroom with Shower & Sink",
-      price: 29
+      price: 29,
+      description: "Relaxing oil therapy with specialized boat-shaped treatment area.",
+      availableDates: ["Wed, Jun 04, 2025", "Thu, Jun 05, 2025"],
+      availableTimeSlots: ["10:00 AM", "1:00 PM", "3:00 PM"]
     },
     {
       id: 3,
-      name: "Room No. 34001",
+      name: "Swedish Massage",
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
       roomSize: "6m x 10m Therapy Room",
       equipment: "Therapy Bed, Recliner Chair, Consultation Desk & Chair",
       attachedFacilities: "Private Washroom with Shower & Sink",
-      price: 299
+      price: 299,
+      description: "Classic Swedish massage techniques for deep relaxation and muscle tension relief.",
+      availableDates: ["Fri, Jun 06, 2025", "Sat, Jun 07, 2025"],
+      availableTimeSlots: ["11:00 AM", "2:30 PM", "5:00 PM"]
     }
   ]);
 
@@ -147,6 +165,7 @@ const TherapyAdmin: React.FC<TherapyAdminProps> = ({ onNavigateToAdd }) => {
         {/* All Therapies Header */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 mb-8">
           <h2 className="text-2xl font-bold text-white">All Therapies</h2>
+          <p className="text-blue-100 mt-2">Manage your therapy services and bookings</p>
         </div>
 
         {/* Therapy List */}
