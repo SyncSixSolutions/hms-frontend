@@ -1,0 +1,306 @@
+import React, { useState } from 'react';
+import { Calendar, Image, HelpCircle } from 'lucide-react';
+
+const AddVehicle = () => {
+  const [formData, setFormData] = useState({
+    vehicleNumber: '',
+    passengerCount: '',
+    vehicleType: '',
+    pricePerKM: '',
+    priceBase: '',
+    availabilityFrom: '',
+    availabilityTo: '',
+    ownerName: '',
+    contactNumber: '',
+    ownerNIC: ''
+  });
+
+  const [vehicleImages, setVehicleImages] = useState<string[]>([]);
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setVehicleImages(prev => [...prev, e.target?.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    // Reset input value to allow selecting the same file again
+    event.target.value = '';
+  };
+
+  const removeImage = (index: number) => {
+    setVehicleImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      {/* <div className="bg-white px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-medium text-gray-800">Welcome, Admin</h1>
+            <p className="text-sm text-gray-500 mt-1">Tue, 07 June 2022</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search"
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <svg className="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+              <div className="w-8 h-8 bg-orange-200 rounded-md"></div>
+            </div>
+          </div>
+        </div>
+      </div> */}
+
+      <div className="p-6">
+        {/* Title Bar */}
+        <div className="bg-indigo-500 text-white px-6 py-4 rounded-t-lg">
+          <h2 className="text-2xl font-medium">Add a new vehicle</h2>
+        </div>
+
+        {/* Form Container */}
+        <div className="bg-white rounded-b-lg border border-gray-200 p-6">
+          {/* Vehicle Picture Section */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <h3 className="text-base font-medium text-gray-800">Vehicle Picture</h3>
+              <HelpCircle className="w-4 h-4 text-gray-400" />
+            </div>
+            <div className="flex gap-4 flex-wrap">
+              {/* Display uploaded images */}
+              {vehicleImages.map((image, index) => (
+                <div key={index} className="relative w-60 h-40 bg-gray-100 rounded-lg flex items-center justify-center group">
+                  <img 
+                    src={image}
+                    alt={`Vehicle ${index + 1}`}
+                    className="w-full h-full object-contain rounded-lg"
+                  />
+                  <button
+                    onClick={() => removeImage(index)}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              
+              {/* Add image button */}
+              <label className="w-60 h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 cursor-pointer">
+                <Image className="w-8 h-8 mb-2" />
+                <span className="text-sm">Add image</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* Vehicle Details Section */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-6">
+              <h3 className="text-base font-medium text-gray-800">Vehicle Details</h3>
+              <HelpCircle className="w-4 h-4 text-gray-400" />
+            </div>
+            
+            <div className="grid grid-cols-3 gap-6 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Vehicle Number*
+                </label>
+                <input
+                  type="text"
+                  placeholder="vehicle number"
+                  value={formData.vehicleNumber}
+                  onChange={(e) => handleInputChange('vehicleNumber', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Passenger Count *
+                </label>
+                <select
+                  value={formData.passengerCount}
+                  onChange={(e) => handleInputChange('passengerCount', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">count</option>
+                  <option value="2">2</option>
+                  <option value="4">4</option>
+                  <option value="6">6</option>
+                  <option value="8">8</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Vehicle type *
+                </label>
+                <select
+                  value={formData.vehicleType}
+                  onChange={(e) => handleInputChange('vehicleType', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">type</option>
+                  <option value="car">Car</option>
+                  <option value="van">Van</option>
+                  <option value="bus">Bus</option>
+                  <option value="bike">Bike</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Price - 1KM*
+                </label>
+                <input
+                  type="text"
+                  placeholder="price"
+                  value={formData.pricePerKM}
+                  onChange={(e) => handleInputChange('pricePerKM', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Price - Base*
+                </label>
+                <select
+                  value={formData.priceBase}
+                  onChange={(e) => handleInputChange('priceBase', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                >
+                  <option value="">price</option>
+                  <option value="hourly">Hourly</option>
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Availability
+                </label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="from"
+                      value={formData.availabilityFrom}
+                      onChange={(e) => handleInputChange('availabilityFrom', e.target.value)}
+                      className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <Calendar className="w-4 h-4 text-gray-400 absolute right-3 top-4" />
+                  </div>
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      placeholder="to"
+                      value={formData.availabilityTo}
+                      onChange={(e) => handleInputChange('availabilityTo', e.target.value)}
+                      className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <Calendar className="w-4 h-4 text-gray-400 absolute right-3 top-4" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Owner Details Section */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-6">
+              <h3 className="text-base font-medium text-gray-800">Owner Details</h3>
+              <HelpCircle className="w-4 h-4 text-gray-400" />
+            </div>
+            
+            <div className="grid grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Owner Name*
+                </label>
+                <input
+                  type="text"
+                  placeholder="name"
+                  value={formData.ownerName}
+                  onChange={(e) => handleInputChange('ownerName', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Contact Number*
+                </label>
+                <input
+                  type="text"
+                  placeholder="contact no"
+                  value={formData.contactNumber}
+                  onChange={(e) => handleInputChange('contactNumber', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Owner NIC
+                </label>
+                <input
+                  type="text"
+                  placeholder="NIC"
+                  value={formData.ownerNIC}
+                  onChange={(e) => handleInputChange('ownerNIC', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-6">
+            <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              Save Changes
+            </button>
+            <button className="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors duration-200">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AddVehicle;
