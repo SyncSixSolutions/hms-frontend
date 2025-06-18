@@ -16,6 +16,9 @@ import Profile from "./pages/Client/UserProfile";
 import BookingCalendar from './pages/Client/Booking/BookingCalendar'
 import ViewRentings from "./pages/Receiptionist/ViewRentings";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AddFood from './pages/Admin/CRUDS/Food/AddFood'; 
+import EditFood from './pages/Admin/CRUDS/Food/EditFood';
+import FoodList from './pages/Admin/CRUDS/Food/FoodList';
 
 
 
@@ -37,6 +40,12 @@ function App() {
         <Route path="/calendar" element={<BookingCalendar />} />
         <Route path="/recieptionist-view-rentings" element={<ViewRentings />} />
         <Route path="/dashboard-admin" element={<AdminDashboard />} />
+        <Route path="/vehicle-listing" element={<VehicleListing />} />
+        <Route path="/add-vehicle" element={<AddVehicle />} />
+        <Route path="/view-all-vehicles" element={<ViewAllVehicle />} />
+        <Route path="/admin/food/addfood" element={<AddFood />} />
+        <Route path="/admin/food/editfood/:id" element={<EditFood />} />
+        <Route path="/admin/food/list" element={<FoodList />} />
       </Routes>
     </Router>
   );
