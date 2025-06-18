@@ -18,6 +18,7 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AddFood from './pages/Admin/CRUDS/Food/AddFood'; 
 import EditFood from './pages/Admin/CRUDS/Food/EditFood';
 import FoodList from './pages/Admin/CRUDS/Food/FoodList';
+import AddRoom from './pages/Admin/CRUDS/Room/AddRoom';
 
 
 
@@ -45,6 +46,7 @@ function App() {
         <Route path="/admin/food/addfood" element={<AddFood />} />
         <Route path="/admin/food/editfood/:id" element={<EditFood />} />
         <Route path="/admin/food/list" element={<FoodList />} />
+        <Route path="/admin/room/addroom" element={<AddRoom />} />
       </Routes>
     </Router>
   );
