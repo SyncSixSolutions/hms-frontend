@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { foodService } from '../../../../services/foodService';
+import Button from '../../../../components/ui/Button';
+import Card from '../../../../components/ui/Card';
+import CardContent from '../../../../components/ui/CardContent';
+import Input from '../../../../components/ui/Input';
 
 import { 
   Box, 
   Typography, 
   TextField, 
-  Button, 
   IconButton, 
   Paper, 
   Grid, 
@@ -166,20 +169,30 @@ const AddFood: React.FC = () => {
         <Typography variant="h6">Admin Panel</Typography>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Button variant="text" sx={{ justifyContent: 'flex-start' }}>Dashboard</Button>
-        <Button 
-          variant="text" 
-          sx={{ 
-            justifyContent: 'flex-start',
-            bgcolor: 'rgba(99, 102, 241, 0.08)',
-            color: '#6366f1'
-          }}
-          onClick={() => navigate('/admin/foods')}
-        >
-          Food Management
-        </Button>
-        <Button variant="text" sx={{ justifyContent: 'flex-start' }}>User Management</Button>
-        <Button variant="text" sx={{ justifyContent: 'flex-start' }}>Settings</Button>
+        <div className="mb-2">
+          <Button variant="secondary" className="w-full text-left justify-start" onClick={() => navigate('/dashboard-admin')}>
+            Dashboard
+          </Button>
+        </div>
+        <div className="mb-2">
+          <Button 
+            variant="primary" 
+            className="w-full text-left justify-start"
+            onClick={() => navigate('/admin/foods')}
+          >
+            Food Management
+          </Button>
+        </div>
+        <div className="mb-2">
+          <Button variant="secondary" className="w-full text-left justify-start">
+            User Management
+          </Button>
+        </div>
+        <div className="mb-2">
+          <Button variant="secondary" className="w-full text-left justify-start">
+            Settings
+          </Button>
+        </div>
       </Box>
     </Box>
   );
@@ -286,308 +299,224 @@ const AddFood: React.FC = () => {
         )}
 
         {/* Main Content */}
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            borderRadius: 3, 
-            overflow: 'hidden',
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
-            mb: 4,
-            flexGrow: 1
-          }}
-        >
+        <Card className="mb-4 flex-grow">
           {/* Page Title */}
-          <Box sx={{ bgcolor: '#6366f1', color: 'white', p: 2 }}>
+          <div className="bg-primary text-white p-4 -m-4 mb-4 rounded-t-2xl">
             <Typography variant="h6" fontWeight="600">
               Add a new food
             </Typography>
-          </Box>
+          </div>
 
-          <Box sx={{ p: { xs: 2, sm: 3 } }}>
+          <CardContent className="p-4 -m-4">
             {error && (
-              <Box sx={{ 
-                bgcolor: '#FEE2E2', 
-                color: '#B91C1C', 
-                p: 2, 
-                borderRadius: 1,
-                mb: 3 
-              }}>
-                <Typography>{error}</Typography>
-              </Box>
+              <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-6">
+                <p>{error}</p>
+              </div>
             )}
             
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="space-y-6">
               {/* Food Picture Section */}
-              <Box sx={{ mb: 4 }}>
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 1,
-                  mb: 2,
-                  pb: 1,
-                  borderBottom: '1px solid #e2e8f0'
-                }}>
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border">
                   <Typography variant="subtitle1" fontWeight="600">
                     Food Picture
                   </Typography>
                   <InfoIcon sx={{ fontSize: 18, color: '#64748b' }} />
-                </Box>
+                </div>
 
-                <Grid container spacing={2}>
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
                   {/* Uploaded image previews */}
                   {formData.imagePreviews.map((preview, index) => (
-                    <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
-                      <Box sx={{ position: 'relative' }}>
-                        <Box
-                          component="img"
-                          src={preview}
-                          alt={`Food preview ${index + 1}`}
-                          sx={{
-                            width: '100%',
-                            aspectRatio: '1/1',
-                            objectFit: 'cover',
-                            borderRadius: 2,
-                            border: '1px solid #e2e8f0'
-                          }}
-                        />
-                        <IconButton
-                          size="small"
-                          onClick={() => handleRemoveImage(index)}
-                          sx={{
-                            position: 'absolute',
-                            top: -8,
-                            right: -8,
-                            bgcolor: 'white',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                            '&:hover': {
-                              bgcolor: '#f1f5f9',
-                            }
-                          }}
-                        >
-                          <CloseIcon fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </Grid>
+                    <div key={index} className="relative">
+                      <img
+                        src={preview}
+                        alt={`Food preview ${index + 1}`}
+                        className="w-full aspect-square object-cover rounded-xl border border-border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(index)}
+                        className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+                      >
+                        <CloseIcon fontSize="small" />
+                      </button>
+                    </div>
                   ))}
 
                   {/* Image upload box */}
-                  <Grid item xs={6} sm={4} md={3} lg={2}>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        aspectRatio: '1/1',
-                        border: '1px dashed #cbd5e1',
-                        borderRadius: 2,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s',
-                        '&:hover': {
-                          bgcolor: '#f1f5f9',
-                        }
-                      }}
-                      component="label"
+                  <div className="relative">
+                    <label 
                       htmlFor="image-upload"
+                      className="flex flex-col items-center justify-center w-full aspect-square border border-dashed border-border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
                     >
                       <input
                         type="file"
                         id="image-upload"
                         accept="image/*"
                         onChange={handleFileUpload}
-                        style={{ display: 'none' }}
+                        className="sr-only"
                       />
                       <AddPhotoAlternateIcon sx={{ fontSize: 24, color: '#94a3b8', mb: 1 }} />
-                      <Typography variant="caption" color="#64748b" align="center">
+                      <span className="text-xs text-gray-500">
                         {formData.imagePreviews.length > 0 ? 'Change image' : 'Add image'}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
 
               {/* Food Details Section */}
-              <Box sx={{ mb: 4 }}>
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 1,
-                  mb: 2,
-                  pb: 1,
-                  borderBottom: '1px solid #e2e8f0'
-                }}>
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border">
                   <Typography variant="subtitle1" fontWeight="600">
                     Food Details
                   </Typography>
                   <InfoIcon sx={{ fontSize: 18, color: '#64748b' }} />
-                </Box>
+                </div>
 
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Food number"
-                      name="foodNumber"
-                      value={formData.foodNumber}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      placeholder="Food number"
-                      variant="outlined"
-                      size="small"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Food name"
-                      name="foodName"
-                      value={formData.foodName}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      placeholder="Food name"
-                      variant="outlined"
-                      size="small"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      select
-                      label="Available times"
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <Input
+                    label="Food number"
+                    name="foodNumber"
+                    value={formData.foodNumber}
+                    onChange={handleChange}
+                    required
+                    placeholder="Food number"
+                  />
+                  
+                  <Input
+                    label="Food name"
+                    name="foodName"
+                    value={formData.foodName}
+                    onChange={handleChange}
+                    required
+                    placeholder="Food name"
+                  />
+
+                  <div className="mb-2 p-2">
+                    <label className="block mb-1 text-sm font-medium text-text">
+                      Available times
+                    </label>
+                    <select
                       name="availableTimes"
                       value={formData.availableTimes}
-                      onChange={handleChange}
-                      fullWidth
+                      onChange={handleChange as any}
                       required
-                      variant="outlined"
-                      size="small"
+                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
+                               hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
+                               focus:outline-none transition duration-150 ease-in-out"
                     >
-                      <MenuItem value="">-Select-</MenuItem>
-                      <MenuItem value="breakfast">Breakfast</MenuItem>
-                      <MenuItem value="lunch">Lunch</MenuItem>
-                      <MenuItem value="dinner">Dinner</MenuItem>
-                      <MenuItem value="allday">All Day</MenuItem>
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      select
-                      label="Food nature"
+                      <option value="">-Select-</option>
+                      <option value="breakfast">Breakfast</option>
+                      <option value="lunch">Lunch</option>
+                      <option value="dinner">Dinner</option>
+                      <option value="allday">All Day</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-2 p-2">
+                    <label className="block mb-1 text-sm font-medium text-text">
+                      Food nature
+                    </label>
+                    <select
                       name="foodNature"
                       value={formData.foodNature}
-                      onChange={handleChange}
-                      fullWidth
+                      onChange={handleChange as any}
                       required
-                      variant="outlined"
-                      size="small"
+                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
+                               hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
+                               focus:outline-none transition duration-150 ease-in-out"
                     >
-                      <MenuItem value="">-Select-</MenuItem>
-                      <MenuItem value="veg">Vegetarian</MenuItem>
-                      <MenuItem value="nonveg">Non-Vegetarian</MenuItem>
-                      <MenuItem value="vegan">Vegan</MenuItem>
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Price"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      placeholder="Rs. Price"
-                      variant="outlined"
-                      size="small"
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start">Rs.</InputAdornment>,
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      select
-                      label="Food type"
+                      <option value="">-Select-</option>
+                      <option value="veg">Vegetarian</option>
+                      <option value="nonveg">Non-Vegetarian</option>
+                      <option value="vegan">Vegan</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-2 p-2">
+                    <label className="block mb-1 text-sm font-medium text-text">
+                      Price
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-2 text-gray-500">Rs.</span>
+                      <input
+                        name="price"
+                        value={formData.price}
+                        onChange={handleChange}
+                        required
+                        placeholder="Price"
+                        className="w-full px-3 py-2 pl-10 border border-border rounded-3xl shadow-sm bg-bg text-text 
+                                 hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
+                                 focus:outline-none transition duration-150 ease-in-out"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-2 p-2">
+                    <label className="block mb-1 text-sm font-medium text-text">
+                      Food type
+                    </label>
+                    <select
                       name="foodType"
                       value={formData.foodType}
-                      onChange={handleChange}
-                      fullWidth
+                      onChange={handleChange as any}
                       required
-                      variant="outlined"
-                      size="small"
+                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
+                               hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
+                               focus:outline-none transition duration-150 ease-in-out"
                     >
-                      <MenuItem value="">-Select-</MenuItem>
-                      <MenuItem value="appetizer">Appetizer</MenuItem>
-                      <MenuItem value="mainCourse">Main Course</MenuItem>
-                      <MenuItem value="dessert">Dessert</MenuItem>
-                      <MenuItem value="beverage">Beverage</MenuItem>
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      label="Food description"
+                      <option value="">-Select-</option>
+                      <option value="appetizer">Appetizer</option>
+                      <option value="mainCourse">Main Course</option>
+                      <option value="dessert">Dessert</option>
+                      <option value="beverage">Beverage</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-2 p-2 sm:col-span-2">
+                    <label className="block mb-1 text-sm font-medium text-text">
+                      Food description
+                    </label>
+                    <textarea
                       name="foodDescription"
                       value={formData.foodDescription}
                       onChange={handleChange}
-                      fullWidth
                       required
                       placeholder="Food description"
-                      variant="outlined"
-                      size="small"
-                      multiline
                       rows={isMobile ? 3 : 4}
+                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
+                               hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
+                               focus:outline-none transition duration-150 ease-in-out"
                     />
-                  </Grid>
-                </Grid>
-              </Box>
+                  </div>
+                </div>
+              </div>
 
               {/* Action Buttons */}
-              <Box sx={{ 
-                display: 'flex', 
-                flexDirection: isMobile ? 'column' : 'row',
-                gap: 2, 
-                mt: 4 
-              }}>
+              <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-4 mt-6`}>
                 <Button
                   type="submit"
-                  variant="contained"
-                  fullWidth={isMobile}
-                  startIcon={<SaveIcon />}
+                  variant="primary"
                   disabled={loading}
-                  sx={{
-                    bgcolor: '#6366f1',
-                    borderRadius: 2,
-                    py: 1,
-                    px: 3,
-                    '&:hover': {
-                      bgcolor: '#5355c9'
-                    }
-                  }}
+                  className={`flex items-center justify-center gap-2 text-black ${isMobile ? 'w-full' : ''}`}
                 >
+                  <SaveIcon style={{ fontSize: '1.25rem' }} />
                   {loading ? 'Saving...' : 'Save Changes'}
                 </Button>
+                
                 <Button
                   type="button"
-                  variant="outlined"
-                  fullWidth={isMobile}
+                  variant="secondary"
                   onClick={handleCancel}
-                  sx={{
-                    borderColor: '#cbd5e1',
-                    color: '#64748b',
-                    borderRadius: 2,
-                    py: 1,
-                    px: 3,
-                    '&:hover': {
-                      bgcolor: '#f1f5f9',
-                      borderColor: '#cbd5e1',
-                    }
-                  }}
+                  className={isMobile ? 'w-full' : ''}
                 >
                   Cancel
                 </Button>
-              </Box>
+              </div>
             </form>
-          </Box>
-        </Paper>
+          </CardContent>
+        </Card>
       </Container>
     </Box>
   );

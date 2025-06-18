@@ -1,7 +1,7 @@
 // Food service for API calls related to food items
 
 // Define the base URL for the API
-const API_BASE_URL = 'http://localhost:13505/api/services/meals';
+const API_BASE_URL = 'http://localhost:8765/api/services/meals';
 
 // Define interfaces for the data types
 export interface FoodItem {
