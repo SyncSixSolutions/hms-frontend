@@ -1,445 +1,489 @@
-import React, { useState } from 'react';
-import { Avatar, Button, Card, Grid, Typography, Box, Paper, TextField, IconButton, Fade, Grow } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { 
+  Avatar, 
+  Button, 
+  Card, 
+  Grid, 
+  Typography, 
+  Box, 
+  TextField, 
+  IconButton, 
+  Fade, 
+  Grow, 
+  Chip,
+  Paper,
+  Divider,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Rating
+} from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import nissan from '../../../assets/images/vehicles/alphard.png';
 import tuktuk from '../../../assets/images/vehicles/tuktuk.png';
 import scooty from '../../../assets/images/vehicles/scooty.png';
 import userAvatar from '../../../assets/images/avatar.jpg';
 import Travel from '../../../assets/images/travel.png';
-import trvl1 from '../../../assets/images/trvl1.png';
 import PersonIcon from '@mui/icons-material/Person';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import CloseIcon from '@mui/icons-material/Close';
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import LocalTaxiOutlinedIcon from '@mui/icons-material/LocalTaxiOutlined';
-
-interface VehicleCardProps {
-  id: number;
-  name: string;
-  image: string;
-  capacity: number;
-  onSelect: (id: number) => void;
-  isSelected: boolean;
-}
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import GavelIcon from '@mui/icons-material/Gavel';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PriceCheckIcon from '@mui/icons-material/PriceCheck';
+import { addDays, formatDistance } from 'date-fns';
 
 // Vehicle details type
 interface Vehicle {
   id: number;
   name: string;
+  vehicle_number: string;
   image: string;
+  images: string[];
   capacity: number;
+  vehicle_type: string;
+  price_per_km: number;
+  base_price: number;
+  description: string;
+  owner_name: string;
+  availability_from: Date;
+  availability_to: Date;
 }
 
-// Updated VehicleCard component
-const VehicleCard: React.FC<VehicleCardProps> = ({ id, name, image, capacity, onSelect, isSelected }) => (
-  <Card sx={{ 
-    p: 3, 
-    borderRadius: 3, 
-    boxShadow: 'rgba(0, 0, 0, 0.08) 0px 4px 12px',
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    position: 'relative',
-    bgcolor: isSelected ? 'rgba(100, 102, 233, 0.05)' : '#ffffff',
-    border: isSelected ? '1px solid #6466e9' : '1px solid transparent',
-    transition: 'all 0.3s ease'
-  }}>
-    <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2, fontSize: '1.1rem' }}>
-      {name}
-    </Typography>
-    
-    <Box
-      sx={{
-        textAlign: 'center',
-        mb: 2,
-        width: '100%',
-        height: '120px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        '& img': {
-          transition: 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s',
-        },
-        '&:hover img': {
-          transform: 'scale(1.08) rotate(-3deg)',
-        }
-      }}
-    >
-      <img src={image} alt={name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-    </Box>
-    
-    <Box sx={{ 
-      display: 'flex', 
-      alignItems: 'center', 
-      mb: 2,
-      color: '#6C7A89'
-    }}>
-      <PersonIcon sx={{ fontSize: 16, mr: 0.5, color: '#6466e9' }} />
-      <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#6C7A89' }}>
-        {capacity} {capacity > 1 ? 'People' : 'Person'}
-      </Typography>
-    </Box>
-    
-    <Button 
-      variant="contained" 
-      onClick={() => onSelect(id)}
-      sx={{ 
-        bgcolor: isSelected ? '#5355c9' : '#6466e9', 
-        borderRadius: 8,
-        py: 1,
-        mt: 'auto',
-        '&:hover': {
-          bgcolor: '#5355c9'
-        }
-      }}
-    >
-      {isSelected ? 'Selected' : 'Rent Now'}
-    </Button>
+// Vehicle card component for search results
+const VehicleCard: React.FC<{
+  vehicle: Vehicle;
+  onSelect: (vehicle: Vehicle) => void;
+}> = ({ vehicle, onSelect }) => (
+  <Card 
+    sx={{ 
+      p: 3, 
+      borderRadius: 2, 
+      boxShadow: 'rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px',
+      cursor: 'pointer',
+      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+      '&:hover': {
+        transform: 'translateY(-4px)',
+        boxShadow: 'rgba(0, 0, 0, 0.1) 0px 10px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px'
+      },
+    }}
+    onClick={() => onSelect(vehicle)}
+  >
+    <Grid container spacing={2}>
+      <Grid item xs={4}>
+        <Box
+          sx={{
+            height: 140,
+            width: '100%',
+            position: 'relative',
+            borderRadius: 2,
+            overflow: 'hidden',
+            mb: 1,
+          }}
+        >
+          <img 
+            src={vehicle.image} 
+            alt={vehicle.name}
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover',
+            }} 
+          />
+          <Chip
+            label={vehicle.vehicle_type}
+            size="small"
+            sx={{
+              position: 'absolute',
+              top: 8,
+              left: 8,
+              backgroundColor: 'rgba(100, 102, 233, 0.8)',
+              color: 'white',
+            }}
+          />
+        </Box>
+      </Grid>
+      <Grid item xs={8}>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+            {vehicle.name}
+          </Typography>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <PersonIcon sx={{ fontSize: 16, mr: 0.5, color: '#6466e9' }} />
+              <Typography variant="body2" sx={{ color: '#555' }}>
+                {vehicle.capacity} {vehicle.capacity > 1 ? 'People' : 'Person'}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <AttachMoneyIcon sx={{ fontSize: 16, mr: 0.5, color: '#6466e9' }} />
+              <Typography variant="body2" sx={{ color: '#555' }}>
+                ${vehicle.base_price}/day
+              </Typography>
+            </Box>
+          </Box>
+          
+          <Typography variant="body2" sx={{ color: '#777', mb: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            {vehicle.description}
+          </Typography>
+          
+          <Box sx={{ mt: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Chip
+              label={vehicle.vehicle_number}
+              size="small"
+              variant="outlined"
+              sx={{ borderColor: '#6466e9', color: '#6466e9' }}
+            />
+            <Button
+              variant="text"
+              endIcon={<ArrowForwardIcon />}
+              size="small"
+              sx={{ color: '#6466e9' }}
+            >
+              View details
+            </Button>
+          </Box>
+        </Box>
+      </Grid>
+    </Grid>
   </Card>
 );
 
-// Booking details side panel component
-const BookingSidePanel: React.FC<{
-  selectedVehicle: Vehicle | null;
+// Vehicle details component
+const VehicleDetails: React.FC<{
+  vehicle: Vehicle;
+  startDate: Date | null;
+  endDate: Date | null;
   onClose: () => void;
-  onConfirm: () => void;
-}> = ({ selectedVehicle, onClose, onConfirm }) => {
-  const [rentalType, setRentalType] = useState<'rent' | 'hire'>('rent');
+  onBook: () => void;
+}> = ({ vehicle, startDate, endDate, onClose, onBook }) => {
+  const [activeImage, setActiveImage] = useState(vehicle.image);
+  const [showAgreement, setShowAgreement] = useState(false);
+
+  const totalDays = startDate && endDate
+    ? Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) || 1
+    : 0;
+    
+  const totalPrice = totalDays * vehicle.base_price;
 
   return (
-    <Box sx={{ 
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 2
-    }}>
-      {/* Vehicle info with animation */}
-      <Fade in timeout={600}>
+    <Box sx={{ p: 2 }}>
+      {showAgreement ? (
         <Box>
-          <Box 
-            sx={{ 
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              mb: 2
-            }}
-          >
-            <Typography variant="h6" fontWeight="700">
-              {selectedVehicle?.name}
-            </Typography>
-            <IconButton 
-              onClick={onClose}
-              sx={{ 
-                bgcolor: 'rgba(0,0,0,0.04)', 
-                '&:hover': { bgcolor: 'rgba(0,0,0,0.08)' } 
-              }}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h6" fontWeight="700">Rental Agreement</Typography>
+            <Button 
+              variant="outlined" 
+              onClick={() => setShowAgreement(false)}
+              sx={{ borderColor: '#ddd', color: '#555' }}
             >
-              <CloseIcon fontSize="small" />
-            </IconButton>
+              Back to Details
+            </Button>
           </Box>
           
-          <Box 
-            sx={{
-              mb: 1,
-              pb: 2,
-              borderBottom: '1px solid #eee',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 2
-            }}
-          >
-            <Box 
-              sx={{ 
-                width: 100, 
-                height: 85, 
-                borderRadius: 2, 
-                overflow: 'hidden',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                bgcolor: 'rgba(100, 102, 233, 0.05)',
-                animation: 'slideIn 0.5s ease'
-              }}
-            >
-              <img 
-                src={selectedVehicle?.image} 
-                alt={selectedVehicle?.name} 
-                style={{ 
-                  maxWidth: '95%', 
-                  maxHeight: '95%',
-                  objectFit: 'contain'
-                }} 
-              />
-            </Box>
-            <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                <LocalTaxiOutlinedIcon sx={{ color: '#6466e9', fontSize: 18 }} />
-                <Typography sx={{ fontWeight: 500, color: '#555' }}>
-                  {selectedVehicle?.name}
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <PersonIcon sx={{ color: '#6466e9', fontSize: 18 }} />
-                <Typography sx={{ color: '#777', fontSize: '0.9rem' }}>
-                  {selectedVehicle?.capacity} {selectedVehicle?.capacity === 1 ? 'Person' : 'People'}
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Fade>
-
-      <Grow in timeout={800}>
-        <Box>
-          <Typography variant="h6" fontWeight="600">
-            Select Method
-          </Typography>
-
-          <Box sx={{ 
-            display: 'flex',
-            gap: 2,
-            mt: 1.5,
-            mb: 2
-          }}>
-            <Button
-              variant={rentalType === 'rent' ? 'contained' : 'outlined'}
-              fullWidth
-              sx={{
-                borderRadius: 2,
-                py: 1.5,
-                bgcolor: rentalType === 'rent' ? '#6466e9' : 'rgba(255, 255, 255, 1)',
-                borderColor: '#6466e9',
-                color: rentalType === 'rent' ? 'white' : '#6466e9',
-                '&:hover': {
-                  bgcolor: rentalType === 'rent' ? '#5355c9' : 'rgba(100, 102, 233, 0.1)',
-                },
-                transition: 'background 0.3s, transform 0.2s',
-                '&:active': {
-                  transform: 'scale(0.98)'
-                }
-              }}
-              onClick={() => setRentalType('rent')}
-            >
-              Rent
-            </Button>
-            <Button
-              variant={rentalType === 'hire' ? 'contained' : 'outlined'}
-              fullWidth
-              sx={{
-                borderRadius: 2,
-                py: 1.5,
-                bgcolor: rentalType === 'hire' ? '#6466e9' : 'rgba(255, 255, 255, 1)',
-                borderColor: '#6466e9',
-                color: rentalType === 'hire' ? 'white' : '#6466e9',
-                '&:hover': {
-                  bgcolor: rentalType === 'hire' ? '#5355c9' : 'rgba(100, 102, 233, 0.1)',
-                },
-                transition: 'background 0.3s, transform 0.2s',
-                '&:active': {
-                  transform: 'scale(0.98)'
-                }
-              }}
-              onClick={() => setRentalType('hire')}
-            >
-              Hire
-            </Button>
-          </Box>
-        </Box>
-      </Grow>
-
-      <Grow in timeout={1000}>
-        <Box>
-          <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
-            Pickup details
-          </Typography>
-
-          <Box sx={{ mb: 1.5 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                textAlign: 'left',
-                px: 2,
-                py: 1.5,
-                color: '#555',
-                borderColor: '#ddd',
-                borderRadius: 2,
-                bgcolor: 'rgba(255, 255, 255, 1)',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 1)',
-                }
-              }}
-              endIcon={<KeyboardArrowDownIcon />}
-            >
-              <Typography sx={{ fontWeight: 500, color: '#777' }}>
-                Select Date
-              </Typography>
-            </Button>
-          </Box>
-
-          <Box sx={{ mb: 1.5 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                textAlign: 'left',
-                px: 2,
-                py: 1.5,
-                color: '#555',
-                borderColor: '#ddd',
-                borderRadius: 2,
-                bgcolor: 'rgba(255, 255, 255, 1)',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 1)',
-                }
-              }}
-              endIcon={<KeyboardArrowDownIcon />}
-            >
-              <Typography sx={{ fontWeight: 500, color: '#777' }}>
-                Select Time
-              </Typography>
-            </Button>
-          </Box>
-
-          <Box sx={{ mb: 1.5 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                textAlign: 'left',
-                px: 2,
-                py: 1.5,
-                color: '#555',
-                borderColor: '#ddd',
-                borderRadius: 2,
-                bgcolor: 'rgba(255, 255, 255, 1)',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 1)',
-                }
-              }}
-              endIcon={<KeyboardArrowDownIcon />}
-            >
-              <Typography sx={{ fontWeight: 500, color: '#777' }}>
-                Location
-              </Typography>
-            </Button>
-          </Box>
-        </Box>
-      </Grow>
-
-      <Grow in timeout={1200}>
-        <Box>
-          <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
-            Dropoff details
-          </Typography>
-
-          <Box sx={{ mb: 1.5 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                textAlign: 'left',
-                px: 2,
-                py: 1.5,
-                color: '#555',
-                borderColor: '#ddd',
-                borderRadius: 2,
-                bgcolor: 'rgba(255, 255, 255, 1)',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 1)',
-                }
-              }}
-              endIcon={<KeyboardArrowDownIcon />}
-            >
-              <Typography sx={{ fontWeight: 500, color: '#777' }}>
-                Location
-              </Typography>
-            </Button>
-          </Box>
-        </Box>
-      </Grow>
-
-      <Fade in timeout={1400}>
-        <Box sx={{ mt: 'auto', display: 'flex', gap: 2 }}>
-          <Button
-            variant="outlined"
-            sx={{
-              borderRadius: 2,
-              py: 1.5,
-              flex: 1,
-              borderColor: '#ddd',
-              color: '#666',
-              bgcolor: 'rgba(255, 255, 255, 1)',
-              transition: 'transform 0.2s',
-              '&:active': {
-                transform: 'scale(0.98)'
-              },
-              '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 1)',
-              }
-            }}
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
+          <Paper elevation={0} sx={{ p: 3, border: '1px solid #eee', borderRadius: 2, mb: 3 }}>
+            <Typography variant="h6" fontWeight="600" mb={2}>Terms & Conditions</Typography>
+            
+            <Typography variant="body2" sx={{ mb: 2, color: '#555' }}>
+              1. <strong>Rental Period:</strong> The rental period begins on {startDate?.toLocaleDateString()} and ends on {endDate?.toLocaleDateString()}.
+            </Typography>
+            
+            <Typography variant="body2" sx={{ mb: 2, color: '#555' }}>
+              2. <strong>Payment:</strong> Full payment of ${totalPrice} is due at the time of booking.
+            </Typography>
+            
+            <Typography variant="body2" sx={{ mb: 2, color: '#555' }}>
+              3. <strong>Security Deposit:</strong> A refundable security deposit of $200 is required.
+            </Typography>
+            
+            <Typography variant="body2" sx={{ mb: 2, color: '#555' }}>
+              4. <strong>Cancellation Policy:</strong> Full refund if cancelled 48 hours before rental period. 50% refund if cancelled 24 hours before rental period. No refund for cancellations less than 24 hours before rental period.
+            </Typography>
+            
+            <Typography variant="body2" sx={{ mb: 2, color: '#555' }}>
+              5. <strong>Insurance:</strong> Basic insurance is included in the rental price. Additional insurance options are available.
+            </Typography>
+            
+            <Typography variant="body2" sx={{ mb: 2, color: '#555' }}>
+              6. <strong>Fuel Policy:</strong> The vehicle will be provided with a full tank of fuel and should be returned with a full tank.
+            </Typography>
+            
+            <Typography variant="body2" sx={{ mb: 2, color: '#555' }}>
+              7. <strong>Mileage Limit:</strong> A limit of 100km per day applies. Additional kilometers will be charged at ${vehicle.price_per_km} per km.
+            </Typography>
+            
+            <Typography variant="body2" sx={{ mb: 2, color: '#555' }}>
+              8. <strong>Late Return:</strong> Late returns will incur additional charges at an hourly rate.
+            </Typography>
+          </Paper>
+          
           <Button
             variant="contained"
+            fullWidth
             sx={{
-              borderRadius: 2,
               py: 1.5,
-              flex: 1,
               bgcolor: '#6466e9',
               '&:hover': {
                 bgcolor: '#5355c9'
-              },
-              transition: 'transform 0.2s, background 0.3s',
-              '&:active': {
-                transform: 'scale(0.98)'
               }
             }}
-            onClick={onConfirm}
+            onClick={onBook}
           >
-            Confirm
+            Accept Terms & Complete Booking
           </Button>
         </Box>
-      </Fade>
+      ) : (
+        <>
+          <Grid container spacing={3}>
+            {/* Image Gallery */}
+            <Grid item xs={12} md={6}>
+              <Box
+                sx={{
+                  width: '100%',
+                  height: 300,
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  mb: 2,
+                  position: 'relative',
+                }}
+              >
+                <img 
+                  src={activeImage} 
+                  alt={vehicle.name}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover',
+                  }} 
+                />
+                <Chip
+                  label={vehicle.vehicle_type}
+                  size="small"
+                  sx={{
+                    position: 'absolute',
+                    top: 12,
+                    left: 12,
+                    backgroundColor: 'rgba(100, 102, 233, 0.8)',
+                    color: 'white',
+                  }}
+                />
+              </Box>
+              
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'nowrap', overflow: 'auto' }}>
+                {[vehicle.image, ...vehicle.images].map((img, index) => (
+                  <Box
+                    key={index}
+                    onClick={() => setActiveImage(img)}
+                    sx={{
+                      width: 80,
+                      height: 60,
+                      borderRadius: 1,
+                      overflow: 'hidden',
+                      cursor: 'pointer',
+                      border: activeImage === img ? '2px solid #6466e9' : '2px solid transparent',
+                      opacity: activeImage === img ? 1 : 0.7,
+                      transition: 'all 0.2s ease',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img 
+                      src={img} 
+                      alt={`${vehicle.name} view ${index}`}
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover',
+                      }} 
+                    />
+                  </Box>
+                ))}
+              </Box>
+            </Grid>
+            
+            {/* Vehicle Details */}
+            <Grid item xs={12} md={6}>
+              <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
+                {vehicle.name}
+              </Typography>
+              
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <WorkspacePremiumIcon sx={{ color: '#6466e9', mr: 1, fontSize: 20 }} />
+                  <Typography variant="body2" sx={{ color: '#555' }}>
+                    <strong>Vehicle Number:</strong> {vehicle.vehicle_number}
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <PersonIcon sx={{ color: '#6466e9', mr: 1, fontSize: 20 }} />
+                  <Typography variant="body2" sx={{ color: '#555' }}>
+                    <strong>Capacity:</strong> {vehicle.capacity} {vehicle.capacity > 1 ? 'People' : 'Person'}
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <DriveEtaIcon sx={{ color: '#6466e9', mr: 1, fontSize: 20 }} />
+                  <Typography variant="body2" sx={{ color: '#555' }}>
+                    <strong>Type:</strong> {vehicle.vehicle_type}
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <LocalTaxiOutlinedIcon sx={{ color: '#6466e9', mr: 1, fontSize: 20 }} />
+                  <Typography variant="body2" sx={{ color: '#555' }}>
+                    <strong>Owner:</strong> {vehicle.owner_name}
+                  </Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
+                  <InfoOutlinedIcon sx={{ color: '#6466e9', mr: 1, fontSize: 20, mt: 0.3 }} />
+                  <Typography variant="body2" sx={{ color: '#555' }}>
+                    <strong>Description:</strong> {vehicle.description}
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <Divider sx={{ my: 2 }} />
+              
+              {/* Pricing Details */}
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  Rental Details
+                </Typography>
+                
+                <TableContainer component={Paper} variant="outlined" sx={{ mb: 2, borderRadius: 2 }}>
+                  <Table size="small">
+                    <TableBody>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 500 }}>Base Price</TableCell>
+                        <TableCell align="right">${vehicle.base_price} per day</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 500 }}>Price per KM</TableCell>
+                        <TableCell align="right">${vehicle.price_per_km}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 500 }}>Rental Period</TableCell>
+                        <TableCell align="right">{totalDays} days</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 500 }}>Total Rental Cost</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 700, color: '#6466e9' }}>${totalPrice}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Button
+                    startIcon={<GavelIcon />}
+                    variant="outlined"
+                    onClick={() => setShowAgreement(true)}
+                    sx={{ borderColor: '#6466e9', color: '#6466e9' }}
+                  >
+                    View Rental Agreement
+                  </Button>
+                  
+                  <Button
+                    variant="contained"
+                    onClick={onBook}
+                    sx={{ 
+                      bgcolor: '#6466e9',
+                      '&:hover': {
+                        bgcolor: '#5355c9'
+                      }
+                    }}
+                  >
+                    Book Now
+                  </Button>
+                </Box>
+              </Box>
+              
+              <Box sx={{ 
+                p: 2, 
+                borderRadius: 2, 
+                bgcolor: 'rgba(100, 102, 233, 0.05)', 
+                border: '1px solid rgba(100, 102, 233, 0.2)' 
+              }}>
+                <Typography variant="body2" sx={{ color: '#555' }}>
+                  <strong>Availability Period:</strong> {vehicle.availability_from.toLocaleDateString()} to {vehicle.availability_to.toLocaleDateString()}
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </>
+      )}
     </Box>
   );
 };
 
 const VehicleListing: React.FC = () => {
-  const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
-  
-  const vehicles = [
-    { id: 1, name: 'Toyota Alphard', image: nissan, capacity: 2 },
-    { id: 2, name: 'Tuk tuk', image: tuktuk, capacity: 2 },
-    { id: 3, name: 'Scooty', image: scooty, capacity: 1 },
-    { id: 4, name: 'Toyota Alphard', image: nissan, capacity: 2 },
-    { id: 5, name: 'Tuk tuk', image: tuktuk, capacity: 2 },
-    { id: 6, name: 'Scooty', image: scooty, capacity: 1 },
-  ];
+  const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [endDate, setEndDate] = useState<Date | null>(addDays(new Date(), 1));
+  const [startTime, setStartTime] = useState<Date | null>(new Date());
+  const [endTime, setEndTime] = useState<Date | null>(new Date());
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
+  const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSelectVehicle = (vehicleId: number) => {
-    setSelectedVehicleId(vehicleId === selectedVehicleId ? null : vehicleId);
+  const handleSelectVehicle = (vehicle: Vehicle) => {
+    setSelectedVehicle(vehicle);
   };
 
   const handleConfirmBooking = () => {
-    console.log(`Confirming booking for vehicle ID: ${selectedVehicleId}`);
-    // Handle booking confirmation logic here
-    setSelectedVehicleId(null);
+    alert(`Booking confirmed for ${selectedVehicle?.name} from ${startDate?.toLocaleDateString()} to ${endDate?.toLocaleDateString()}`);
+    setSelectedVehicle(null);
+    setSearchPerformed(false);
   };
 
-  const selectedVehicle = selectedVehicleId ? vehicles.find(v => v.id === selectedVehicleId) || null : null;
+  const handleSearch = async () => {
+    if (startDate && endDate && startTime && endTime) {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getVehicles();
+        // Map backend data to Vehicle type, parse dates
+        const mapped = data.map((v: any) => ({
+          ...v,
+          availability_from: new Date(v.availability_from),
+          availability_to: new Date(v.availability_to),
+          image: v.image || nissan, // fallback if image missing
+          images: v.images && v.images.length > 0 ? v.images : [v.image || nissan],
+        }));
+        setVehicles(mapped);
+        setSearchPerformed(true);
+      } catch (err: any) {
+        setError('Failed to fetch vehicles.');
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert('Please select both start and end dates and times');
+    }
+  };
+
+  // Filter available vehicles based on date range
+  const availableVehicles = searchPerformed ? vehicles.filter(vehicle => {
+    if (!startDate || !endDate) return false;
+    return (
+      startDate >= vehicle.availability_from &&
+      endDate <= vehicle.availability_to
+    );
+  }) : [];
 
   return (
     <Box 
@@ -527,156 +571,223 @@ const VehicleListing: React.FC = () => {
           </Box>
 
           <Grid container spacing={4}>
-            <Grid item xs={12} md={selectedVehicleId ? 8 : 8}>
-              <Box sx={{ bgcolor: 'rgba(255, 255, 255, 0.8)', p: 3, borderRadius: 4 }}>
-                <Typography variant="h3" fontWeight="800" mb={3} color="grey.700" sx={{ fontSize: '1.3rem' }}>
-                  Select the vehicle
-                </Typography>
-
+            {/* Search Form */}
+            <Grid item xs={12}>
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  borderRadius: 4, 
+                  mb: 4, 
+                  bgcolor: 'rgba(255, 255, 255, 0.9)',
+                  backdropFilter: 'blur(5px)',
+                  border: '1px solid rgba(255, 255, 255, 0.5)',
+                }}
+              >
+                <Typography variant="h6" fontWeight="700" mb={3}>Search Available Vehicles</Typography>
+                
                 <Grid container spacing={3}>
-                  {vehicles.map(vehicle => (
-                    <Grid item xs={12} sm={6} md={4} key={vehicle.id}>
-                      <VehicleCard
-                        id={vehicle.id}
-                        name={vehicle.name}
-                        image={vehicle.image}
-                        capacity={vehicle.capacity}
-                        onSelect={handleSelectVehicle}
-                        isSelected={vehicle.id === selectedVehicleId}
+                  <Grid item xs={12} sm={6} md={3}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <DatePicker
+                        label="Start Date"
+                        value={startDate}
+                        onChange={(date) => setStartDate(date)}
+                        disablePast
+                        slotProps={{
+                          textField: { 
+                            fullWidth: true,
+                            required: true
+                          }
+                        }}
                       />
-                    </Grid>
-                  ))}
+                    </LocalizationProvider>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={6} md={3}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <TimePicker
+                        label="Start Time"
+                        value={startTime}
+                        onChange={(time) => setStartTime(time)}
+                        slotProps={{
+                          textField: { 
+                            fullWidth: true,
+                            required: true
+                          }
+                        }}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={6} md={3}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <DatePicker
+                        label="End Date"
+                        value={endDate}
+                        onChange={(date) => setEndDate(date)}
+                        disablePast
+                        slotProps={{
+                          textField: { 
+                            fullWidth: true,
+                            required: true
+                          }
+                        }}
+                        minDate={startDate || undefined}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={6} md={3}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <TimePicker
+                        label="End Time"
+                        value={endTime}
+                        onChange={(time) => setEndTime(time)}
+                        slotProps={{
+                          textField: { 
+                            fullWidth: true,
+                            required: true
+                          }
+                        }}
+                      />
+                    </LocalizationProvider>
+                  </Grid>
                 </Grid>
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Fade in timeout={300}>
-                <Box>
-                  {selectedVehicleId ? (
-                    <Grow in timeout={400}>
-                        <Box sx={{ 
-                        bgcolor: 'rgba(255, 255, 255, 0.8)', 
-                        borderRadius: 4, 
-                        p: 3, 
-                        height: '100%',
-                        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-                        animation: 'fadeIn 0.5s ease-in-out',
-                        backdropFilter: 'blur(1px)',
-                        WebkitBackdropFilter: 'blur(1px)',
-                        '@keyframes fadeIn': {
-                          '0%': { opacity: 0, transform: 'translateY(10px)' },
-                          '100%': { opacity: 1, transform: 'translateY(0)' }
-                        }
-                        }}>
-                        <BookingSidePanel 
-                          selectedVehicle={selectedVehicle}
-                          onClose={() => setSelectedVehicleId(null)}
-                          onConfirm={handleConfirmBooking}
-                        />
-                        </Box>
-                    </Grow>
-                  ) : (
-                    <Box
-                      sx={{
-                        height: '100%',
-                        borderRadius: 4,
-                        overflow: 'hidden',
-                        position: 'relative',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'flex-end',
-                        background: 'rgba(255,255,255,0.85)', 
-                        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-                        p: 0,
-                        minHeight: 480,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          width: '100%',
-                          height: '80%',
-                          position: 'relative',
-                          overflow: 'hidden',
-                          borderTopLeftRadius: 32,
-                          borderTopRightRadius: 8,
-                          borderBottomLeftRadius: 500,
-                          borderBottomRightRadius: 1000,
-                        }}
-                      >
-                        <img
-                          src={trvl1}
-                          alt="Discover Sri Lanka"
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            objectPosition: 'top',
-                            display: 'block',
-                            borderTopLeftRadius: 32,
-                            borderTopRightRadius: 8,
-                            borderBottomLeftRadius: 500,
-                            borderBottomRightRadius: 1000,
-                          }}
-                        />
-                      </Box>
-                      <Box
-                        sx={{
-                          paddingTop: 0,
-                          paddingBottom: 3,
-                          paddingLeft: 3,
-                          paddingRight: 3,
-                          textAlign: 'center',
-                          height: '60%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                        }}
-                      >
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: '#8d7c6c',
-                            fontWeight: 700,
-                            letterSpacing: 0.2,
-                            textAlign: 'right',
-                            fontSize: '1.5rem'
-                          }}
-                        >
-                          Discover Sri Lanka
-                        </Typography>
-                        <Typography
-                          variant="h4"
-                          sx={{
-                            fontWeight: 800,
-                            color: '#222',
-                            mb: 1.2,
-                            fontSize: { xs: '1.5rem', md: '2.1rem' },
-                            lineHeight: 1.13,
-                            fontFamily: 'Montserrat, Arial, sans-serif',
-                            textAlign: 'right',
-                          }}
-                        >
-                          The Pearl of the <br /> Indian Ocean
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontSize: '1rem',
-                            lineHeight: 1.6,
-                            color: '#6c7a89',
-                            px: 1,
-                            fontWeight: 800,
-                            textShadow: '0 1px 2px rgba(255,255,255,0.15)',
-                            textAlign: 'right',
-                          }}
-                        >
-                          Sri Lanka is a tropical paradise, rich in natural beauty and cultural heritage. With its golden beaches, lush green landscapes, and breathtaking waterfalls, the island offers an unforgettable experience for travelers. Rolling tea plantations, serene lakes, and dense wildlife sanctuaries create a picture-perfect escape. Rent a vehicle and explore its scenic beauty at your own pace, making every moment of your trip truly special.
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
+                
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                  <Button 
+                    variant="contained" 
+                    size="large"
+                    onClick={handleSearch}
+                    sx={{ 
+                      bgcolor: '#6466e9', 
+                      '&:hover': { bgcolor: '#5355c9' },
+                      px: 4
+                    }}
+                  >
+                    Search Vehicles
+                  </Button>
                 </Box>
-              </Fade>
+              </Paper>
+            </Grid>
+            
+            {/* Search Results or Vehicle Details */}
+            <Grid item xs={12}>
+              {selectedVehicle ? (
+                <Paper 
+                  elevation={0} 
+                  sx={{ 
+                    borderRadius: 4, 
+                    overflow: 'hidden', 
+                    bgcolor: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(5px)',
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                  }}
+                >
+                  <Box sx={{ p: 2, bgcolor: '#6466e9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="h6" color="white" fontWeight="600">Vehicle Details</Typography>
+                    <Button 
+                      variant="text" 
+                      color="inherit" 
+                      onClick={() => setSelectedVehicle(null)}
+                      sx={{ color: 'white' }}
+                    >
+                      Back to List
+                    </Button>
+                  </Box>
+                  <VehicleDetails 
+                    vehicle={selectedVehicle}
+                    startDate={startDate}
+                    endDate={endDate}
+                    onClose={() => setSelectedVehicle(null)}
+                    onBook={handleConfirmBooking}
+                  />
+                </Paper>
+              ) : searchPerformed ? (
+                <Box>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                    <Typography variant="h6" fontWeight="700">
+                      Available Vehicles ({availableVehicles.length})
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CalendarMonthIcon sx={{ color: '#6466e9' }} />
+                      <Typography variant="body2" sx={{ color: '#555' }}>
+                        {startDate?.toLocaleDateString()} - {endDate?.toLocaleDateString()}
+                      </Typography>
+                      <AccessTimeIcon sx={{ color: '#6466e9', ml: 2 }} />
+                      <Typography variant="body2" sx={{ color: '#555' }}>
+                        {startTime?.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - {endTime?.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  
+                  <Grid container spacing={3}>
+                    {availableVehicles.length > 0 ? (
+                      availableVehicles.map((vehicle) => (
+                        <Grid item xs={12} sm={6} md={4} key={vehicle.id}>
+                          <VehicleCard
+                            vehicle={vehicle}
+                            onSelect={handleSelectVehicle}
+                          />
+                        </Grid>
+                      ))
+                    ) : (
+                      <Grid item xs={12}>
+                        <Paper 
+                          elevation={0} 
+                          sx={{ 
+                            p: 4, 
+                            textAlign: 'center',
+                            borderRadius: 2,
+                            bgcolor: 'rgba(255, 255, 255, 0.9)'
+                          }}
+                        >
+                          <Typography variant="h6" color="text.secondary" mb={1}>No vehicles available for the selected dates</Typography>
+                          <Typography variant="body2" color="text.secondary">Please try different dates or contact customer support</Typography>
+                        </Paper>
+                      </Grid>
+                    )}
+                  </Grid>
+                </Box>
+              ) : (
+                <Paper 
+                  elevation={0} 
+                  sx={{ 
+                    p: 5, 
+                    textAlign: 'center',
+                    borderRadius: 4,
+                    bgcolor: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(5px)',
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                  }}
+                >
+                  <img 
+                    src={nissan} 
+                    alt="Select dates" 
+                    style={{ maxWidth: 180, marginBottom: 24, opacity: 0.8 }} 
+                  />
+                  <Typography variant="h5" color="text.primary" fontWeight="700" mb={2}>
+                    Find the Perfect Vehicle for Your Journey
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" mb={4} sx={{ maxWidth: 600, mx: 'auto' }}>
+                    Select your pickup and return dates above to see available vehicles. Our fleet includes various options from scooters to luxury vans.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    startIcon={<PriceCheckIcon />}
+                    onClick={handleSearch}
+                    sx={{ 
+                      bgcolor: '#6466e9', 
+                      '&:hover': { bgcolor: '#5355c9' },
+                      px: 4
+                    }}
+                  >
+                    Search Available Vehicles
+                  </Button>
+                </Paper>
+              )}
             </Grid>
           </Grid>
         </Box>
