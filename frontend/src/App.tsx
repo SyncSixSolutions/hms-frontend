@@ -45,7 +45,7 @@ function App() {
         <Route path="/dashboard-admin" element={<AdminDashboard />} />
         <Route path="/vehicle-listing" element={<VehicleListing />} />
         <Route path="/show-bookings" element={<ShowBookings />} />
-        <Route path="/booking-dashboard" element={<BookingDashboard />} />
+        {/* <Route path="/booking-dashboard" element={<BookingDashboard />} /> */}
         <Route path="/add-vehicle" element={<AddVehicle />} />
         <Route path="/view-all-vehicles" element={<ViewAllVehicle />} />
         <Route path="/add-therapy" element={<AddTherapy />} />

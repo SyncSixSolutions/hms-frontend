@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FoodItem } from '../types';
-import RatingStars from './RatingStars';
-import { Plus } from 'lucide-react';
 
 interface FoodCardProps {
   food: FoodItem;
@@ -9,42 +7,44 @@ interface FoodCardProps {
 }
 
 const FoodCard: React.FC<FoodCardProps> = ({ food, onAddToCart }) => {
-
-  const [clicked,setClicked]=useState(false);
-
-  const handleClick=()=>{
-    setClicked(true);
-    onAddToCart(food);
-  }
   return (
-    <div className="">
-      <div className="relative left-10 top-14 z-10 h-40 w-40 overflow-hidden rounded-full border border-spacing-1.5 border-orange-400">
+    <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div className="relative h-40">
         <img
-          src={food.image}
+          src={food.image || '/default-food.png'}
           alt={food.name}
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110 "
+          className="w-full h-full object-cover"
         />
+        {food.oldPrice && (
+          <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded">
+            Sale
+          </span>
+        )}
       </div>
-      <div className={`p-3   rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 relative h-60
-        ${clicked?'bg-orange-500 text-white' : 'bg-white text-black'}`}>
-        <h3 className="font-medium text-lg mt-20">{food.name}</h3>
-        <div className={`my-2 ${clicked?'bg-orange-500 text-white' : 'bg-white text-black'}`}>
-          <RatingStars rating={food.rating} />
-        </div>
-        <div className="flex justify-between items-center mt-2">
-          <div className="flex items-baseline">
-            <span className=" font-semibold">${food.price.toFixed(2)}</span>
+      <div className="p-4">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="font-medium text-gray-800">{food.name}</h3>
+          <div className="flex items-center">
+            <span className="text-orange-500 font-medium">
+              ${food.price.toFixed(2)}
+            </span>
             {food.oldPrice && (
-              <span className="text-gray-500 text-sm line-through ml-2">
+              <span className="ml-2 text-gray-400 text-sm line-through">
                 ${food.oldPrice.toFixed(2)}
               </span>
             )}
           </div>
+        </div>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <span className="text-yellow-400">★</span>
+            <span className="text-gray-600 ml-1 text-sm">{food.rating}</span>
+          </div>
           <button
-            onClick={handleClick}
-            className={`p-1 rounded-full hover:bg-orange-500 transition-colors duration-200 ${clicked?'bg-white text-black' : ' bg-orange-400 text-black'}`} 
+            onClick={() => onAddToCart(food)}
+            className="px-3 py-1 bg-orange-400 text-white rounded-full text-sm hover:bg-orange-500 transition-colors"
           >
-            <Plus size={20} />
+            Add
           </button>
         </div>
       </div>
