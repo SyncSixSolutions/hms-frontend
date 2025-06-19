@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import CategoryHeader from "./components/CategoryHeader";
 import PopularCategories from "./components/PopularCategories";
@@ -6,13 +6,16 @@ import CategoryGrid from "./components/CategoryGrid";
 import FoodGrid from "./components/FoodGrid";
 import Cart from "./components/Cart";
 import { CartProvider, useCart } from "./context/CartContext";
-import { MealType } from "./types";
+import { MealType, FoodItem } from "./types";
+import { getFoods, getBreakfastFoods, getLunchFoods, getDinnerFoods } from "../../../api/foodApi";
 
 import { popularCategories, categories, foodItems } from "./data/foodData";
 
 const FoodApp: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("pizza");
   const [selectedMealType, setSelectedMealType] = useState<MealType>("all");
+  const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const {
     cartItems,
@@ -22,9 +25,36 @@ const FoodApp: React.FC = () => {
     removeFromCart,
   } = useCart();
 
+  useEffect(() => {
+    const fetchFoods = async () => {
+      try {
+        let foods: FoodItem[] = [];
+        
+        if (selectedMealType === 'all') {
+          foods = await getFoods();
+        } else if (selectedMealType === 'breakfast') {
+          foods = await getBreakfastFoods();
+        } else if (selectedMealType === 'lunch') {
+          foods = await getLunchFoods();
+        } else if (selectedMealType === 'dinner') {
+          foods = await getDinnerFoods();
+        }
+        
+        setFoodItems(foods);
+      } catch (error) {
+        console.error("Error fetching foods:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFoods();
+  }, [selectedMealType]);
+
   const handleSelectCategory = (categoryId: string) => {
     setSelectedCategory(categoryId);
   };
+
   const handleMealTypeChange = (mealType: MealType) => {
     setSelectedMealType(mealType);
   };
@@ -44,7 +74,6 @@ const FoodApp: React.FC = () => {
             <div className="md:col-span-2">
               <div className="flex flex-row">
                 <PopularCategories categories={popularCategories} />
-
                 <div className="mb-6 ml-2">
                   <CategoryGrid
                     categories={categories}
