@@ -1,144 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, CircularProgress, Paper, Grid, Card, CardContent, CardMedia, IconButton, Chip, Stack } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, Card, CardMedia, Divider, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import BedIcon from '@mui/icons-material/Bed';
-import PersonIcon from '@mui/icons-material/Person';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import WifiIcon from '@mui/icons-material/Wifi';
-import AcUnitIcon from '@mui/icons-material/AcUnit';
-import TvIcon from '@mui/icons-material/Tv';
-
-// You'll need to create this service
-// import { roomService, RoomItem } from '../../../../services/roomService';
-
-// Define the Room interface until you create the real service
-interface RoomItem {
-  id?: number;
-  roomNumber: string;
-  roomFloor: string;
-  reservationStatus: string;
-  roomType: string;
-  capacity: string;
-  pricePerNight: string;
-  bedType: string;
-  roomSize: string;
-  description: string;
-  images?: string[];
-  amenities: {
-    petFriendly: boolean;
-    smoking: boolean;
-    wifi: boolean;
-    miniBar: boolean;
-    coffeeMaker: boolean;
-    cityView: boolean;
-    shower: boolean;
-    sofaBox: boolean;
-    refrigerator: boolean;
-    airConditioner: boolean;
-    tvCable: boolean;
-    seaView: boolean;
-  };
-}
-
-// Mock roomService until you create the real one
-const roomService = {
-  getAllRooms: async (): Promise<RoomItem[]> => {
-    // This is mock data - replace with actual API call
-    return [
-      {
-        id: 1,
-        roomNumber: '101',
-        roomFloor: '1',
-        reservationStatus: 'Vacant',
-        roomType: 'Deluxe',
-        capacity: '2-4 guests',
-        pricePerNight: '150',
-        bedType: 'King size',
-        roomSize: '400 sq ft',
-        description: 'Spacious room with beautiful view and modern amenities.',
-        images: ['https://via.placeholder.com/300x200?text=Deluxe+Room'],
-        amenities: {
-          petFriendly: true,
-          smoking: false,
-          wifi: true,
-          miniBar: true,
-          coffeeMaker: true,
-          cityView: false,
-          shower: true,
-          sofaBox: true,
-          refrigerator: false,
-          airConditioner: true,
-          tvCable: true,
-          seaView: false
-        }
-      },
-      {
-        id: 2,
-        roomNumber: '102',
-        roomFloor: '1',
-        reservationStatus: 'Reserved',
-        roomType: 'Suite',
-        capacity: '2 guests',
-        pricePerNight: '250',
-        bedType: 'Queen size',
-        roomSize: '600 sq ft',
-        description: 'Luxury suite with separate living area and premium amenities.',
-        images: ['https://via.placeholder.com/300x200?text=Suite+Room'],
-        amenities: {
-          petFriendly: false,
-          smoking: false,
-          wifi: true,
-          miniBar: true,
-          coffeeMaker: true,
-          cityView: true,
-          shower: true,
-          sofaBox: true,
-          refrigerator: true,
-          airConditioner: true,
-          tvCable: true,
-          seaView: true
-        }
-      },
-      {
-        id: 3,
-        roomNumber: '201',
-        roomFloor: '2',
-        reservationStatus: 'Occupied',
-        roomType: 'Standard',
-        capacity: '2 guests',
-        pricePerNight: '100',
-        bedType: 'Double',
-        roomSize: '300 sq ft',
-        description: 'Comfortable standard room with all basic amenities.',
-        images: ['https://via.placeholder.com/300x200?text=Standard+Room'],
-        amenities: {
-          petFriendly: false,
-          smoking: false,
-          wifi: true,
-          miniBar: false,
-          coffeeMaker: true,
-          cityView: false,
-          shower: true,
-          sofaBox: false,
-          refrigerator: false,
-          airConditioner: true,
-          tvCable: true,
-          seaView: false
-        }
-      }
-    ];
-  },
-  deleteRoom: async (id: number): Promise<void> => {
-    // This is a mock - replace with actual API call
-    console.log(`Deleting room with ID: ${id}`);
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return;
-  }
-};
+import DeleteIcon from '@mui/icons-material/Delete';
+import { roomService, RoomItem } from '../../../../services/roomService';
 
 const RoomList: React.FC = () => {
   const navigate = useNavigate();
@@ -169,10 +34,6 @@ const RoomList: React.FC = () => {
     navigate('/admin/room/addroom');
   };
 
-  const handleEditRoom = (id: number) => {
-    navigate(`/admin/room/editroom/${id}`);
-  };
-
   const handleDeleteRoom = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this room?')) {
       try {
@@ -189,21 +50,16 @@ const RoomList: React.FC = () => {
     }
   };
 
-  // Helper function to get status color
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Vacant':
-        return 'success';
-      case 'Reserved':
-        return 'warning';
-      case 'Occupied':
-        return 'error';
-      case 'Maintenance':
-        return 'info';
-      default:
-        return 'default';
-    }
+  const handleEditRoom = (id: number) => {
+    navigate(`/admin/room/editroom/${id}`);
   };
+
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'short',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  });
 
   if (loading && rooms.length === 0) {
     return (
@@ -214,143 +70,194 @@ const RoomList: React.FC = () => {
   }
 
   return (
-    <Box sx={{ padding: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Hotel Rooms</Typography>
-        <Button 
-          variant="contained" 
-          color="primary" 
+    <Box sx={{ 
+      bgcolor: '#f8f9fa', 
+      minHeight: '100vh', 
+      padding: { xs: 2, md: 4 } 
+    }}>
+      {/* Header Section */}
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: { xs: 'column', md: 'row' }, 
+        justifyContent: 'space-between', 
+        alignItems: { xs: 'flex-start', md: 'center' },
+        marginBottom: 4
+      }}>
+        <Box>
+          <Typography variant="h5" component="h1" fontWeight="600">
+            Welcome, Admin
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {currentDate}
+          </Typography>
+        </Box>
+        
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          mt: { xs: 2, md: 0 },
+          width: { xs: '100%', md: 'auto' }
+        }}>
+          <Box 
+            component="input"
+            placeholder="Search"
+            sx={{ 
+              border: '1px solid #e0e0e0',
+              borderRadius: '20px',
+              padding: '8px 16px',
+              width: { xs: '100%', md: '200px' },
+              mr: 2
+            }}
+          />
+          <img 
+            src="https://via.placeholder.com/40x40" 
+            alt="Admin" 
+            style={{ borderRadius: '50%' }} 
+          />
+        </Box>
+      </Box>
+
+      {/* Room List Section */}
+      <Card sx={{ 
+        borderRadius: 3,
+        overflow: 'hidden',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
+        mb: 3
+      }}>
+        {/* Title Section */}
+        <Box sx={{ 
+          bgcolor: '#6366f1', 
+          color: 'white', 
+          p: 2
+        }}>
+          <Typography variant="h6" fontWeight="600">
+            All rooms
+          </Typography>
+        </Box>
+
+        {/* Room Items */}
+        {rooms.map((room, index) => (
+          <Box key={room.id} sx={{ position: 'relative' }}>
+            {index > 0 && <Divider />}
+            <Box sx={{ 
+              display: 'flex', 
+              p: 2,
+              flexDirection: { xs: 'column', sm: 'row' },
+              '&:hover': {
+                bgcolor: '#f9f9f9'
+              }
+            }}>
+              {/* Room Image */}
+              <Box sx={{ 
+                width: { xs: '100%', sm: 140 }, 
+                height: { xs: 140, sm: 90 }, 
+                mr: { xs: 0, sm: 2 },
+                mb: { xs: 2, sm: 0 },
+                flexShrink: 0
+              }}>
+                <CardMedia
+                  component="img"
+                  image={room.images?.[0] || 'https://via.placeholder.com/140x90?text=Room'}
+                  alt={`Room ${room.roomNumber}`}
+                  sx={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover',
+                    borderRadius: 1
+                  }}
+                  onClick={() => handleEditRoom(room.id!)}
+                  style={{ cursor: 'pointer' }}
+                />
+              </Box>
+
+              {/* Room Details */}
+              <Box sx={{ 
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <Box sx={{ mb: 0.5 }}>
+                  <Typography variant="subtitle1" fontWeight="600">
+                    Room No. {room.roomNumber}
+                  </Typography>
+                </Box>
+                
+                <Typography variant="body2">
+                  {room.roomSize} {room.roomType} room with {room.bedType}
+                </Typography>
+                
+                <Typography variant="body2">
+                  Attached bath room with tubs
+                </Typography>
+                
+                <Typography variant="body2">
+                  Capacity - {room.capacity.split(' ')[0]}
+                </Typography>
+                
+                <Typography variant="body2">
+                  {Object.entries(room.amenities)
+                    .filter(([_, value]) => value === true)
+                    .map(([key]) => key)
+                    .slice(0, 4)
+                    .map(amenity => {
+                      const formattedAmenity = amenity
+                        .replace(/([A-Z])/g, ' $1')
+                        .replace(/^./, str => str.toUpperCase());
+                      return formattedAmenity;
+                    })
+                    .join(', ')}
+                </Typography>
+              </Box>
+
+              {/* Room Price & Actions */}
+              <Box sx={{ 
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                minWidth: { xs: '100%', sm: 100 },
+                mt: { xs: 2, sm: 0 }
+              }}>
+                <Box sx={{ textAlign: 'right' }}>
+                  <Typography variant="caption" color="text.secondary">
+                    Room price per night *
+                  </Typography>
+                  <Typography variant="subtitle1" fontWeight="600">
+                    $ {room.pricePerNight}
+                  </Typography>
+                </Box>
+                
+                <Button 
+                  variant="outlined" 
+                  color="error"
+                  size="small"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => handleDeleteRoom(room.id!)}
+                  sx={{ mt: { xs: 2, sm: 0 } }}
+                >
+                  Delete
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        ))}
+      </Card>
+
+      {/* Add Room Button */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Button
+          variant="contained"
+          color="primary"
           startIcon={<AddIcon />}
           onClick={handleAddRoom}
+          sx={{ 
+            borderRadius: 20,
+            px: 3
+          }}
         >
           Add Room
         </Button>
       </Box>
-
-      {error && (
-        <Paper sx={{ p: 2, mb: 3, bgcolor: '#FEE2E2', color: '#B91C1C' }}>
-          <Typography>{error}</Typography>
-        </Paper>
-      )}
-
-      <Grid container spacing={3}>
-        {rooms.map((room) => (
-          <Grid item xs={12} sm={6} md={4} key={room.id}>
-            <Card sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              height: '100%',
-              borderRadius: 2,
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            }}>
-              <Box sx={{ position: 'relative' }}>
-                <CardMedia
-                  component="img"
-                  height="180"
-                  image={room.images?.[0] || 'https://via.placeholder.com/300x180?text=No+Image'}
-                  alt={`Room ${room.roomNumber}`}
-                />
-                <Chip 
-                  label={room.reservationStatus} 
-                  color={getStatusColor(room.reservationStatus) as any}
-                  size="small"
-                  sx={{ 
-                    position: 'absolute', 
-                    top: 10, 
-                    right: 10,
-                    fontWeight: 'bold'
-                  }} 
-                />
-                <Chip 
-                  label={`Room ${room.roomNumber}`} 
-                  variant="filled"
-                  color="primary"
-                  size="medium"
-                  sx={{ 
-                    position: 'absolute', 
-                    bottom: -12, 
-                    left: 16,
-                    fontWeight: 'bold',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-                  }} 
-                />
-              </Box>
-              <CardContent sx={{ flexGrow: 1, pt: 2 }}>
-                <Box sx={{ mt: 1, mb: 2 }}>
-                  <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-                    {room.roomType}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Floor: {room.roomFloor} | {room.roomSize}
-                  </Typography>
-                </Box>
-                
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  {room.description.length > 100 
-                    ? `${room.description.substring(0, 100)}...` 
-                    : room.description}
-                </Typography>
-                
-                <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 0.5 }}>
-                  {room.amenities.wifi && <Chip icon={<WifiIcon />} label="WiFi" size="small" variant="outlined" />}
-                  {room.amenities.airConditioner && <Chip icon={<AcUnitIcon />} label="AC" size="small" variant="outlined" />}
-                  {room.amenities.tvCable && <Chip icon={<TvIcon />} label="TV" size="small" variant="outlined" />}
-                  {/* Add more amenity chips as needed */}
-                </Stack>
-                
-                <Box sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center',
-                  mt: 'auto'
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                      <BedIcon fontSize="small" sx={{ color: 'text.secondary', mr: 0.5 }} />
-                      <Typography variant="body2">{room.bedType}</Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <PersonIcon fontSize="small" sx={{ color: 'text.secondary', mr: 0.5 }} />
-                      <Typography variant="body2">{room.capacity.split(' ')[0]}</Typography>
-                    </Box>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <AttachMoneyIcon fontSize="small" sx={{ color: 'primary.main' }} />
-                    <Typography variant="h6" color="primary" fontWeight="bold">
-                      {room.pricePerNight}
-                    </Typography>
-                  </Box>
-                </Box>
-                
-                <Box sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'flex-end',
-                  mt: 2,
-                  pt: 2,
-                  borderTop: '1px solid rgba(0, 0, 0, 0.12)'
-                }}>
-                  <IconButton 
-                    color="primary" 
-                    onClick={() => handleEditRoom(room.id!)}
-                    aria-label="edit"
-                    size="small"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton 
-                    color="error" 
-                    onClick={() => handleDeleteRoom(room.id!)}
-                    aria-label="delete"
-                    size="small"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
     </Box>
   );
 };

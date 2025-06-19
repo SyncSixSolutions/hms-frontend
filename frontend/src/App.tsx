@@ -20,6 +20,7 @@ import EditFood from './pages/Admin/CRUDS/Food/EditFood';
 import FoodList from './pages/Admin/CRUDS/Food/FoodList';
 import AddRoom from './pages/Admin/CRUDS/Room/AddRoom';
 import EditRoom from './pages/Admin/CRUDS/Room/EditRoom';
+import RoomList from './pages/Admin/CRUDS/Room/RoomList';
 
 
 
@@ -49,6 +50,7 @@ function App() {
         <Route path="/admin/food/list" element={<FoodList />} />
         <Route path="/admin/room/addroom" element={<AddRoom />} />
         <Route path='/admin/room/editroom/:id' element={<EditRoom />} />
+        <Route path="/admin/room/list" element={<RoomList />} />
       </Routes>
     </Router>
   );
