@@ -66,7 +66,7 @@ export const addVehicle = async (payload: AddVehiclePayload): Promise<boolean> =
 };
 
 /**
- * Fetch all vehicles
+ *  Fetch all vehicles
  */
 export interface VehicleResponseDTO {
   vehicle: {
