@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Image, HelpCircle, ChevronDown } from 'lucide-react';
+import {getOwners, addVehicle} from '../../../../services/vehicleService';
 
+// Define Owner interface
 interface Owner {
   id: string;
   name: string;
@@ -8,16 +10,31 @@ interface Owner {
   nic: string;
 }
 
-const AddVehicle = () => {
-  const [formData, setFormData] = useState({
+// Define FormData type
+interface FormData {
+  vehicleNumber: string;
+  passengerCount: string;
+  vehicleType: string;
+  pricePerKm: string;
+  basePrice: string;
+  availabilityFrom: string;
+  availabilityTo: string;
+  description: string;
+  ownerName: string;
+  contactNumber: string;
+  ownerNIC: string;
+}
+
+const AddVehicle: React.FC = () => {
+  const [formData, setFormData] = useState<FormData>({
     vehicleNumber: '',
     passengerCount: '',
     vehicleType: '',
     pricePerKm: '',
-    basePrice: '', 
+    basePrice: '',
     availabilityFrom: '',
     availabilityTo: '',
-    description: '', 
+    description: '',
     ownerName: '',
     contactNumber: '',
     ownerNIC: ''
@@ -30,38 +47,24 @@ const AddVehicle = () => {
 
   useEffect(() => {
     const fetchOwners = async () => {
-      try {
-        const response = await fetch('http://localhost:14399/api/v1/vehicle/getOwners');
-        if (!response.ok) {
-          console.error('Failed to fetch owners:', response.statusText);
-          return;
-        }
-
-        const ownersData = await response.json();
-        console.log('Owners data:', ownersData);
-        setOwners(ownersData);
-
-      } catch (e) {
-        console.error('Error fetching owners:', e);
-      }
-    };
-
+      const ownersData = await getOwners();
+      setOwners(ownersData);
+    }
     fetchOwners();
   }, []);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
 
-    // Handle owner name autocomplete
     if (field === 'ownerName') {
       if (value.trim() === '') {
         setFilteredOwners([]);
         setShowSuggestions(false);
       } else {
-        const filtered = owners.filter(owner => 
+        const filtered = owners.filter(owner =>
           owner.name.toLowerCase().includes(value.toLowerCase())
         );
         setFilteredOwners(filtered);
@@ -99,52 +102,39 @@ const AddVehicle = () => {
     setVehicleImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async () => {
-    try {
-      const payload = {
-        vehicle: {
-          vehicleNumber: formData.vehicleNumber,
-          passengerCount: parseInt(formData.passengerCount),
-          vehicleType: formData.vehicleType,
-          pricePerKm: parseFloat(formData.pricePerKm),
-          basePrice: parseFloat(formData.basePrice),
-          availabilityFrom: formData.availabilityFrom,
-          availabilityTo: formData.availabilityTo,
-          description: formData.description || "Vehicle description"
-        },
-        availability: {
-          availabilityFrom: formData.availabilityFrom,
-          availabilityTo: formData.availabilityTo
-        },
-        owner: {
-          name: formData.ownerName,
-          contactNumber: formData.contactNumber,
-          nic: formData.ownerNIC
-        },
-        images: vehicleImages.map((_, index) => ({
-          imageUrl: `https://example.com/images/${formData.vehicleNumber}_${index + 1}.jpg`,
-          uploadedAt: new Date().toISOString()
-        }))
-      };
-
-      const response = await fetch('http://localhost:14399/api/v1/vehicle/addVehicle', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (response.ok) {
-        console.log('Vehicle added successfully');
-        // Reset form or redirect
-      } else {
-        console.error('Failed to add vehicle');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
+const handleSubmit = async () => {
+  const payload = {
+    vehicle: {
+      vehicleNumber: formData.vehicleNumber,
+      passengerCount: parseInt(formData.passengerCount),
+      vehicleType: formData.vehicleType,
+      pricePerKm: parseFloat(formData.pricePerKm),
+      basePrice: parseFloat(formData.basePrice),
+      availabilityFrom: formData.availabilityFrom,
+      availabilityTo: formData.availabilityTo,
+      description: formData.description || "Vehicle description"
+    },
+    availability: {
+      availabilityFrom: formData.availabilityFrom,
+      availabilityTo: formData.availabilityTo
+    },
+    owner: {
+      name: formData.ownerName,
+      contactNumber: formData.contactNumber,
+      nic: formData.ownerNIC
+    },
+    images: vehicleImages.map((_, index) => ({
+      imageUrl: `https://example.com/images/${formData.vehicleNumber}_${index  + 1}.jpg`,
+      uploadedAt: new Date().toISOString()
+    }))
   };
+
+  const success = await addVehicle(payload);
+  if (success) {
+    console.log('Vehicle added successfully');
+    // Optionally reset form or redirect
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -153,7 +143,6 @@ const AddVehicle = () => {
         <div className="bg-indigo-500 text-white px-6 py-4 rounded-t-lg">
           <h2 className="text-2xl font-medium">Add a new vehicle</h2>
         </div>
-
         {/* Form Container */}
         <div className="bg-white rounded-b-lg border border-gray-200 p-6">
           {/* Vehicle Picture Section */}
@@ -179,7 +168,6 @@ const AddVehicle = () => {
                   </button>
                 </div>
               ))}
-              
               {/* Add image button */}
               <label className="w-60 h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 cursor-pointer">
                 <Image className="w-8 h-8 mb-2" />
@@ -201,7 +189,6 @@ const AddVehicle = () => {
               <h3 className="text-base font-medium text-gray-800">Vehicle Details</h3>
               <HelpCircle className="w-4 h-4 text-gray-400" />
             </div>
-            
             <div className="grid grid-cols-3 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -215,7 +202,6 @@ const AddVehicle = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Passenger Count *
@@ -232,7 +218,6 @@ const AddVehicle = () => {
                   <option value="8">8</option>
                 </select>
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Vehicle type *
@@ -250,7 +235,6 @@ const AddVehicle = () => {
                 </select>
               </div>
             </div>
-
             <div className="grid grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -264,7 +248,6 @@ const AddVehicle = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Base Price*
@@ -277,7 +260,6 @@ const AddVehicle = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Availability
@@ -310,7 +292,6 @@ const AddVehicle = () => {
               <h3 className="text-base font-medium text-gray-800">Owner Details</h3>
               <HelpCircle className="w-4 h-4 text-gray-400" />
             </div>
-            
             <div className="grid grid-cols-3 gap-6">
               {/* Owner Name with Autocomplete */}
               <div className="relative">
@@ -328,12 +309,10 @@ const AddVehicle = () => {
                     }
                   }}
                   onBlur={() => {
-                    // Delay hiding suggestions to allow for clicks
                     setTimeout(() => setShowSuggestions(false), 200);
                   }}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                
                 {/* Suggestions Dropdown */}
                 {showSuggestions && filteredOwners.length > 0 && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
@@ -351,7 +330,8 @@ const AddVehicle = () => {
                   </div>
                 )}
               </div>
-                            <div>
+
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Contact Number*
                 </label>
@@ -363,7 +343,6 @@ const AddVehicle = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Owner NIC
@@ -376,7 +355,6 @@ const AddVehicle = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-
               <div className="mt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description
