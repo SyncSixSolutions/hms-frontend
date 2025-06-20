@@ -25,6 +25,7 @@ import AddFood from './pages/Admin/CRUDS/Food/AddFood';
 import EditFood from './pages/Admin/CRUDS/Food/EditFood';
 import FoodList from './pages/Admin/CRUDS/Food/FoodList';
 import ReceiptionistDashboard from './pages/Receiptionist/ReceiptionistDashboard';
+import ShowOrderings from './pages/Admin/Management/Food/ShowOrderings';
 
 function App() {
 
@@ -57,6 +58,7 @@ function App() {
         <Route path="/food-list" element={<FoodList />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/receiptionist-dashboard" element={<ReceiptionistDashboard />} />
+        <Route path="/Admin/show-orderings" element={<ShowOrderings />} />
       </Routes>
     </Router>
   );
