@@ -8,11 +8,10 @@ pnpm-debug.log*
 lerna-debug.log*
 
 package-lock.json
+./package-lock.json
 node_modules
-package-lock.json
 dist
 dist-ssr
-package-lock.json
 *.local
 
 # Editor directories and files
@@ -25,4 +24,3 @@ package-lock.json
 *.njsproj
 *.sln
 *.sw?
-package-lock.json

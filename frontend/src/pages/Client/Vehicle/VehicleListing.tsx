@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getVehiclesByDateRange, rentVehicle } from '../../../services/vehicleService'; // adjust path as needed
 import { 
   Avatar, 
   Button, 
@@ -24,12 +25,14 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+// Removing TimePicker import
 import nissan from '../../../assets/images/vehicles/alphard.png';
 import tuktuk from '../../../assets/images/vehicles/tuktuk.png';
 import scooty from '../../../assets/images/vehicles/scooty.png';
 import userAvatar from '../../../assets/images/avatar.jpg';
 import Travel from '../../../assets/images/travel.png';
+
+
 import PersonIcon from '@mui/icons-material/Person';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -40,9 +43,8 @@ import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PriceCheckIcon from '@mui/icons-material/PriceCheck';
-import { addDays, formatDistance } from 'date-fns';
+import { addDays } from 'date-fns';
 
 // Vehicle details type
 interface Vehicle {
@@ -166,9 +168,8 @@ const VehicleDetails: React.FC<{
   vehicle: Vehicle;
   startDate: Date | null;
   endDate: Date | null;
-  onClose: () => void;
   onBook: () => void;
-}> = ({ vehicle, startDate, endDate, onClose, onBook }) => {
+}> = ({ vehicle, startDate, endDate, onBook }) => {
   const [activeImage, setActiveImage] = useState(vehicle.image);
   const [showAgreement, setShowAgreement] = useState(false);
 
@@ -432,47 +433,85 @@ const VehicleDetails: React.FC<{
 const VehicleListing: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(addDays(new Date(), 1));
-  const [startTime, setStartTime] = useState<Date | null>(new Date());
-  const [endTime, setEndTime] = useState<Date | null>(new Date());
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [searchPerformed, setSearchPerformed] = useState<boolean>(false);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSelectVehicle = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
   };
 
-  const handleConfirmBooking = () => {
-    alert(`Booking confirmed for ${selectedVehicle?.name} from ${startDate?.toLocaleDateString()} to ${endDate?.toLocaleDateString()}`);
-    setSelectedVehicle(null);
-    setSearchPerformed(false);
+  const handleConfirmBooking = async () => {
+    if (!selectedVehicle || !startDate || !endDate) {
+      alert("Missing booking information");
+      return;
+    }
+
+    const userId = 1; // You should ideally get this from auth context or state
+    const vehicleId = selectedVehicle.id;
+
+    // Format dates as "YYYY-MM-DD"
+    const formattedStartDate = startDate.toISOString().split('T')[0];
+    const formattedEndDate = endDate.toISOString().split('T')[0];
+
+    try {
+      const success = await rentVehicle({
+        userId,
+        vehicleId,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate
+      });
+
+      if (success) {
+        alert(`Booking confirmed for ${selectedVehicle.name}`);
+        setSelectedVehicle(null);
+        setSearchPerformed(false);
+      } else {
+        alert("Failed to book the vehicle. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during booking:", error);
+      alert("An unexpected error occurred while booking.");
+    }
   };
 
+
   const handleSearch = async () => {
-    if (startDate && endDate && startTime && endTime) {
-      setLoading(true);
-      setError(null);
+    if (startDate && endDate) {
+      setIsLoading(true);
       try {
-        const data = await getVehicles();
-        // Map backend data to Vehicle type, parse dates
-        const mapped = data.map((v: any) => ({
-          ...v,
-          availability_from: new Date(v.availability_from),
-          availability_to: new Date(v.availability_to),
-          image: v.image || nissan, // fallback if image missing
-          images: v.images && v.images.length > 0 ? v.images : [v.image || nissan],
+        const formattedStartDate = startDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
+        const formattedEndDate = endDate.toISOString().split('T')[0];
+
+        const data = await getVehiclesByDateRange(formattedStartDate, formattedEndDate);
+
+        const mappedVehicles = data.map((item) => ({
+          id: item.vehicle.vehicleId,
+          name: `${item.vehicle.vehicleType} ${item.vehicle.vehicleNumber}`,
+          vehicle_number: item.vehicle.vehicleNumber,
+          image: item.images[0]?.imageUrl.trim(),
+          images: item.images.slice(1).map((img) => img.imageUrl.trim()),
+          capacity: item.vehicle.passengerCount,
+          vehicle_type: item.vehicle.vehicleType,
+          price_per_km: item.vehicle.pricePerKm,
+          base_price: item.vehicle.basePrice,
+          description: item.vehicle.description,
+          owner_name: item.owner.name,
+          availability_from: new Date(item.availability.availabilityFrom),
+          availability_to: new Date(item.availability.availabilityTo),
         }));
-        setVehicles(mapped);
+
+        setVehicles(mappedVehicles);
         setSearchPerformed(true);
-      } catch (err: any) {
-        setError('Failed to fetch vehicles.');
+      } catch (error) {
+        console.error("Error fetching vehicles:", error);
+        alert("Failed to load vehicles");
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     } else {
-      alert('Please select both start and end dates and times');
+      alert('Please select both start and end dates');
     }
   };
 
@@ -560,7 +599,7 @@ const VehicleListing: React.FC = () => {
               p: 2, 
               pl: 3,
               borderRadius: 2, 
-              mb: 3, 
+              mb: 2, 
               backgroundColor: 'rgba(100, 102, 233, 0.0)',
               backgroundImage: 'linear-gradient(90deg, rgba(100, 102, 233, 0.3) 0%, rgba(218, 246, 255, 0) 100%)'
             }}
@@ -568,105 +607,82 @@ const VehicleListing: React.FC = () => {
             <Typography variant="h5" fontWeight="700" color="#fff">
               Rent a Vehicle
             </Typography>
-          </Box>
-
-          <Grid container spacing={4}>
+          </Box>          <Grid container spacing={2}>
             {/* Search Form */}
-            <Grid item xs={12}>
-              <Paper 
+            <Grid item xs={12}><Paper 
                 elevation={0} 
                 sx={{ 
-                  p: 3, 
+                  p: 2, 
                   borderRadius: 4, 
-                  mb: 4, 
+                  mb: 2, 
                   bgcolor: 'rgba(255, 255, 255, 0.9)',
                   backdropFilter: 'blur(5px)',
                   border: '1px solid rgba(255, 255, 255, 0.5)',
                 }}
               >
-                <Typography variant="h6" fontWeight="700" mb={3}>Search Available Vehicles</Typography>
-                
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="h6" fontWeight="700" mb={2}>Search Available Vehicles</Typography>
+                  <Grid container spacing={2} justifyContent="center">
+                  <Grid item xs={12} sm={6} md={4}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <DatePicker
-                        label="Start Date"
+                        label="Pickup Date"
                         value={startDate}
                         onChange={(date) => setStartDate(date)}
                         disablePast
                         slotProps={{
                           textField: { 
                             fullWidth: true,
-                            required: true
+                            required: true,
+                            sx: {
+                              '& .MuiInputBase-root': {
+                                borderRadius: 2,
+                                backgroundColor: '#fff'
+                              }
+                            }
                           }
                         }}
                       />
                     </LocalizationProvider>
                   </Grid>
                   
-                  <Grid item xs={12} sm={6} md={3}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <TimePicker
-                        label="Start Time"
-                        value={startTime}
-                        onChange={(time) => setStartTime(time)}
-                        slotProps={{
-                          textField: { 
-                            fullWidth: true,
-                            required: true
-                          }
-                        }}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
-                  
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={4}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <DatePicker
-                        label="End Date"
+                        label="Return Date"
                         value={endDate}
                         onChange={(date) => setEndDate(date)}
                         disablePast
                         slotProps={{
                           textField: { 
                             fullWidth: true,
-                            required: true
+                            required: true,
+                            sx: {
+                              '& .MuiInputBase-root': {
+                                borderRadius: 2,
+                                backgroundColor: '#fff'
+                              }
+                            }
                           }
                         }}
                         minDate={startDate || undefined}
                       />
                     </LocalizationProvider>
                   </Grid>
-                  
-                  <Grid item xs={12} sm={6} md={3}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <TimePicker
-                        label="End Time"
-                        value={endTime}
-                        onChange={(time) => setEndTime(time)}
-                        slotProps={{
-                          textField: { 
-                            fullWidth: true,
-                            required: true
-                          }
-                        }}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
                 </Grid>
                 
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>                  
                   <Button 
                     variant="contained" 
-                    size="large"
+                    size="medium"
                     onClick={handleSearch}
+                    disabled={isLoading}
                     sx={{ 
-                      bgcolor: '#6466e9', 
+                      bgcolor: isLoading ? '#a0a1ec' : '#6466e9', 
                       '&:hover': { bgcolor: '#5355c9' },
-                      px: 4
+                      px: 3
                     }}
                   >
-                    Search Vehicles
+                    {isLoading ? 'Searching...' : 'Search Vehicles'}
                   </Button>
                 </Box>
               </Paper>
@@ -695,34 +711,38 @@ const VehicleListing: React.FC = () => {
                     >
                       Back to List
                     </Button>
-                  </Box>
-                  <VehicleDetails 
+                  </Box>                  <VehicleDetails 
                     vehicle={selectedVehicle}
                     startDate={startDate}
                     endDate={endDate}
-                    onClose={() => setSelectedVehicle(null)}
                     onBook={handleConfirmBooking}
                   />
-                </Paper>
-              ) : searchPerformed ? (
+                </Paper>              
+                ) : searchPerformed ? (
                 <Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Paper
+                    elevation={0}
+                    sx={{                    display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center', 
+                      mb: 2,
+                      p: 2,
+                      borderRadius: 2,
+                      bgcolor: 'rgba(255, 255, 255, 0.8)'
+                    }}
+                  >
                     <Typography variant="h6" fontWeight="700">
                       Available Vehicles ({availableVehicles.length})
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <CalendarMonthIcon sx={{ color: '#6466e9' }} />
-                      <Typography variant="body2" sx={{ color: '#555' }}>
+                      <Typography variant="body2" sx={{ color: '#555', fontWeight: 500 }}>
                         {startDate?.toLocaleDateString()} - {endDate?.toLocaleDateString()}
                       </Typography>
-                      <AccessTimeIcon sx={{ color: '#6466e9', ml: 2 }} />
-                      <Typography variant="body2" sx={{ color: '#555' }}>
-                        {startTime?.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - {endTime?.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                      </Typography>
                     </Box>
-                  </Box>
+                  </Paper>
                   
-                  <Grid container spacing={3}>
+                  <Grid container spacing={2}>
                     {availableVehicles.length > 0 ? (
                       availableVehicles.map((vehicle) => (
                         <Grid item xs={12} sm={6} md={4} key={vehicle.id}>
@@ -732,41 +752,124 @@ const VehicleListing: React.FC = () => {
                           />
                         </Grid>
                       ))
-                    ) : (
-                      <Grid item xs={12}>
+                    ) : (                      <Grid item xs={12}>
                         <Paper 
                           elevation={0} 
                           sx={{ 
-                            p: 4, 
+                            p: 5, 
                             textAlign: 'center',
-                            borderRadius: 2,
-                            bgcolor: 'rgba(255, 255, 255, 0.9)'
+                            borderRadius: 4,
+                            bgcolor: 'rgba(255, 255, 255, 0.9)',
+                            backdropFilter: 'blur(8px)',
+                            border: '1px solid rgba(255, 255, 255, 0.5)',
                           }}
                         >
-                          <Typography variant="h6" color="text.secondary" mb={1}>No vehicles available for the selected dates</Typography>
-                          <Typography variant="body2" color="text.secondary">Please try different dates or contact customer support</Typography>
+                          <Box
+                            sx={{
+                              width: 60,
+                              height: 60,
+                              borderRadius: '50%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              bgcolor: 'rgba(100, 102, 233, 0.1)',
+                              mb: 2,
+                              mx: 'auto'
+                            }}
+                          >
+                            <CalendarMonthIcon sx={{ fontSize: 28, color: '#6466e9' }} />
+                          </Box>
+                          <Typography variant="h6" color="text.secondary" mb={1} fontWeight="600">
+                            No vehicles available for the selected dates
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" mb={3} sx={{ maxWidth: 500, mx: 'auto' }}>
+                            Please try different dates or contact our customer support team for assistance with your vehicle rental needs.
+                          </Typography>
+                          <Button
+                            variant="outlined"
+                            onClick={() => {
+                              setStartDate(new Date());
+                              setEndDate(addDays(new Date(), 1));
+                            }}
+                            sx={{ 
+                              borderColor: '#6466e9', 
+                              color: '#6466e9',
+                              borderRadius: 2
+                            }}
+                          >
+                            Change Dates
+                          </Button>
                         </Paper>
                       </Grid>
                     )}
                   </Grid>
                 </Box>
-              ) : (
-                <Paper 
+              ) : (                <Paper 
                   elevation={0} 
                   sx={{ 
                     p: 5, 
                     textAlign: 'center',
                     borderRadius: 4,
+                    overflow: 'hidden',
                     bgcolor: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(5px)',
+                    backdropFilter: 'blur(10px)',
                     border: '1px solid rgba(255, 255, 255, 0.5)',
+                    position: 'relative',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '8px',
+                      background: 'linear-gradient(90deg, #6466e9 0%, #8B8DFF 100%)',
+                    }
                   }}
                 >
-                  <img 
-                    src={nissan} 
-                    alt="Select dates" 
-                    style={{ maxWidth: 180, marginBottom: 24, opacity: 0.8 }} 
-                  />
+                  <Box 
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      mb: 4
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: 200,
+                        height: 140,
+                        position: 'relative',
+                        mb: 1
+                      }}
+                    >
+                      <Box 
+                        component="img"
+                        src={nissan}
+                        alt="Luxury vehicle"
+                        sx={{ 
+                          width: 160, 
+                          height: 'auto', 
+                          objectFit: 'contain',
+                          zIndex: 1
+                        }} 
+                      />
+                      <Box 
+                        sx={{
+                          position: 'absolute',
+                          bottom: 0,
+                          width: '80%',
+                          height: '30px',
+                          borderRadius: '50%',
+                          background: 'rgba(0,0,0,0.08)',
+                          filter: 'blur(4px)',
+                          zIndex: 0
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                  
                   <Typography variant="h5" color="text.primary" fontWeight="700" mb={2}>
                     Find the Perfect Vehicle for Your Journey
                   </Typography>
@@ -781,7 +884,9 @@ const VehicleListing: React.FC = () => {
                     sx={{ 
                       bgcolor: '#6466e9', 
                       '&:hover': { bgcolor: '#5355c9' },
-                      px: 4
+                      px: 4,
+                      py: 1.5,
+                      borderRadius: 2
                     }}
                   >
                     Search Available Vehicles
