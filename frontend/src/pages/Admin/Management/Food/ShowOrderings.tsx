@@ -728,10 +728,14 @@ const ShowOrderings: React.FC = () => {
         return "bg-gray-100 text-gray-800";
     }
   };
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-7xl mx-auto px-4 py-4 bg-gradient-to-r from-orange-0 to-orange-50">
+    <div className="min-h-screen bg-no-repeat bg-cover bg-fixed bg-center" 
+      style={{
+        backgroundImage: 'url("/src/assets/images/client-food.png")',
+        backgroundBlendMode: 'overlay',
+        backgroundColor: 'rgba(255, 255, 255, 0.92)'
+      }}>
+      <div className="max-w-7xl mx-auto px-4 py-4 bg-white/90 backdrop-blur-sm shadow-xl rounded-lg">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -759,12 +763,18 @@ const ShowOrderings: React.FC = () => {
               />
             </div>
           </div>
-        </div>        
-        {/* Dashboard Header - Matching AdminDashboard styling */}
-        <div className="rounded-t-2xl p-4 mb-6 bg-[#FFA500]">
-          <h2 className="text-2xl font-bold text-white">Orders Dashboard</h2>
-          <p className="text-white text-opacity-90 text-sm mt-1">
-            View and manage all food orders in the hotel
+        </div>          
+        {/* Dashboard Header - Enhanced styling */}
+        <div className="rounded-t-2xl p-5 mb-6 bg-gradient-to-r from-[#FF9800] to-[#FF5722] shadow-md relative overflow-hidden">
+          {/* Food icon pattern overlay */}
+          <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-full h-full">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-white drop-shadow-sm">Orders Dashboard</h2>
+          <p className="text-white text-opacity-95 text-sm mt-1 max-w-xl">
+            View and manage all food orders in the hotel - track status, process orders, and generate reports
           </p>
         </div>
 
@@ -1000,23 +1010,24 @@ const ShowOrderings: React.FC = () => {
           <ExportView orders={filteredOrders} onBack={handleBackToList} />
         )}
           
-        {/* Footer with gradient background like in AdminDashboard */}
-        <div className="bg-gradient-to-r from-orange-500/10 to-orange-300/10 px-8 py-6 flex justify-end items-center mt-8 -mb-8 -ml-36 -mr-36 rounded-b-lg">
+        
+      </div>
+      {/* Footer with gradient background like in AdminDashboard */}
+        <div className="bg-gradient-to-r from-orange-500/10 to-orange-300/10 px-8 py-6 flex justify-end items-center mt-8 rounded-b-lg -mb-11">
           <div className="flex items-center flex-1">
             <div className="flex items-center">
-              <span className="text-gray-500 text-sm mr-2">© 2025 HMS - NovaSynergy</span>
-              <span className="text-xs px-2 py-0.5 bg-[#6B72D6]/10 text-[#6B72D6] rounded-full">v2.1.0</span>
+              <span className="text-gray-600 text-sm mr-2">© 2025 HMS - NovaSynergy</span>
+              <span className="text-xs px-2 py-0.5 bg-[#6B72D6]/20 text-[#6B72D6] rounded-full">v2.1.0</span>
             </div>
           </div>
 
-          <span className="text-gray-600 text-lg font-medium mr-2">
+          <span className="text-gray-700 text-lg font-medium mr-2">
             Total Revenue:
           </span>
           <span className="font-semibold text-orange-600 text-lg">
             ${orders.reduce((sum, order) => sum + order.total_price, 0).toFixed(2)}
           </span>
         </div>
-      </div>
     </div>
   );
 };
