@@ -27,6 +27,7 @@ import FoodList from './pages/Admin/CRUDS/Food/FoodList';
 import ReceiptionistDashboard from './pages/Receiptionist/ReceiptionistDashboard';
 import ShowOrderings from './pages/Admin/Management/Food/ShowOrderings';
 import RoomListing from './pages/Admin/Management/Room/RoomListing';
+import TherapyBookingHistory from './pages/Admin/Management/Therapy/TherapyBookingHistory';
 
 function App() {
 
@@ -61,6 +62,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/receiptionist-dashboard" element={<ReceiptionistDashboard />} />
         <Route path="/Admin/show-orderings" element={<ShowOrderings />} />
+        <Route path="/admin/therapy-booking-history" element={<TherapyBookingHistory />} />
       </Routes>
     </Router>
   );
