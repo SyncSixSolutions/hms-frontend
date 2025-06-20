@@ -26,6 +26,7 @@ import EditFood from './pages/Admin/CRUDS/Food/EditFood';
 import FoodList from './pages/Admin/CRUDS/Food/FoodList';
 import ReceiptionistDashboard from './pages/Receiptionist/ReceiptionistDashboard';
 import ShowOrderings from './pages/Admin/Management/Food/ShowOrderings';
+import RoomListing from './pages/Admin/Management/Room/RoomListing';
 
 function App() {
 
@@ -47,6 +48,7 @@ function App() {
         <Route path="/dashboard-admin" element={<AdminDashboard />} />
         <Route path="/vehicle-listing" element={<VehicleListing />} />
         <Route path="/show-bookings" element={<ShowBookings />} />
+        <Route path="/admin/rooms" element={<RoomListing />} />
         {/* <Route path="/booking-dashboard" element={<BookingDashboard />} /> */}
         <Route path="/add-vehicle" element={<AddVehicle />} />
         <Route path="/view-all-vehicles" element={<ViewAllVehicle />} />
