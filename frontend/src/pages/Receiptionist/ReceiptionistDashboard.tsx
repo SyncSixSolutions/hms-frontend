@@ -569,7 +569,7 @@ const ReceiptionistDashboard: React.FC = () => {
       <div className="bg-[#6B72D6]/10 px-8 py-6 flex justify-between items-center mt-8 -ml-16 -mr-16 -mb-8">
         <div className="flex items-center">
         <div className="flex items-center">
-            <span className="text-gray-500 text-sm mr-2">© 2025 Hotel Management System</span>
+            <span className="text-gray-500 text-sm mr-2">© 2025 HMS - NovaSynergy</span>
             <span className="text-xs px-2 py-0.5 bg-[#6B72D6]/10 text-[#6B72D6] rounded-full">v2.1.0</span>
           </div>
         </div>
