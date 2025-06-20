@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getVehiclesByDateRange } from '../../../services/vehicleService'; // adjust path as needed
 import { 
   Avatar, 
   Button, 
@@ -30,6 +31,8 @@ import tuktuk from '../../../assets/images/vehicles/tuktuk.png';
 import scooty from '../../../assets/images/vehicles/scooty.png';
 import userAvatar from '../../../assets/images/avatar.jpg';
 import Travel from '../../../assets/images/travel.png';
+
+
 import PersonIcon from '@mui/icons-material/Person';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -444,61 +447,41 @@ const VehicleListing: React.FC = () => {
     setSelectedVehicle(null);
     setSearchPerformed(false);
   };
-  const handleSearch = () => {
+
+
+  const handleSearch = async () => {
     if (startDate && endDate) {
       setIsLoading(true);
-      // Mock data for demo purposes - in a real app, this would be an API call
-      const demoVehicles = [
-        {
-          id: 1,
-          name: "Toyota Alphard",
-          vehicle_number: "CAR-3578",
-          image: nissan,
-          images: [nissan, scooty, tuktuk],
-          capacity: 7,
-          vehicle_type: "Luxury Van",
-          price_per_km: 0.5,
-          base_price: 120,
-          description: "A luxury minivan with spacious interior and premium features, perfect for group travel.",
-          owner_name: "Vista Car Rentals",
-          availability_from: new Date("2025-06-15"),
-          availability_to: new Date("2025-07-30")
-        },
-        {
-          id: 2,
-          name: "Sri Lanka Tuk Tuk",
-          vehicle_number: "TUK-1234",
-          image: tuktuk,
-          images: [tuktuk, nissan],
-          capacity: 3,
-          vehicle_type: "Three Wheeler",
-          price_per_km: 0.2,
-          base_price: 40,
-          description: "Experience the local way of travel with our comfortable tuk tuks, perfect for city exploration.",
-          owner_name: "City Tuk Rentals",
-          availability_from: new Date("2025-06-10"),
-          availability_to: new Date("2025-08-15")
-        },
-        {
-          id: 3,
-          name: "Honda Scooty",
-          vehicle_number: "SC-5678",
-          image: scooty,
-          images: [scooty],
-          capacity: 2,
-          vehicle_type: "Scooter",
-          price_per_km: 0.1,
-          base_price: 25,
-          description: "Economical and agile scooter for quick trips around the city. Easy to park and fuel efficient.",
-          owner_name: "EZ Scooters",
-          availability_from: new Date("2025-06-05"),
-          availability_to: new Date("2025-09-01")
-        }
-      ];
-      
-      setVehicles(demoVehicles);
-      setSearchPerformed(true);
-      setIsLoading(false);
+      try {
+        const formattedStartDate = startDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
+        const formattedEndDate = endDate.toISOString().split('T')[0];
+
+        const data = await getVehiclesByDateRange(formattedStartDate, formattedEndDate);
+
+        const mappedVehicles = data.map((item) => ({
+          id: item.vehicle.vehicleId,
+          name: `${item.vehicle.vehicleType} ${item.vehicle.vehicleNumber}`,
+          vehicle_number: item.vehicle.vehicleNumber,
+          image: item.images[0]?.imageUrl.trim(),
+          images: item.images.slice(1).map((img) => img.imageUrl.trim()),
+          capacity: item.vehicle.passengerCount,
+          vehicle_type: item.vehicle.vehicleType,
+          price_per_km: item.vehicle.pricePerKm,
+          base_price: item.vehicle.basePrice,
+          description: item.vehicle.description,
+          owner_name: item.owner.name,
+          availability_from: new Date(item.availability.availabilityFrom),
+          availability_to: new Date(item.availability.availabilityTo),
+        }));
+
+        setVehicles(mappedVehicles);
+        setSearchPerformed(true);
+      } catch (error) {
+        console.error("Error fetching vehicles:", error);
+        alert("Failed to load vehicles");
+      } finally {
+        setIsLoading(false);
+      }
     } else {
       alert('Please select both start and end dates');
     }

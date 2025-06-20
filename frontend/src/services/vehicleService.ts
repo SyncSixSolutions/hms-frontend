@@ -36,7 +36,7 @@ export interface AddVehiclePayload {
 
 // Create an axios instance
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8765/api/v1/vehicle',
+  baseURL: 'http://localhost:8765/api/v1/services/vehicle',
 });
 
 /**
@@ -62,5 +62,62 @@ export const addVehicle = async (payload: AddVehiclePayload): Promise<boolean> =
   } catch (error) {
     console.error('Error adding vehicle:', error);
     return false;
+  }
+};
+
+/**
+ * Fetch all vehicles
+ */
+export interface VehicleResponseDTO {
+  vehicle: {
+    vehicleId: number;
+    vehicleNumber: string;
+    passengerCount: number;
+    vehicleType: string;
+    pricePerKm: number;
+    basePrice: number;
+    availabilityFrom: string;
+    availabilityTo: string;
+    description: string;
+    ownerId: number;
+    createdAt: string;
+  };
+  availability: {
+    slotId: number;
+    vehicleId: number;
+    availabilityFrom: string;
+    availabilityTo: string;
+    createdAt: string;
+  };
+  images: Array<{
+    imageId: number;
+    vehicleId: number;
+    imageUrl: string;
+    uploadedAt: string;
+  }>;
+  owner: {
+    ownerId: number;
+    vehicleId: number;
+    name: string;
+    contactNumber: string;
+    nic: string;
+  };
+}
+
+export const getVehiclesByDateRange = async (
+  startDate: string,
+  endDate: string
+): Promise<VehicleResponseDTO[]> => {
+  try {
+    const response = await apiClient.get('/getVehiclesByDateRange', {
+      params: {
+        startDate,
+        endDate,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching vehicles by date range:', error);
+    return [];
   }
 };
