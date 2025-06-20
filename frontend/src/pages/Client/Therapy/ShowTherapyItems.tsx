@@ -21,6 +21,7 @@ import treatment_3 from '../../../assets/images/theraphy/treatment_3.png';
 import treatment_4 from '../../../assets/images/theraphy/treatment_4.png';
 import details_food from '../../../assets/images/theraphy/details_food.png';
 import bgphoto from '../../../assets/images/theraphy/background.png';
+import { Outlet } from 'react-router-dom';
 
 
 const spaPromoImage = '/api/placeholder/400/300';
@@ -401,6 +402,7 @@ const SpaDashboard: React.FC = () => {
     : null;
 
   return (
+    <>
     <Box sx={{
       display: 'flex',
       minHeight: '100vh',
@@ -611,6 +613,9 @@ const SpaDashboard: React.FC = () => {
         </Box>
       </Box>
     </Box>
+
+    <Outlet />
+    </>
   );
 };
 

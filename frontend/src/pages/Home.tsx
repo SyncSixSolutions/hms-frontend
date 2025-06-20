@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { useNavigate } from 'react-router-dom';
 
 import HomeHeader from '../assets/images/HomeHeader.png';
 import How1Icon from '../assets/images/how1.png';
@@ -455,6 +456,7 @@ const GuestsSelector: React.FC<{
 const Home: React.FC = () => {
   const [centerIdx, setCenterIdx] = useState(1);
   const [activeImageIndexes, setActiveImageIndexes] = useState(Array(6).fill(0));
+  const navigate = useNavigate()
   
   // Hero image slider state
   const [currentHeroImage, setCurrentHeroImage] = useState(0);
@@ -626,6 +628,7 @@ const Home: React.FC = () => {
           whileHover={{ scale: 1.05, backgroundColor: "#254FCF" }}
           whileTap={{ scale: 0.95 }}
           className="bg-[#2D60FF] text-white px-6 py-3 rounded-full text-sm"
+          onClick={() => navigate("/signup")}
         >
           Sign up
         </motion.button>

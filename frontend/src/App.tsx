@@ -1,7 +1,7 @@
 import Home from './pages/Home';
 import VehicleListing from './pages/Client/Vehicle/VehicleListing';
 import ShowBookings from './pages/Admin/Management/Booking/ShowBookings';
-import BookingDashboard from './pages/Admin/Management/Booking/ViewBooking';
+//import BookingDashboard from './pages/Admin/Management/Booking/ViewBooking';
 import AddVehicle from './pages/Admin/CRUDS/Vehicle/AddVehicle';
 import ViewAllVehicle from './pages/Admin/CRUDS/Vehicle/ViewAllVehicle';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -24,6 +24,8 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AddFood from './pages/Admin/CRUDS/Food/AddFood';
 import EditFood from './pages/Admin/CRUDS/Food/EditFood';
 import FoodList from './pages/Admin/CRUDS/Food/FoodList';
+import RoleProtectedWrapper from './components/RoleProtectedWrapper';
+import GuestRouterWrapper from './components/GuestRouterWrapper';
 
 function App() {
 
@@ -31,15 +33,31 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/dashboard-bookings-client" element={<ClientDashboard_Bookings />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/dashboard-client" element={<ClientDashboard />} />
-        <Route path="/rooms" element={<ShowRooms />} />
-        <Route path="/signup" element={<SignUp/>} ></Route>
-        <Route path="/therapies" element={<ViewTherapiesPage />} />
-        <Route path="/addtherapy" element={<AddTherapyPage />} />
-        <Route path="/edittherapy" element={<EditTherapyPage />} />
-        <Route path="/food" element={<FoodClient/>} />
+
+        {/* Guest Routes */}
+        <Route element={<GuestRouterWrapper />}>
+          <Route path="/signup" element={<SignUp />} ></Route>
+          <Route path="/signin" element={<SignIn />} />
+        </Route> 
+
+        {/* Rooms Section - Protected */}
+        <Route element={<RoleProtectedWrapper allowedRoles={["receptionist", "customer"]} />}>
+          <Route path="/rooms" element={<ShowRooms />} />
+        </Route>
+
+        {/* User data Section - Protected */}
+         <Route element={<RoleProtectedWrapper allowedRoles={["customer"]} />}>
+          <Route path="/dashboard-bookings-client" element={<ClientDashboard_Bookings />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard-client" element={<ClientDashboard />} />
+        </Route>
+        
+        <Route element={<RoleProtectedWrapper allowedRoles={["receptionist", "admin"]} />}>
+          <Route path="/therapies" element={<ViewTherapiesPage />} />
+          <Route path="/addtherapy" element={<AddTherapyPage />} />
+          <Route path="/edittherapy" element={<EditTherapyPage />} />
+        </Route>
+        <Route path="/food" element={<FoodClient />} />
         <Route path="/calendar" element={<BookingCalendar />} />
         <Route path="/recieptionist-view-rentings" element={<ViewRentings />} />
         <Route path="/dashboard-admin" element={<AdminDashboard />} />
@@ -54,7 +72,6 @@ function App() {
         <Route path="/add-food" element={<AddFood />} />
         <Route path="/edit-food" element={<EditFood />} />
         <Route path="/food-list" element={<FoodList />} />
-        <Route path="/signin" element={<SignIn />} />
       </Routes>
     </Router>
   );

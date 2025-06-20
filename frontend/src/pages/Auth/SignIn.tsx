@@ -3,17 +3,40 @@ import { Button, Input, Card } from '../../components/ui';
 import { FcGoogle } from 'react-icons/fc';
 import { NavBarComponent } from '../../components/layout';
 import Footer from '../../components/layout/Footer';
+import { useNavigate } from 'react-router-dom';
+import { signin, SignInPayload, AuthResponse } from '../../utility/Authentication';
+import { getDecodedToken  } from '../../utility/jwtDecode';
+
 
 const SignIn: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-    const handleSignIn = () => console.log("Sign In");
-    const handleSignUp = () => console.log("Sign Up");
+    const handleSignIn = () => {navigate('/signin');}
+    const handleSignUp = () => {navigate('/signup');}
 
-    const handleLogin = () => {
-        console.log({ email, password });
+    const handleLogin = async () => {
+    const payload: SignInPayload = {
+        email: email, 
+        password: password, 
     };
+
+  try {
+    const response = await signin(payload); 
+    const data: AuthResponse = response.data;
+
+    localStorage.setItem('token', data.access_token);
+
+    const decode = getDecodedToken();
+
+    console.log('Logged in as:', decode?.role);
+    navigate('/dashboard-client'); // or any route
+  } catch (error) {
+    console.error('Sign In Error:', error);
+    alert('Sign In Failed. Please check your credentials.');
+  }
+};
 
     return (
         <div className="min-h-screen flex flex-col justify-between bg-white">
@@ -73,7 +96,10 @@ const SignIn: React.FC = () => {
 
                     <p className="text-center text-sm mt-6 text-muted">
                         New user?{' '}
-                        <a href="#" className="text-primary hover:text-indigo-400">
+                        <a 
+                            onClick={handleSignUp}
+                            className="text-primary hover:text-indigo-400 hover:cursor-pointer"
+                        >
                             Create an account
                         </a>
                     </p>

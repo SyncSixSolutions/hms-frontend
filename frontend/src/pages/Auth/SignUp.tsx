@@ -3,6 +3,8 @@ import { Button, Input, Card, Dropdown } from '../../components/ui';
 import { FcGoogle } from 'react-icons/fc';
 import { NavBarComponent } from '../../components/layout';
 import Footer from '../../components/layout/Footer';
+import { useNavigate } from 'react-router-dom';
+import { signup } from '../../utility/Authentication';
 
 const SignUp: React.FC = () => {
     const [fullName, setFullName] = useState('');
@@ -10,10 +12,22 @@ const SignUp: React.FC = () => {
     const [country, setCountry] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const navigate = useNavigate();
 
-    const handleSignIn = () => console.log('Sign In');
+    const handleSignIn = () => { navigate('/signin');};
     const handleSignUp = () => {
         console.log({ fullName, email, country, password, confirmPassword });
+
+        signup({ fullName, email, country, password, confirmPassword })
+            .then((response) => {
+                if (response.success) {
+                    alert('Sign Up Successful! Please Sign In.');
+                    navigate('/signin');
+                }
+            })
+            .catch((error) => {
+                console.error('Sign Up Error:', error);
+            });
     };
 
     const countries = [
@@ -97,17 +111,20 @@ const SignUp: React.FC = () => {
                     </div>
 
                     <div className="my-4">
-                        <Button variant="primary" className="w-full" onClick={handleSignUp}>
+                        <Button variant='primary' className="w-full " onClick={handleSignUp}>
                             Sign Up
                         </Button>
                     </div>
 
                     <p className="text-center text-sm mt-4">
                         Already have an account?{' '}
-                        <a href="#" className="text-indigo-600 hover:text-indigo-400">
+                        <span 
+                            className="text-indigo-600 hover:text-indigo-400 hover:cursor-pointer"
+                            onClick={handleSignIn}>
                             Sign In
-                        </a>
+                        </span>
                     </p>
+
                 </Card>
             </div>
 

@@ -1,46 +1,47 @@
 import React from "react";
-import defaultProfileImage from "../../assets/images/profile_image.jpeg";
+import defaultProfileImage from "../../assets/images/profile_image.jpeg"; // adjust path
+import { isAuthenticated, getUserInfo, logout } from "../../utility/auth"
 
 interface ClientHeaderProps {
-  userName: string;
-  date: string;
-  profileImageUrl?: string;
   onSearchChange?: (value: string) => void;
   onProfileClick?: () => void;
 }
 
 const ClientHeader: React.FC<ClientHeaderProps> = ({
-  userName,
-  date,
-  profileImageUrl,
   onSearchChange,
   onProfileClick,
 }) => {
+  if (!isAuthenticated()) return null;
+
+  const user = getUserInfo();
+  const username = user?.username || "Guest";
+  const today = new Date().toLocaleDateString();
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSearchChange?.(e.target.value);
   };
 
   return (
-    <div className="flex justify-between items-center mb-6 md:flex-row flex-col md:items-center items-start">
+    <div className="flex justify-between items-center mb-6 md:flex-row flex-col md:items-center px-4">
       <div>
         <h1 className="text-2xl font-medium text-gray-700">
-          Welcome, {userName}
+          Welcome, {username}
         </h1>
-        <p className="text-sm text-gray-400">{date}</p>
+        <p className="text-sm text-gray-400">{today}</p>
       </div>
-      <div className="flex items-center md:mt-0 mt-4">
-        <div className="relative mr-4">
+
+      <div className="flex items-center gap-4 md:mt-0 mt-4">
+        <div className="relative">
           <input
             type="search"
             placeholder="Search"
+            onChange={handleSearchChange}
             className="pl-4 pr-10 py-2 rounded-lg border border-gray-200 w-64 focus:outline-none focus:ring-2 transition-all"
             style={
               {
                 "--tw-ring-color": "#6B72D6",
-                focusRingColor: "#6B72D6",
               } as React.CSSProperties & { "--tw-ring-color": string }
             }
-            onChange={handleSearchChange}
           />
           <div className="absolute right-3 top-2.5 text-gray-400">
             <svg
@@ -59,6 +60,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({
             </svg>
           </div>
         </div>
+
         <div
           className="w-10 h-10 overflow-hidden rounded-full cursor-pointer hover:ring-2 transition-all"
           style={
@@ -69,16 +71,23 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({
           onClick={onProfileClick}
         >
           <img
-            src={profileImageUrl || defaultProfileImage}
+            src={defaultProfileImage}
             alt="Profile"
             className="w-full h-full object-cover"
             onError={(e) => {
-              e.currentTarget.src = `https://via.placeholder.com/40x40/6B72D6/ffffff?text=${userName.charAt(
+              e.currentTarget.src = `https://via.placeholder.com/40x40/6B72D6/ffffff?text=${username.charAt(
                 0
               )}`;
             }}
           />
         </div>
+
+        <button
+          className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 text-sm"
+          onClick={logout}
+        >
+          Logout
+        </button>
       </div>
     </div>
   );
