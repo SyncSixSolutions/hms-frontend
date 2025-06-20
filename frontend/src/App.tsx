@@ -23,6 +23,8 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AddFood from './pages/Admin/CRUDS/Food/AddFood'; 
 import EditFood from './pages/Admin/CRUDS/Food/EditFood';
 import FoodList from './pages/Admin/CRUDS/Food/FoodList';
+import MakeBooking from './pages/Client/Booking/MakeBooking';
+import RoomsLayout from './pages/Client/Booking/RoomsLayout';
 import ReceiptionistDashboard from './pages/Receiptionist/ReceiptionistDashboard';
 import ShowOrderings from './pages/Admin/Management/Food/ShowOrderings';
 import RoomListing from './pages/Admin/Management/Room/RoomListing';
@@ -66,6 +68,7 @@ function App() {
         <Route path="/edit-therapy" element={<EditTherapy />} />
         <Route path="/spa-dashboard" element={<SpaDashboard />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/booking" element={<MakeBooking />} />
         <Route path="/receiptionist-dashboard" element={<ReceiptionistDashboard />} />
         <Route path="/admin/show-orderings" element={<ShowOrderings />} />
         <Route path="/admin/therapy-booking-history" element={<TherapyBookingHistory />} />
