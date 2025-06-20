@@ -1,14 +1,20 @@
 import Home from './pages/Home';
 import VehicleListing from './pages/Client/Vehicle/VehicleListing';
+import ShowBookings from './pages/Admin/Management/Booking/ShowBookings';
+import BookingDashboard from './pages/Admin/Management/Booking/ViewBooking';
 import AddVehicle from './pages/Admin/CRUDS/Vehicle/AddVehicle';
 import ViewAllVehicle from './pages/Admin/CRUDS/Vehicle/ViewAllVehicle';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ShowRooms from './pages/Client/Booking/BookingCalendar';
 import SignUp from "./pages/Auth/SignUp";
+import SignIn from './pages/Auth/SignIn';
 import ViewTherapiesPage from "./pages/Admin/CRUDS/Therapy/ViewTherapies";
 import AddTherapyPage from "./pages/Admin/CRUDS/Therapy/AddTherapy";
 import EditTherapyPage from "./pages/Admin/CRUDS/Therapy/EditTherapy";
+import AddTherapy from './pages/Admin/CRUDS/Therapy/AddTherapy';
+import EditTherapy from './pages/Admin/CRUDS/Therapy/EditTherapy';
 import FoodClient from './pages/Client/Food/ShowFoods'
+import SpaDashboard from './pages/Client/Therapy/ShowTherapyItems';
 import ClientDashboard_Bookings from "./pages/Client/ClientDashboards_Bookings";
 import ClientDashboard from "./pages/Client/ClientDashboard";
 import Profile from "./pages/Client/UserProfile";
@@ -21,8 +27,6 @@ import FoodList from './pages/Admin/CRUDS/Food/FoodList';
 import AddRoom from './pages/Admin/CRUDS/Room/AddRoom';
 import EditRoom from './pages/Admin/CRUDS/Room/EditRoom';
 import RoomList from './pages/Admin/CRUDS/Room/RoomList';
-
-
 
 function App() {
 
@@ -51,6 +55,11 @@ function App() {
         <Route path="/admin/room/addroom" element={<AddRoom />} />
         <Route path='/admin/room/editroom/:id' element={<EditRoom />} />
         <Route path="/admin/room/list" element={<RoomList />} />
+        <Route path="/show-bookings" element={<ShowBookings />} />
+        <Route path="/add-therapy" element={<AddTherapy />} />
+        <Route path="/edit-therapy" element={<EditTherapy />} />
+        <Route path="/spa-dashboard" element={<SpaDashboard />} />
+        <Route path="/signin" element={<SignIn />} />
       </Routes>
     </Router>
   );

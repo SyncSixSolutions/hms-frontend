@@ -39,6 +39,7 @@ module.exports = {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['Fira Code', 'ui-monospace', 'monospace'],
+        parisienne: ['Parisienne', 'cursive'],
       },
       spacing: {
         '18': '4.5rem',
