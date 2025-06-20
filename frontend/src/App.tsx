@@ -24,6 +24,8 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AddFood from './pages/Admin/CRUDS/Food/AddFood';
 import EditFood from './pages/Admin/CRUDS/Food/EditFood';
 import FoodList from './pages/Admin/CRUDS/Food/FoodList';
+import MakeBooking from './pages/Client/Booking/MakeBooking';
+import RoomsLayout from './pages/Client/Booking/RoomsLayout';
 
 function App() {
 
@@ -56,6 +58,7 @@ function App() {
           <Route path="/edit-food" element={<EditFood />} />
           <Route path="/food-list" element={<FoodList />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/booking" element={<MakeBooking />} />
         </Routes>
       </Router>
     </div>
