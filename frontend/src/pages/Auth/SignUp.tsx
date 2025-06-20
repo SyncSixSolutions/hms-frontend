@@ -7,7 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { signup } from '../../utility/Authentication';
 
 const SignUp: React.FC = () => {
-    const [fullName, setFullName] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [country, setCountry] = useState('');
     const [password, setPassword] = useState('');
@@ -15,20 +16,37 @@ const SignUp: React.FC = () => {
     const navigate = useNavigate();
 
     const handleSignIn = () => { navigate('/signin');};
-    const handleSignUp = () => {
-        console.log({ fullName, email, country, password, confirmPassword });
+    const handleSignup = async () => {
+  try {
+    const response = await signup({
+      firstName,
+      lastName,
+      email,
+      country,
+      passwordHash: password,
+      confirmPassword,
+      phoneNumber: '012131',
+    });
 
-        signup({ fullName, email, country, password, confirmPassword })
-            .then((response) => {
-                if (response.success) {
-                    alert('Sign Up Successful! Please Sign In.');
-                    navigate('/signin');
-                }
-            })
-            .catch((error) => {
-                console.error('Sign Up Error:', error);
-            });
-    };
+    if (response.status === 200 || response.status === 201) {
+      alert('Sign Up Successful! Please Sign In.');
+      navigate('/signin');
+    } else {
+      console.warn('Unexpected response:', response);
+    }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    if (error.response) {
+      // Server responded with an error code
+      console.error('Sign Up Error:', error.response.data?.message || error.message);
+      alert(error.response.data?.message || 'Sign Up failed');
+    } else {
+      // Network or unknown error
+      console.error('Unexpected Sign Up Error:', error.message);
+      alert('Something went wrong. Please try again.');
+    }
+  }
+};
 
     const countries = [
         { label: 'Sri Lanka', value: 'sri-lanka' },
@@ -45,7 +63,7 @@ const SignUp: React.FC = () => {
                 isAuthenticated={false}
                 forWhat="signIn"
                 onSignIn={handleSignIn}
-                onSignUp={handleSignUp}
+                onSignUp={handleSignup}
             />
 
             {/* Sign Up Card */}
@@ -66,12 +84,26 @@ const SignUp: React.FC = () => {
                     <div className="text-center text-xs text-gray-400 mt-4">OR</div>
 
                     <div className="mt-2">
-                        <Input
-                            label="Full Name"
-                            placeholder="John Doe"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                        />
+                        <div className="flex flex-col sm:flex-row sm:gap-4">
+                            <div className="flex-1">
+                                <Input
+                                    label="First Name"
+                                    type="text"
+                                    placeholder="Enter your first name"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <Input
+                                    label="Last Name"
+                                    type="text"
+                                    placeholder="Enter your last name"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                />
+                            </div>
+                        </div>
                         <Input
                             label="Email"
                             placeholder="you@example.com"
@@ -111,7 +143,7 @@ const SignUp: React.FC = () => {
                     </div>
 
                     <div className="my-4">
-                        <Button variant='primary' className="w-full " onClick={handleSignUp}>
+                        <Button variant='primary' className="w-full " onClick={handleSignup}>
                             Sign Up
                         </Button>
                     </div>

@@ -27,6 +27,7 @@ const SignIn: React.FC = () => {
     const data: AuthResponse = response.data;
 
     localStorage.setItem('token', data.access_token);
+    localStorage.setItem('refreshToken', data.refresh_token);
 
     const decode = getDecodedToken();
 

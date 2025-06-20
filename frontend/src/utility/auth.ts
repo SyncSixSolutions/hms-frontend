@@ -28,6 +28,7 @@ export function getUserInfo(): { username: string; roles: string | string[] } | 
 
 export function logout(): void {
   localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
   window.location.href = "/"; 
 }
 
