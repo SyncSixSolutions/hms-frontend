@@ -1,7 +1,7 @@
 import Home from './pages/Home';
 import VehicleListing from './pages/Client/Vehicle/VehicleListing';
 import ShowBookings from './pages/Admin/Management/Booking/ShowBookings';
-import BookingDashboard from './pages/Admin/Management/Booking/ViewBooking';
+// import BookingDashboard from './pages/Admin/Management/Booking/ViewBooking';
 import AddVehicle from './pages/Admin/CRUDS/Vehicle/AddVehicle';
 import ViewAllVehicle from './pages/Admin/CRUDS/Vehicle/ViewAllVehicle';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -24,6 +24,7 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AddFood from './pages/Admin/CRUDS/Food/AddFood';
 import EditFood from './pages/Admin/CRUDS/Food/EditFood';
 import FoodList from './pages/Admin/CRUDS/Food/FoodList';
+import ReceiptionistDashboard from './pages/Receiptionist/ReceiptionistDashboard';
 
 function App() {
 
@@ -55,6 +56,7 @@ function App() {
         <Route path="/edit-food" element={<EditFood />} />
         <Route path="/food-list" element={<FoodList />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/receiptionist-dashboard" element={<ReceiptionistDashboard />} />
       </Routes>
     </Router>
   );
