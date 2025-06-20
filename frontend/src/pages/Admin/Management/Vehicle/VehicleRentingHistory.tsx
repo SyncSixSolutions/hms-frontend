@@ -607,10 +607,32 @@ const VehicleRentingHistory: React.FC = () => {
   const handleToggleTodayOnly = () => {
     setShowTodayOnly(!showTodayOnly);
   };
-  
-  const handleBackToList = () => {
+    const handleBackToList = () => {
     setActiveView('list');
     setSelectedRental(null);
+  };
+  
+  const updateRentalStatus = (rentalId: number, newStatus: 'reserved' | 'active' | 'completed' | 'cancelled') => {
+    // In a real app, we would call an API to update the status
+    // For this example, we'll update it in our local state
+    
+    // Create updated rental object
+    const updatedRental = rentals.find(r => r.rental_id === rentalId);
+    
+    if (updatedRental) {
+      const updatedRentalWithStatus = { ...updatedRental, status: newStatus };
+      
+      // Update rentals array
+      setRentals(prev => prev.map(r => r.rental_id === rentalId ? updatedRentalWithStatus : r));
+      
+      // Update filtered rentals array
+      setFilteredRentals(prev => prev.map(r => r.rental_id === rentalId ? updatedRentalWithStatus : r));
+      
+      // Update selected rental if it's the one being modified
+      if (selectedRental && selectedRental.rental_id === rentalId) {
+        setSelectedRental(updatedRentalWithStatus);
+      }
+    }
   };
 
   const getStatusBadgeClass = (status: string) => {
@@ -670,16 +692,17 @@ const VehicleRentingHistory: React.FC = () => {
                 View and manage all vehicle rentals
               </p>
             </div>
-            <div className="mt-4 md:mt-0 flex items-start space-x-2">
-              <button
+            <div className="mt-4 md:mt-0 flex items-start space-x-2">              <button
                 onClick={handleExport}
                 className="px-4 py-2 bg-white text-indigo-600 rounded-md hover:bg-indigo-50 transition-all shadow-sm flex items-center"
+                title="Export rental records as CSV, JSON or PDF"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Export Records
-              </button>              <button
+              </button><button
                 className="px-4 py-2 border border-white text-white rounded-md hover:bg-white/20 transition-all flex items-center"
                 onClick={() => setActiveView('advancedFilter')}
+                title="Apply advanced filters like price range, date range, and vehicle type"
               >
                 <Filter className="mr-2 h-4 w-4" />
                 Advanced Filter
@@ -881,11 +904,19 @@ const VehicleRentingHistory: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="flex justify-end pt-2 border-t border-gray-100">
+                        <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                        <button
+                          onClick={() => handlePrintReceipt(rental)}
+                          className="px-3 py-2 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50 transition-colors text-sm flex items-center"
+                          title="Print receipt for this rental"
+                        >
+                          <Printer className="w-4 h-4 mr-1" />
+                          Print Receipt
+                        </button>
                         <button
                           onClick={() => handleViewDetails(rental)}
                           className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors text-sm flex items-center"
+                          title="View complete rental details"
                         >
                           View Details
                         </button>
@@ -898,12 +929,12 @@ const VehicleRentingHistory: React.FC = () => {
           </>
         )}
         {/* Details View */}        
-        {/* Rental Details View */}        
-        {activeView === 'details' && selectedRental && (
+        {/* Rental Details View */}          {activeView === 'details' && selectedRental && (
           <RentalDetailsView 
             rental={selectedRental} 
             onBack={handleBackToList} 
             onPrintReceipt={handlePrintReceipt}
+            updateRentalStatus={updateRentalStatus}
           />
         )}
         
@@ -918,16 +949,32 @@ const VehicleRentingHistory: React.FC = () => {
         
         {/* Advanced Filter View */}
         {activeView === 'advancedFilter' && (
-          <div className="bg-white rounded-lg shadow-lg p-6 transition-all duration-300 animate-fadeIn">
-            <div className="flex justify-between items-center mb-6">
+          <div className="bg-white rounded-lg shadow-lg p-6 transition-all duration-300 animate-fadeIn">            <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-semibold text-gray-800">Advanced Filters</h3>
-              <button
-                onClick={handleBackToList}
-                className="text-indigo-600 hover:text-indigo-700 flex items-center"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Back to Rentals
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => {
+                    setPriceRange([0, 500]);
+                    setDateRange({
+                      start: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().split('T')[0],
+                      end: new Date().toISOString().split('T')[0]
+                    });
+                    setVehicleTypeFilter("all");
+                  }}
+                  className="text-gray-500 hover:text-gray-700 flex items-center"
+                  title="Reset all filters to default values"
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Reset
+                </button>
+                <button
+                  onClick={handleBackToList}
+                  className="text-indigo-600 hover:text-indigo-700 flex items-center"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  Back to Rentals
+                </button>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
