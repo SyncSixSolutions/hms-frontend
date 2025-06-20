@@ -1,0 +1,25 @@
+/* Animation styles for Room Listing page */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Card hover transition */
+.hover\:shadow-lg {
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.hover\:shadow-lg:hover {
+  transform: translateY(-2px);
+}
