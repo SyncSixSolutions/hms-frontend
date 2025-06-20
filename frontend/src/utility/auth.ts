@@ -1,14 +1,40 @@
 import { getDecodedToken } from './jwtDecode';
+import { refreshKeycloakToken } from './RefreshToken';
 
 export function getToken(): string | null {
   return localStorage.getItem("token");
 }
 
-export function isAuthenticated(): boolean {
-  const decoded = getDecodedToken();
-  if (!decoded || !decoded.exp) return false;
+export async function isAuthenticated(): Promise<boolean> {
+  const token = getToken();
+  if (!token) {
+    redirectToSignin();
+    return false;
+  }
 
-  return Date.now() < decoded.exp * 1000;
+  const decoded = getDecodedToken();
+  if (!decoded || !decoded.exp) {
+    redirectToSignin();
+    return false;
+  }
+
+  const isExpired = Date.now() >= decoded.exp * 1000;
+
+  if (isExpired) {
+    try {
+      const newToken = await refreshKeycloakToken(); // This should return null if refresh failed
+      if (!newToken) {
+        redirectToSignin();
+        return false;
+      }
+      return true;
+    } catch {
+      redirectToSignin();
+      return false;
+    }
+  }
+
+  return true;
 }
 
 export function getUserInfo(): { username: string; roles: string | string[] } | null {
@@ -38,4 +64,8 @@ export function getUserRole(): string  {
 
 
   return decoded.role;
+}
+
+function redirectToSignin() {
+  window.location.href = "/signin";
 }

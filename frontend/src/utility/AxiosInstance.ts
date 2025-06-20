@@ -4,6 +4,7 @@ import axios, {
   InternalAxiosRequestConfig,
 } from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import { refreshKeycloakToken } from './RefreshToken';
 
 declare module 'axios' {
   export interface InternalAxiosRequestConfig {
@@ -20,27 +21,6 @@ const isTokenExpired = (token: string): boolean => {
   }
 };
 
-const refreshAccessToken = async (): Promise<string | null> => {
-  const refreshToken = localStorage.getItem('refreshToken');
-  if (!refreshToken) return null;
-
-  try {
-    const response = await axios.post('http://localhost:8178/api/auth/refresh-token', {
-      refresh_token: refreshToken,
-    });
-
-    const { token, refresh_token: newRefreshToken } = response.data;
-    localStorage.setItem('token', token);
-    localStorage.setItem('refreshToken', newRefreshToken);
-    return token;
-  } catch (error) {
-    console.error('Token refresh failed:', error);
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    window.location.href = '/signin';
-    return null;
-  }
-};
 
 const instance: AxiosInstance = axios.create({
   baseURL: 'http://localhost:8178/api',
@@ -57,7 +37,7 @@ instance.interceptors.request.use(
 
     if (token) {
       const expired = isTokenExpired(token);
-      const validToken = expired ? await refreshAccessToken() : token;
+      const validToken = expired ? refreshKeycloakToken : token;
 
       if (validToken) {
         if (!config.headers) config.headers = {} as AxiosRequestHeaders;
