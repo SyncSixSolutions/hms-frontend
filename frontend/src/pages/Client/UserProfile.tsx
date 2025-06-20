@@ -32,7 +32,7 @@ const UserProfile: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6"> {/* Minimal padding */}
+    <div className="min-h-screen bg-gray-50 p-6 bg-gradient-to-br from-gray-50 to-gray-100"> {/* Added gradient background */}
       {/* Main container with wider width to minimize edge distance */}
       <div className="max-w-[95%] mx-auto">
         {/* Header - now aligned with card below */}
@@ -45,7 +45,7 @@ const UserProfile: React.FC = () => {
             {/* Search Bar */}
             
             {/* Profile Avatar */}
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-white shadow-sm">
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-white shadow-md"> {/* Enhanced shadow */}
               <img
                 src="/src/assets/images/avatar.jpg"
                 alt="Profile"
@@ -56,7 +56,7 @@ const UserProfile: React.FC = () => {
         </div>      
 
         {/* Manage Account Section - same alignment as header */}
-        <div className="rounded-lg overflow-hidden">
+        <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"> {/* Added shadow with hover effect */}
           {/* My Dashboard Header */}
           <div className="rounded-t-lg p-2 bg-[#6B72D6]"> {/* Reduced padding */}
             <h2 className="text-xl font-bold text-white ml-1">Manage Account</h2> {/* Added small left margin */}
@@ -66,7 +66,7 @@ const UserProfile: React.FC = () => {
           <div className="p-2 bg-white rounded-b-lg"> {/* Further reduced padding */}
             <div className="flex items-center justify-between mb-4"> {/* Reduced margin */}
               <div className="flex items-center gap-2"> {/* Reduced gap */}
-                <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden"> {/* Reduced size */}
+                <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden shadow-sm"> {/* Added shadow */}
                   <img 
                     src="/src/assets/images/avatar.jpg" 
                     alt="Serina Williams" 
@@ -78,13 +78,13 @@ const UserProfile: React.FC = () => {
                   <p className="text-gray-600">dani@gmail.com</p>
                 </div>
               </div>
-              <button className="bg-[#6B72D6] text-white font-medium px-4 py-1 rounded text-lg focus:outline-none transition-colors hover:bg-[#5a60b8]">
+              <button className="bg-[#6B72D6] text-white font-medium px-4 py-1 rounded text-lg focus:outline-none transition-colors hover:bg-[#5a60b8] shadow-sm hover:shadow transition-shadow duration-300"> {/* Added shadow and transition */}
                   Edit
               </button>
             </div>
 
             {/* Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3"> {/* Further reduced gap and margin */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4"> {/* Slightly increased gap for better readability */}
               {/* Full Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>              
@@ -94,7 +94,7 @@ const UserProfile: React.FC = () => {
                   placeholder="Your Full Name"
                   value={formData.fullName}
                   onChange={handleInputChange}
-                  className="w-full px-2 py-2 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50"
+                  className="w-full px-2 py-2 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50 shadow-sm"
                 />
               </div>
 
@@ -106,7 +106,7 @@ const UserProfile: React.FC = () => {
                   name="mobileNumber"
                   value={formData.mobileNumber}
                   onChange={handleInputChange}
-                  className="w-full px-2 py-2 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50"
+                  className="w-full px-2 py-2 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50 shadow-sm"
                 />
               </div>            
               {/* Gender */}
@@ -116,7 +116,7 @@ const UserProfile: React.FC = () => {
                   name="gender"
                   value={formData.gender}
                   onChange={handleInputChange}
-                  className="w-full pl-2 pr-8 py-2 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50 text-gray-400"
+                  className="w-full pl-2 pr-8 py-2 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50 text-gray-400 shadow-sm"
                 >
                   <option value="">Your Gender</option>
                   <option value="male">Male</option>
@@ -131,7 +131,7 @@ const UserProfile: React.FC = () => {
                   name="country"
                   value={formData.country}
                   onChange={handleInputChange}
-                  className="w-full pl-2 pr-8 py-2 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50 text-gray-400"
+                  className="w-full pl-2 pr-8 py-2 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50 text-gray-400 shadow-sm"
                 >
                   <option value="">Your Country</option>
                   <option value="sri-lanka">Sri Lanka</option>
@@ -149,7 +149,7 @@ const UserProfile: React.FC = () => {
                   name="language"
                   value={formData.language}
                   onChange={handleInputChange}
-                  className="w-full pl-2 pr-8 py-2 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50 text-gray-400"
+                  className="w-full pl-2 pr-8 py-2 border-0 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50 text-gray-400 shadow-sm"
                 >
                   <option value="">Your Primary Language</option>
                   <option value="english">English</option>
@@ -163,10 +163,10 @@ const UserProfile: React.FC = () => {
             </div>
 
             {/* Email Address Section */}
-            <div>
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg shadow-sm"> {/* Added background, padding and shadow for better visibility */}
               <h4 className="text-lg font-semibold text-gray-800 mb-2">My email Address</h4>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 bg-blue-50 rounded-xl p-1 flex items-center justify-center">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 bg-blue-50 rounded-xl p-1 flex items-center justify-center shadow-sm"> {/* Added shadow */}
                   <svg className="w-4 h-4 text-[#6B72D6]" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
@@ -177,7 +177,7 @@ const UserProfile: React.FC = () => {
                   <p className="text-gray-500 text-sm">1 month ago</p>
                 </div>
               </div>
-              <button className="inline-flex items-center px-3 py-1 text-sm font-medium text-green-500 bg-green-100 rounded hover:bg-green-200 transition-colors">
+              <button className="inline-flex items-center px-3 py-1 text-sm font-medium text-green-500 bg-green-100 rounded hover:bg-green-200 transition-colors shadow-sm hover:shadow transition-shadow duration-300"> {/* Added shadow and transition */}
                 + Add Email Address
               </button>
             </div>

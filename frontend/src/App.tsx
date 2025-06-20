@@ -16,7 +16,6 @@ import EditTherapy from './pages/Admin/CRUDS/Therapy/EditTherapy';
 import FoodClient from './pages/Client/Food/ShowFoods'
 import SpaDashboard from './pages/Client/Therapy/ShowTherapyItems';
 import ClientDashboard_Bookings from "./pages/Client/ClientDashboards_Bookings";
-import ClientDashboard from "./pages/Client/ClientDashboard";
 import Profile from "./pages/Client/UserProfile";
 import BookingCalendar from './pages/Client/Booking/BookingCalendar'
 import ViewRentings from "./pages/Receiptionist/ViewRentings";
@@ -36,7 +35,6 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/dashboard-bookings-client" element={<ClientDashboard_Bookings />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/dashboard-client" element={<ClientDashboard />} />
         <Route path="/rooms" element={<ShowRooms />} />
         <Route path="/signup" element={<SignUp/>} ></Route>
         <Route path="/therapies" element={<ViewTherapiesPage />} />
