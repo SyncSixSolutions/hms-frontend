@@ -10,16 +10,15 @@ interface TableProps<T> {
     data: T[];
 }
 
-const Table = <T extends Record<string, any>>({ columns, data }: TableProps<T>) => {
-    return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full border border-border bg-bg text-text rounded-lg overflow-hidden">
-                <thead className="bg-border">
+const Table = <T extends Record<string, any>>({ columns, data }: TableProps<T>) => {    return (
+        <div className="overflow-x-auto shadow-sm rounded-lg">
+            <table className="min-w-full bg-bg text-text rounded-lg overflow-hidden">
+                <thead className="bg-gray-50">
                     <tr>
                         {columns.map((col, idx) => (
                             <th
                                 key={idx}
-                                className={`px-4 py-2 text-left text-sm font-semibold text-text border-b border-border ${idx === 0 ? 'rounded-tl-lg' : ''
+                                className={`px-4 py-3 text-left text-sm font-semibold text-gray-700 ${idx === 0 ? 'rounded-tl-lg' : ''
                                     } ${idx === columns.length - 1 ? 'rounded-tr-lg' : ''}`}
                             >
                                 {col.header}

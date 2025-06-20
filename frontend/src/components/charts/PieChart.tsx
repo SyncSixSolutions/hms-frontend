@@ -87,11 +87,12 @@ const PieChart: React.FC<PieChartProps> = ({
         </svg>
       </div>
       
-      {/* Legend */}
-      <div className="grid grid-cols-2 gap-2 mt-4 w-full">
+      {/* Legend */}      <div className="grid grid-cols-2 gap-2 mt-4 w-full">
         {data.map((item, index) => (
-          <div key={index} className="flex items-center">            <div
-              className={`w-3 h-3 rounded-full mr-2 bg-[${item.color}]`}
+          <div key={index} className="flex items-center">
+            <div
+              className="w-3 h-3 rounded-full mr-2"
+              style={{ backgroundColor: item.color }}
             />
             <span className="text-xs text-gray-700">{item.label} ({Math.round(item.value / total * 100)}%)</span>
           </div>

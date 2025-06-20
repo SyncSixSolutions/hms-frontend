@@ -58,7 +58,7 @@ const AreaChart: React.FC<AreaChartProps> = ({
     return `M${points.join(' L')}`;
   };
   return (
-    <div className={`w-full h-[${height}px]`}>
+    <div className="w-full" style={{ height: `${height}px` }}>
       {title && (
         <div className="mb-2">
           <h3 className="text-lg font-semibold text-gray-700">{title}</h3>
