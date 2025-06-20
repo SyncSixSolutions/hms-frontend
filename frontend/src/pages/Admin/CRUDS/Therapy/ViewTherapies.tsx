@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Plus } from 'lucide-react';
-import {NavBarComponent} from '../../../../components/layout';
+import Button from '../../../../components/ui/Button';
 
 const ViewTherapiesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,14 +49,33 @@ const ViewTherapiesPage = () => {
     }
   ];
 
-const handleDelete = (therapyId: number): void => {
+  const handleDelete = (therapyId: number): void => {
     console.log(`Delete therapy with ID: ${therapyId}`);
     // Handle delete logic here
-};
+  };
 
   const handleAddTherapy = () => {
     console.log('Navigate to Add Therapy page');
     // Handle navigation to add therapy page
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  const handleProfileClick = () => {
+    console.log('Profile clicked');
+  };
+
+  const getCurrentDate = () => {
+    const date = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    };
+    return date.toLocaleDateString('en-US', options);
   };
 
   const filteredTherapies = therapies.filter(therapy =>
@@ -65,127 +84,119 @@ const handleDelete = (therapyId: number): void => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <NavBarComponent 
-        role="admin"
-        isAuthenticated={true}
-        onProfileClick={() => console.log('Profile clicked')}
-        profileImageUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
-      />
-      
-      <div className="max-w-6xl mx-auto p-6">
-        {/* Header Section */}
-        <div className="flex justify-between items-start mb-8">
+    <div className="min-h-screen bg-gray-50 p-6 bg-gradient-to-br from-gray-50 to-gray-100"> {/* Added gradient background */}
+      {/* Main container with wider width to minimize edge distance */}
+      <div className="max-w-[95%] mx-auto">
+        {/* Header - now aligned with card below */}
+        <div className="flex justify-between items-center mb-4"> {/* Increased margin slightly */}
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome, Admin</h1>
-            <p className="text-gray-600">Tue, 07 June 2022</p>
+            <h1 className="text-2xl font-normal text-gray-500">Welcome, Admin</h1>
+            <p className="text-sm text-gray-500 mt-1">{getCurrentDate()}</p>
           </div>
-          
-          {/* Search Bar */}
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-80 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          <div className="flex items-center space-x-3">
+            
+            
+            {/* Profile Avatar */}
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-white shadow-md"> {/* Enhanced shadow */}
+              <img
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+                alt="Admin Profile"
+                className="w-full h-full object-cover"
               />
             </div>
-            
-            {/* Profile Image */}
-            <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
-              alt="Admin Profile"
-              className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md"
-            />
           </div>
-        </div>
+        </div>      
+      
+        {/* Therapies Section - matched with ClientDashboard but with enhanced shadow */}
+        <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"> {/* Added shadow with hover effect */}
+          <div className="rounded-t-lg p-2 bg-[#6B72D6]">
+            <h2 className="text-xl font-bold text-white ml-1">All therapies</h2>
+          </div>
 
-        {/* Page Title */}
-        <div className="text-white p-6 rounded-lg mb-6" style={{ backgroundColor: '#6B72D6' }}>
-          <h2 className="text-2xl font-bold">All therapies</h2>
-        </div>
-
-        {/* Therapies List */}
-        <div className="space-y-4 mb-6">
-          {filteredTherapies.map((therapy) => (
-            <div key={therapy.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-start gap-6">
-                {/* Therapy Image */}
-                <div className="flex-shrink-0">
-                  <img
-                    src={therapy.image}
-                    alt={therapy.name}
-                    className="w-32 h-24 rounded-lg object-cover"
+          {/* Therapies List */}
+          <div className="p-2 bg-white rounded-b-lg">
+            <div className="space-y-4">
+              {filteredTherapies.map((therapy) => (
+                <div key={therapy.id} className="flex flex-col md:flex-row gap-4 items-start md:items-stretch">
+                  <img 
+                    src={therapy.image} 
+                    alt={therapy.name} 
+                    className="md:w-64 w-full h-auto md:h-48 object-cover rounded-lg shadow-md" // Enhanced image shadow
                   />
-                </div>
-
-                {/* Therapy Details */}
-                <div className="flex-grow">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-semibold text-gray-800">{therapy.name}</h3>
-                                        <div>
-                      <button
-                        onClick={() => console.log(`Edit therapy with ID: ${therapy.id}`)}
-                        className="px-4 py-2 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors mr-2"
-                      >
-                        Edit
-                      </button>
-                      <button
+                  
+                  {/* Therapy Details */}
+                  <div className="flex-1 flex flex-col justify-between h-full">
+                    <div>
+                      <div className="text-sm mb-1 text-[#6B72D6]">{therapy.description}</div>
+                      <div className="text-xl font-medium mb-2 text-gray-800">{therapy.name}</div>
+                      <ul className="mb-3">
+                        {[
+                          `Duration - ${therapy.duration}`,
+                          `Focus - ${therapy.focus}`,
+                          `Includes - ${therapy.includes}`
+                        ].map((detail, index) => (
+                          <li key={index} className="pl-4 relative mb-1 text-gray-600 text-sm">
+                            <span className="absolute left-0 text-[#6B72D6]">•</span>
+                            {detail}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Price and Actions */}
+                    <div className="flex justify-between items-end mt-3">
+                      <div>
+                        <span className="text-xs text-gray-500">Therapy price * </span>
+                        <span className="font-medium text-[#6B72D6] text-lg">$ {therapy.price}</span>
+                      </div>
+                      <Button 
+                        variant="border" 
+                        className="text-sm px-3 py-1"
                         onClick={() => handleDelete(therapy.id)}
-                        className="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
                       >
                         Delete
-                      </button>
+                      </Button>
                     </div>
                   </div>
-                  
-                  <p className="text-gray-600 mb-1">{therapy.description}</p>
-                  <p className="text-gray-600 mb-1">Duration - {therapy.duration}</p>
-                  <p className="text-gray-600 mb-1">Focus - {therapy.focus}</p>
-                  <p className="text-gray-600 mb-4">Includes - {therapy.includes}</p>
                 </div>
+              ))}
 
-                {/* Price */}
-                <div className="flex-shrink-0 text-right">
-                  <p className="text-sm text-gray-500 mb-1">Therapy price *</p>
-                  <p className="text-xl font-bold text-gray-800">$ {therapy.price}</p>
+              {/* Empty State */}
+              {filteredTherapies.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 text-lg mb-4">No therapies found</p>
+                  {searchTerm ? (
+                    <p className="text-gray-400">Try adjusting your search term</p>
+                  ) : (
+                    <Button
+                      variant="border"
+                      onClick={handleAddTherapy}
+                      className="text-sm px-4 py-2"
+                    >
+                      Add your first therapy
+                    </Button>
+                  )}
                 </div>
+              )}
+
+              {/* Add Therapy Button - aligned with bottom edge style */}
+              <div className="mt-4 bg-gray-100 rounded-lg p-2 flex justify-between items-center shadow-sm hover:shadow transition-shadow duration-300">
+                <div>
+                  <span className="text-gray-700 text-sm">Total Therapies: </span>
+                  <span className="font-medium text-[#6B72D6] text-sm">{filteredTherapies.length}</span>
+                </div>
+                <Button
+                  variant="border"
+                  onClick={handleAddTherapy}
+                  className="flex items-center gap-2 text-sm px-3 py-1"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Therapy
+                </Button>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Add Therapy Button */}
-        <div className="flex justify-end">
-          <button
-            onClick={handleAddTherapy}
-              className="flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-all shadow-md"
-            style={{ backgroundColor: '#6B72D6' }}
-          >
-            <Plus className="w-5 h-5" />
-            Add Therapy
-          </button>
-        </div>
-
-        {/* Empty State */}
-        {filteredTherapies.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg mb-4">No therapies found</p>
-            {searchTerm ? (
-              <p className="text-gray-400">Try adjusting your search term</p>
-            ) : (
-              <button
-                onClick={handleAddTherapy}
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Add your first therapy
-              </button>
-            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
