@@ -770,7 +770,8 @@ const Home: React.FC = () => {
           {/* Booking fields */}
           <div className="flex flex-1 items-center justify-between relative gap-6">
             {/* Check-in */}
-            <div className="flex items-center gap-2 min-w-[140px] relative">                <motion.button
+            <div className="flex items-center gap-2 min-w-[140px] relative">                
+              <motion.button
                 onClick={() => {
                   // If already open, keep it open
                   if (!showCheckInCalendar) {
@@ -838,7 +839,8 @@ const Home: React.FC = () => {
             </div>
 
             {/* Check-out */}
-            <div className="flex items-center gap-2 min-w-[140px] relative">                <motion.button
+            <div className="flex items-center gap-2 min-w-[140px] relative">                
+              <motion.button
                 onClick={() => {
                   // If already open, keep it open
                   if (!showCheckOutCalendar) {
@@ -976,7 +978,8 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Search button */}            <motion.button
+          {/* Search button */}            
+          <motion.button
             type="button"
             title="Search"
             className="bg-[#5C4DF4] text-white rounded-full w-12 h-12 flex items-center justify-center ml-6 shadow-lg search-button"
