@@ -36,7 +36,7 @@ export interface AddVehiclePayload {
 
 // Create an axios instance
 const apiClient = axios.create({
-  baseURL: 'http://localhost:14399/api/v1/vehicle',
+  baseURL: 'http://localhost:8765/api/v1/vehicle',
 });
 
 /**

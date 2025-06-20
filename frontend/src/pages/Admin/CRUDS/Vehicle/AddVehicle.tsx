@@ -149,7 +149,7 @@ const handleSubmit = async () => {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <h3 className="text-base font-medium text-gray-800">Vehicle Picture</h3>
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              {/* <HelpCircle className="w-4 h-4 text-gray-400" /> */}
             </div>
             <div className="flex gap-4 flex-wrap">
               {/* Display uploaded images */}
@@ -187,7 +187,7 @@ const handleSubmit = async () => {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-6">
               <h3 className="text-base font-medium text-gray-800">Vehicle Details</h3>
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              {/* <HelpCircle className="w-4 h-4 text-gray-400" /> */}
             </div>
             <div className="grid grid-cols-3 gap-6 mb-6">
               <div>
@@ -290,7 +290,7 @@ const handleSubmit = async () => {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-6">
               <h3 className="text-base font-medium text-gray-800">Owner Details</h3>
-              <HelpCircle className="w-4 h-4 text-gray-400" />
+              {/* <HelpCircle className="w-4 h-4 text-gray-400" /> */}
             </div>
             <div className="grid grid-cols-3 gap-6">
               {/* Owner Name with Autocomplete */}
