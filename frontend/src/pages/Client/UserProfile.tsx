@@ -43,14 +43,7 @@ const UserProfile: React.FC = () => {
           </div>
           <div className="flex items-center space-x-3"> {/* Reduced spacing */}
             {/* Search Bar */}
-            <div className="relative bg-white rounded-full shadow-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search"
-                className="pl-10 pr-3 py-2 w-56 rounded-full bg-white text-gray-600 text-sm border-none focus:outline-none focus:ring-1 focus:ring-gray-200"
-              />
-            </div>
+            
             {/* Profile Avatar */}
             <div className="w-10 h-10 rounded-full overflow-hidden border border-white shadow-sm">
               <img
