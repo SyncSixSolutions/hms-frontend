@@ -23,12 +23,7 @@ import sri3 from '../assets/images/sri3.jpg';
 import sri4 from '../assets/images/sri4.jpg';
 import sri5 from '../assets/images/sri5.jpg';
 import sri6 from '../assets/images/sri6.jpg';
-import h1 from '../assets/images/h1.jpg';
-import h2 from '../assets/images/h2.jpg';
-import h3 from '../assets/images/h3.jpg';
-import h5 from '../assets/images/h5.jpg';
-import h6 from '../assets/images/h6.jpg';
-import h4 from '../assets/images/h4.jpg';
+import h1 from '../assets/images/h3.jpg';
 import galleryImg from '../assets/images/gallery.jpg';
 import contactImg from '../assets/images/contact.png';
 
@@ -248,13 +243,18 @@ const Calendar: React.FC<{
     });
   };
   
-  return (
-    <motion.div 
+  return (    <motion.div 
       className="bg-white rounded-2xl shadow-xl border p-6 w-80"
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      initial={{ opacity: 0, y: 15, scale: 0.93 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      transition={{ 
+        duration: 0.35, 
+        ease: [0.23, 1, 0.32, 1],
+        scale: { type: "spring", stiffness: 300, damping: 20 },
+        opacity: { duration: 0.25 },
+        y: { type: "spring", stiffness: 500, damping: 25 }
+      }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -303,9 +303,15 @@ const Calendar: React.FC<{
               ${isDateDisabled(day) ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-blue-50'}
               ${isSelectedDate(day) ? 'bg-[#5C4DF4] text-white shadow-lg' : 'text-gray-700'}
               ${day && !isDateDisabled(day) && !isSelectedDate(day) ? 'hover:bg-blue-50 hover:text-blue-600' : ''}
-            `}
-            whileHover={day && !isDateDisabled(day) ? { scale: 1.05 } : {}}
-            whileTap={day && !isDateDisabled(day) ? { scale: 0.95 } : {}}
+            `}            whileHover={day && !isDateDisabled(day) ? { 
+              scale: 1.08,
+              backgroundColor: "#F5F8FF",
+              transition: { duration: 0.2, ease: "easeOut" }
+            } : {}}
+            whileTap={day && !isDateDisabled(day) ? { 
+              scale: 0.92, 
+              transition: { duration: 0.1, ease: "easeIn" }
+            } : {}}
           >
             {day}
           </motion.button>
@@ -327,13 +333,18 @@ const RoomSelector: React.FC<{
     { name: "Presidential Suite", price: "$499", roomNumbers: ["701", "801"] }
   ];
   
-  return (
-    <motion.div 
+  return (    <motion.div 
       className="bg-white rounded-2xl shadow-xl border p-6 w-80 max-h-96 overflow-y-auto"
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      initial={{ opacity: 0, y: 15, scale: 0.93 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      transition={{ 
+        duration: 0.35, 
+        ease: [0.23, 1, 0.32, 1],
+        scale: { type: "spring", stiffness: 300, damping: 20 },
+        opacity: { duration: 0.25 },
+        y: { type: "spring", stiffness: 500, damping: 25 }
+      }}
     >
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Select Room</h3>
       <div className="space-y-3">
@@ -375,13 +386,18 @@ const GuestsSelector: React.FC<{
   children: number;
   onGuestsChange: (adults: number, children: number) => void;
 }> = ({ adults, children, onGuestsChange }) => {
-  return (
-    <motion.div 
+  return (    <motion.div 
       className="bg-white rounded-2xl shadow-xl border p-6 w-72"
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      initial={{ opacity: 0, y: 15, scale: 0.93 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      transition={{ 
+        duration: 0.35, 
+        ease: [0.23, 1, 0.32, 1],
+        scale: { type: "spring", stiffness: 300, damping: 20 },
+        opacity: { duration: 0.25 },
+        y: { type: "spring", stiffness: 500, damping: 25 }
+      }}
     >
       <h3 className="text-lg font-semibold text-gray-800 mb-4">Guests</h3>
       
@@ -455,10 +471,8 @@ const GuestsSelector: React.FC<{
 const Home: React.FC = () => {
   const [centerIdx, setCenterIdx] = useState(1);
   const [activeImageIndexes, setActiveImageIndexes] = useState(Array(6).fill(0));
-  
-  // Hero image slider state
-  const [currentHeroImage, setCurrentHeroImage] = useState(0);
-  const heroImages = [h1, h2, h3, h5, h6, h4]; 
+    // Static hero image
+  const heroImage = h1; 
   
   const [currentVideo, setCurrentVideo] = useState({
     id: "H1CIBqDeWQ0", 
@@ -478,15 +492,8 @@ const Home: React.FC = () => {
   const [showCheckOutCalendar, setShowCheckOutCalendar] = useState(false);
   const [showRoomSelector, setShowRoomSelector] = useState(false);
   const [showGuestsSelector, setShowGuestsSelector] = useState(false);
-  
-  // Check if any dropdown is open
-  const isAnyDropdownOpen = showCheckInCalendar || showCheckOutCalendar || showRoomSelector || showGuestsSelector;  // Auto-slide effect for hero images
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
-    }, 8000); // Changed to 8 seconds
-    return () => clearInterval(interval);
-  }, [heroImages.length]);
+    // Check if any dropdown is open
+  const isAnyDropdownOpen = showCheckInCalendar || showCheckOutCalendar || showRoomSelector || showGuestsSelector;
 
   const prev = () => setCenterIdx((i) => (i === 0 ? suiteData.length - 1 : i - 1));
   const next = () => setCenterIdx((i) => (i === suiteData.length - 1 ? 0 : i + 1));
@@ -504,15 +511,7 @@ const Home: React.FC = () => {
     newIndexes[roomIndex] = imageIndex;
     setActiveImageIndexes(newIndexes);
   };
-
-  // Function to handle manual hero image navigation
-  const nextHeroImage = () => {
-    setCurrentHeroImage((prev) => (prev + 1) % heroImages.length);
-  };
-
-  const prevHeroImage = () => {
-    setCurrentHeroImage((prev) => (prev - 1 + heroImages.length) % heroImages.length);
-  };
+  // No hero image navigation functions needed for static image
 
   const destinations = [
     { name: "Galle forte", time: "19 minutes drive", image: sri4 },
@@ -630,9 +629,8 @@ const Home: React.FC = () => {
           Sign up
         </motion.button>
       </motion.nav>
-      
-      <motion.header
-        className="relative overflow-hidden bg-cover bg-center transition-all duration-700 ease-out"
+        <motion.header
+        className="relative overflow-hidden bg-cover bg-center"
         style={{
           marginTop: '-10px',
           marginLeft: '2px',
@@ -644,280 +642,57 @@ const Home: React.FC = () => {
           minHeight: isAnyDropdownOpen ? '100vh' : '90vh',
           paddingBottom: isAnyDropdownOpen ? '350px' : '0px'
         }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
-      >
-        {/* Enhanced Hero Image Slider with Particles and Box Effects */}
+        transition={{ 
+          duration: 0.7, 
+          ease: [0.19, 1, 0.22, 1], // Custom cubic-bezier for smoother motion
+          height: { duration: 0.7, ease: [0.34, 1.56, 0.64, 1] },
+          paddingBottom: { duration: 0.6, ease: "easeOut" }
+        }}
+      >        {/* Static Hero Image with Overlay */}
         <div className="absolute inset-0 rounded-[80px_80px_35px_35px] overflow-hidden">
-          {/* Floating Particles Background */}
-          <div className="absolute inset-0 z-[1]">
-            {[...Array(20)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-2 h-2 bg-white/20 rounded-full"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                }}
-                animate={{
-                  x: [0, Math.random() * 100 - 50],
-                  y: [0, Math.random() * 100 - 50],
-                  opacity: [0.2, 0.8, 0.2],
-                  scale: [1, 1.5, 1],
-                }}
-                transition={{
-                  duration: 8 + Math.random() * 4,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: Math.random() * 5,
-                }}
-              />
-            ))}
-          </div>          
-          {/* Image Slider with Seamless Cross-Fade Transition */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentHeroImage}
-              className="absolute inset-0 w-full h-full"
-              initial={{ 
-                opacity: 0,
-                scale: 1.05
-              }}
-              animate={{ 
-                opacity: 1,
-                scale: 1
-              }}
-              exit={{ 
-                opacity: 0,
-                scale: 0.95
-              }}
-              transition={{ 
-                duration: 1.2,
-                ease: [0.25, 0.46, 0.45, 0.94],
-                opacity: { duration: 1.2, ease: "easeInOut" },
-                scale: { duration: 1.5, ease: [0.25, 0.46, 0.45, 0.94] }
-              }}
+          {/* Static background image */}
+          <div 
+            className="absolute inset-0 w-full h-full"
+            style={{
+              backgroundImage: `url(${heroImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            {/* Static gradient overlay */}
+            <div
+              className="absolute inset-0"
               style={{
-                backgroundImage: `url(${heroImages[currentHeroImage]})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                background: "linear-gradient(135deg, rgba(0, 9, 87, 0.4) 0%, rgba(92, 77, 244, 0.3) 50%, rgba(0, 9, 87, 0.4) 100%)",
               }}
-            >
-              {/* Overlay with animated gradient */}
-              <motion.div
-                className="absolute inset-0"
-                style={{
-                  background: "linear-gradient(135deg, rgba(0, 9, 87, 0.4) 0%, rgba(92, 77, 244, 0.3) 50%, rgba(0, 9, 87, 0.4) 100%)",
-                }}
-                animate={{
-                  background: [
-                    "linear-gradient(135deg, rgba(0, 9, 87, 0.4) 0%, rgba(92, 77, 244, 0.3) 50%, rgba(0, 9, 87, 0.4) 100%)",
-                    "linear-gradient(225deg, rgba(92, 77, 244, 0.3) 0%, rgba(0, 9, 87, 0.4) 50%, rgba(92, 77, 244, 0.3) 100%)",
-                    "linear-gradient(135deg, rgba(0, 9, 87, 0.4) 0%, rgba(92, 77, 244, 0.3) 50%, rgba(0, 9, 87, 0.4) 100%)"
-                  ]
-                }}
-                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-              />
-
-              {/* Geometric shapes overlay */}
-              <div className="absolute inset-0">
-                {[...Array(6)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute border border-white/10"
-                    style={{
-                      width: `${40 + Math.random() * 60}px`,
-                      height: `${40 + Math.random() * 60}px`,
-                      left: `${Math.random() * 90}%`,
-                      top: `${Math.random() * 90}%`,
-                      borderRadius: Math.random() > 0.5 ? '50%' : '0%',
-                    }}
-                    animate={{
-                      rotate: [0, 360],
-                      scale: [1, 1.2, 1],
-                      opacity: [0.1, 0.3, 0.1],
-                    }}
-                    transition={{
-                      duration: 10 + Math.random() * 5,
-                      repeat: Infinity,
-                      ease: "linear",
-                      delay: Math.random() * 3,
-                    }}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </AnimatePresence>          
-          {/* Sliding boxes effect on image change */}
-          <AnimatePresence>
-            <motion.div
-              key={`boxes-${currentHeroImage}`}
-              className="absolute inset-0 pointer-events-none z-[2]"
-              initial={{ opacity: 1 }}
-              animate={{ opacity: 0 }}
-              transition={{ duration: 1.2, delay: 0.3, ease: "easeInOut" }}
-            >
-              {[...Array(12)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute bg-white/20 backdrop-blur-sm"
-                  style={{
-                    width: `${100 / 4}%`,
-                    height: `${100 / 3}%`,
-                    left: `${(i % 4) * 25}%`,
-                    top: `${Math.floor(i / 4) * 33.33}%`,
-                  }}
-                  initial={{ 
-                    scaleX: 1,
-                    transformOrigin: i % 2 === 0 ? "left" : "right",
-                    opacity: 1
-                  }}
-                  animate={{ 
-                    scaleX: 0,
-                    opacity: 0
-                  }}
-                  transition={{ 
-                    duration: 1,
-                    delay: (i * 0.08) + 0.4,
-                    ease: [0.16, 1, 0.3, 1],
-                    opacity: { duration: 0.6, delay: (i * 0.08) + 0.6 }
-                  }}
-                />
-              ))}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Enhanced Navigation Arrows */}
-        <motion.button
-          onClick={prevHeroImage}
-          className="absolute left-8 top-1/2 -translate-y-1/2 z-10 group"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <div className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-white rounded-full w-14 h-14 flex items-center justify-center transition-all duration-300 relative overflow-hidden">
-            {/* Ripple effect on hover */}
-            <motion.div
-              className="absolute inset-0 bg-white/20 rounded-full"
-              initial={{ scale: 0, opacity: 0 }}
-              whileHover={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3 }}
             />
-            <svg className="w-6 h-6 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
           </div>
-        </motion.button>
+        </div>        {/* No navigation controls needed for static image */}
 
-        <motion.button
-          onClick={nextHeroImage}
-          className="absolute right-8 top-1/2 -translate-y-1/2 z-10 group"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <div className="bg-white/20 backdrop-blur-md border border-white/30 hover:bg-white/30 text-white rounded-full w-14 h-14 flex items-center justify-center transition-all duration-300 relative overflow-hidden">
-            {/* Ripple effect on hover */}
-            <motion.div
-              className="absolute inset-0 bg-white/20 rounded-full"
-              initial={{ scale: 0, opacity: 0 }}
-              whileHover={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3 }}
-            />
-            <svg className="w-6 h-6 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </motion.button>        
-        {/* Enhanced Dot Indicators with Progress Ring */}
-        <motion.div 
-          className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-10 flex gap-4 justify-center items-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
-          {heroImages.map((_, index) => (
-            <motion.button
-              key={index}
-              onClick={() => setCurrentHeroImage(index)}
-              className="relative w-4 h-4 group"
-              whileHover={{ scale: 1.3 }}
-              whileTap={{ scale: 0.85 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            >
-              {/* Background circle */}
-              <div className="absolute inset-0 bg-white/30 rounded-full transition-all duration-500 ease-out" />
-              
-              {/* Progress ring for active indicator */}
-              {index === currentHeroImage && (
-                <motion.div
-                  className="absolute inset-0"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                >
-                  <svg className="w-4 h-4 -rotate-90" viewBox="0 0 16 16">
-                    <motion.circle
-                      cx="8"
-                      cy="8"
-                      r="6"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      pathLength="1"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: 1 }}
-                      transition={{ 
-                        duration: 8, 
-                        ease: "linear",
-                        repeat: Infinity 
-                      }}
-                    />
-                  </svg>
-                </motion.div>
-              )}
-              
-              {/* Center dot */}
-              <motion.div
-                className={`absolute inset-1 rounded-full transition-all duration-500 ease-out ${
-                  index === currentHeroImage 
-                    ? 'bg-white scale-125' 
-                    : 'bg-white/60 group-hover:bg-white/80'
-                }`}
-                animate={index === currentHeroImage ? { 
-                  scale: [1, 1.3, 1],
-                  opacity: [0.8, 1, 0.8]
-                } : {}}
-                transition={{ 
-                  duration: 3, 
-                  repeat: Infinity, 
-                  ease: [0.25, 0.46, 0.45, 0.94] 
-                }}
-              />
-            </motion.button>
-          ))}
-        </motion.div>
-
-        {/* Hero Content */}
-        <motion.div 
+        {/* Hero Content */}        <motion.div 
           className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4 z-5"
           animate={{ 
             y: isAnyDropdownOpen ? -220 : 0,  
-            opacity: isAnyDropdownOpen ? 0.8 : 1
+            opacity: isAnyDropdownOpen ? 0.8 : 1,
+            scale: isAnyDropdownOpen ? 0.98 : 1
           }}
-          transition={{ duration: 0.5 }}
-        >
-          <motion.h2 
+          transition={{ 
+            duration: 0.7, 
+            ease: [0.19, 1, 0.22, 1], // Custom easing for smoother animation
+            y: { type: "spring", stiffness: 100, damping: 15 },
+            opacity: { duration: 0.8 }
+          }}
+        >          <motion.h2 
             className="text-9xl font-extrabold font-parisienne mb-4 relative"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            initial={{ opacity: 0, y: 40, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              delay: 0.3, 
+              duration: 1.2,
+              y: { type: "spring", stiffness: 70, damping: 14 },
+              opacity: { duration: 1.2, ease: [0.23, 1, 0.32, 1] },
+              scale: { duration: 1.2, ease: [0.34, 1.56, 0.64, 1] }
+            }}
           >
             <span className="relative z-10 font-parisienne">OceanView</span>
             {/* Text glow effect */}
@@ -936,13 +711,17 @@ const Home: React.FC = () => {
               OceanView
             </motion.span>
           </motion.h2>
-          
-          <motion.p 
+            <motion.p 
             className="text-xl font-light relative" 
             style={{ fontFamily: 'Montserrat, sans-serif' }}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
+            transition={{ 
+              delay: 0.6, 
+              duration: 1,
+              y: { type: "spring", stiffness: 60, damping: 16 },
+              opacity: { duration: 0.9, ease: "easeOut" }
+            }}
           >
             <span className="relative z-10">Experience luxury, comfort, and hospitality like never before!</span>
             {/* Subtitle glow */}
@@ -957,18 +736,32 @@ const Home: React.FC = () => {
           </motion.p>
         </motion.div>
 
-        {/* Booking Panel */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
+        {/* Booking Panel */}        <motion.div
+          initial={{ opacity: 0, y: 60, scale: 0.97 }}
           animate={{
             opacity: 1,
+            scale: 1,
             // Move up if hero section is extended (dropdown open)
             y: isAnyDropdownOpen ? -100 : 0
           }}
-          transition={{ duration: 0.8, delay: 1, type: "spring", stiffness: 120 }}
+          transition={{ 
+            duration: 0.9, 
+            delay: 0.7, 
+            type: "spring", 
+            stiffness: 70, 
+            damping: 15,
+            opacity: { duration: 0.6, ease: "easeOut" },
+            scale: { duration: 0.8, ease: [0.34, 1.56, 0.64, 1] },
+            y: { 
+              duration: 0.9, 
+              type: "spring", 
+              stiffness: isAnyDropdownOpen ? 80 : 60, 
+              damping: isAnyDropdownOpen ? 12 : 15 
+            }
+          }}
           className="absolute left-0 right-0 bottom-8 mx-auto w-[80%] max-w-5xl bg-white shadow-2xl rounded-[32px] px-10 py-4 flex items-center justify-between booking-dropdown"
           style={{
-            boxShadow: '0px 4px 24px 0px #00000026',
+            boxShadow: '0px 8px 32px 0px rgba(0, 0, 0, 0.1)',
             borderRadius: '40px',
             zIndex: 10,
             bottom: isAnyDropdownOpen ? '280px' : '2rem'
@@ -977,8 +770,7 @@ const Home: React.FC = () => {
           {/* Booking fields */}
           <div className="flex flex-1 items-center justify-between relative gap-6">
             {/* Check-in */}
-            <div className="flex items-center gap-2 min-w-[140px] relative">              
-              <motion.button
+            <div className="flex items-center gap-2 min-w-[140px] relative">                <motion.button
                 onClick={() => {
                   // If already open, keep it open
                   if (!showCheckInCalendar) {
@@ -988,9 +780,17 @@ const Home: React.FC = () => {
                     setShowGuestsSelector(false);
                   }
                 }}
-                className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className="flex items-center gap-2 w-full p-2 rounded-lg"
+                whileHover={{ 
+                  scale: 1.03, 
+                  backgroundColor: "#F5F8FF",
+                  transition: { duration: 0.3, ease: [0.19, 1, 0.22, 1] }
+                }}
+                whileTap={{ 
+                  scale: 0.97,
+                  backgroundColor: "#EDF2FF",
+                  transition: { duration: 0.1, ease: "easeIn" }
+                }}
                     >
                 <span>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1038,8 +838,7 @@ const Home: React.FC = () => {
             </div>
 
             {/* Check-out */}
-            <div className="flex items-center gap-2 min-w-[140px] relative">              
-              <motion.button
+            <div className="flex items-center gap-2 min-w-[140px] relative">                <motion.button
                 onClick={() => {
                   // If already open, keep it open
                   if (!showCheckOutCalendar) {
@@ -1049,9 +848,17 @@ const Home: React.FC = () => {
                     setShowGuestsSelector(false);
                   }
                 }}
-                className="flex items-center gap-2 w-full hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className="flex items-center gap-2 w-full p-2 rounded-lg"
+                whileHover={{ 
+                  scale: 1.03, 
+                  backgroundColor: "#F5F8FF",
+                  transition: { duration: 0.3, ease: [0.19, 1, 0.22, 1] }
+                }}
+                whileTap={{ 
+                  scale: 0.97,
+                  backgroundColor: "#EDF2FF",
+                  transition: { duration: 0.1, ease: "easeIn" }
+                }}
                 >
                 <span>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1169,14 +976,26 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Search button */}          
-          <motion.button
+          {/* Search button */}            <motion.button
             type="button"
             title="Search"
-            className="bg-[#5C4DF4] hover:bg-[#2D60FF] text-white rounded-full w-12 h-12 flex items-center justify-center ml-6 shadow-lg search-button"
-            style={{ boxShadow: '0px 2px 12px 0px #5C4DF440' }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="bg-[#5C4DF4] text-white rounded-full w-12 h-12 flex items-center justify-center ml-6 shadow-lg search-button"
+            style={{ boxShadow: '0px 4px 20px rgba(92, 77, 244, 0.3)' }}
+            whileHover={{ 
+              scale: 1.08,
+              backgroundColor: "#2D60FF",
+              boxShadow: '0px 6px 24px rgba(92, 77, 244, 0.4)',
+              transition: { 
+                duration: 0.3, 
+                ease: [0.19, 1, 0.22, 1],
+                scale: { type: "spring", stiffness: 400, damping: 10 }
+              }
+            }}
+            whileTap={{ 
+              scale: 0.94,
+              backgroundColor: "#2452E3",
+              transition: { duration: 0.1, ease: "easeIn" }
+            }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
