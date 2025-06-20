@@ -28,6 +28,7 @@ import ReceiptionistDashboard from './pages/Receiptionist/ReceiptionistDashboard
 import ShowOrderings from './pages/Admin/Management/Food/ShowOrderings';
 import RoomListing from './pages/Admin/Management/Room/RoomListing';
 import TherapyBookingHistory from './pages/Admin/Management/Therapy/TherapyBookingHistory';
+import VehicleRentingHistory from './pages/Admin/Management/Vehicle/VehicleRentingHistory';
 
 function App() {
 
@@ -61,8 +62,9 @@ function App() {
         <Route path="/food-list" element={<FoodList />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/receiptionist-dashboard" element={<ReceiptionistDashboard />} />
-        <Route path="/Admin/show-orderings" element={<ShowOrderings />} />
+        <Route path="/admin/show-orderings" element={<ShowOrderings />} />
         <Route path="/admin/therapy-booking-history" element={<TherapyBookingHistory />} />
+        <Route path="/admin/vehicle-renting-history" element={<VehicleRentingHistory />} />
       </Routes>
     </Router>
   );
