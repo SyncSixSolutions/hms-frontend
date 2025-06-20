@@ -28,35 +28,37 @@ import FoodList from './pages/Admin/CRUDS/Food/FoodList';
 function App() {
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard-bookings-client" element={<ClientDashboard_Bookings />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/dashboard-client" element={<ClientDashboard />} />
-        <Route path="/rooms" element={<ShowRooms />} />
-        <Route path="/signup" element={<SignUp/>} ></Route>
-        <Route path="/therapies" element={<ViewTherapiesPage />} />
-        <Route path="/addtherapy" element={<AddTherapyPage />} />
-        <Route path="/edittherapy" element={<EditTherapyPage />} />
-        <Route path="/food" element={<FoodClient/>} />
-        <Route path="/calendar" element={<BookingCalendar />} />
-        <Route path="/recieptionist-view-rentings" element={<ViewRentings />} />
-        <Route path="/dashboard-admin" element={<AdminDashboard />} />
-        <Route path="/vehicle-listing" element={<VehicleListing />} />
-        <Route path="/show-bookings" element={<ShowBookings />} />
-        {/* <Route path="/booking-dashboard" element={<BookingDashboard />} /> */}
-        <Route path="/add-vehicle" element={<AddVehicle />} />
-        <Route path="/view-all-vehicles" element={<ViewAllVehicle />} />
-        <Route path="/add-therapy" element={<AddTherapy />} />
-        <Route path="/edit-therapy" element={<EditTherapy />} />
-        <Route path="/spa-dashboard" element={<SpaDashboard />} />
-        <Route path="/add-food" element={<AddFood />} />
-        <Route path="/edit-food" element={<EditFood />} />
-        <Route path="/food-list" element={<FoodList />} />
-        <Route path="/signin" element={<SignIn />} />
-      </Routes>
-    </Router>
+    <div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard-bookings-client" element={<ClientDashboard_Bookings />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard-client" element={<ClientDashboard />} />
+          <Route path="/rooms" element={<ShowRooms />} />
+          <Route path="/signup" element={<SignUp />} ></Route>
+          <Route path="/therapies" element={<ViewTherapiesPage />} />
+          <Route path="/addtherapy" element={<AddTherapyPage />} />
+          <Route path="/edittherapy" element={<EditTherapyPage />} />
+          <Route path="/food" element={<FoodClient />} />
+          <Route path="/calendar" element={<BookingCalendar />} />
+          <Route path="/recieptionist-view-rentings" element={<ViewRentings />} />
+          <Route path="/dashboard-admin" element={<AdminDashboard />} />
+          <Route path="/vehicle-listing" element={<VehicleListing />} />
+          <Route path="/show-bookings" element={<ShowBookings />} />
+          {/* <Route path="/booking-dashboard" element={<BookingDashboard />} /> */}
+          <Route path="/add-vehicle" element={<AddVehicle />} />
+          <Route path="/view-all-vehicles" element={<ViewAllVehicle />} />
+          <Route path="/add-therapy" element={<AddTherapy />} />
+          <Route path="/edit-therapy" element={<EditTherapy />} />
+          <Route path="/spa-dashboard" element={<SpaDashboard />} />
+          <Route path="/add-food" element={<AddFood />} />
+          <Route path="/edit-food" element={<EditFood />} />
+          <Route path="/food-list" element={<FoodList />} />
+          <Route path="/signin" element={<SignIn />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
