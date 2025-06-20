@@ -329,10 +329,11 @@ const ReceiptionistDashboard: React.FC = () => {
       </div>      
       {/* Charts & Tables Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">        {
-      /* Reservations Chart */}          <Card className="lg:col-span-2 bg-white shadow-md rounded-xl border-0 overflow-hidden">          
+      /* Reservations Chart */}          
+      <Card className="lg:col-span-2 bg-white shadow-md rounded-xl border-0 overflow-hidden">          
           <div className="flex justify-between items-center mb-6 bg-gradient-to-r from-[#6B72D6]/10 via-pink-50/20 to-transparent p-6 relative">
             {/* Pink accent line */}
-            <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#6B72D6] to-pink-400 rounded-full shadow-sm"></div>
+            {/* <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#6B72D6] to-pink-400 rounded-full shadow-sm"></div> */}
             <div>
               <h3 className="text-lg font-semibold text-gray-800">Reservations Overview</h3>
               <p className="text-sm text-gray-500 mt-1">Monthly booking analytics</p>
