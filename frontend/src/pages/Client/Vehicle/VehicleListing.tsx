@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getVehiclesByDateRange } from '../../../services/vehicleService'; // adjust path as needed
+import { getVehiclesByDateRange, rentVehicle } from '../../../services/vehicleService'; // adjust path as needed
 import { 
   Avatar, 
   Button, 
@@ -442,10 +442,38 @@ const VehicleListing: React.FC = () => {
     setSelectedVehicle(vehicle);
   };
 
-  const handleConfirmBooking = () => {
-    alert(`Booking confirmed for ${selectedVehicle?.name} from ${startDate?.toLocaleDateString()} to ${endDate?.toLocaleDateString()}`);
-    setSelectedVehicle(null);
-    setSearchPerformed(false);
+  const handleConfirmBooking = async () => {
+    if (!selectedVehicle || !startDate || !endDate) {
+      alert("Missing booking information");
+      return;
+    }
+
+    const userId = 1; // You should ideally get this from auth context or state
+    const vehicleId = selectedVehicle.id;
+
+    // Format dates as "YYYY-MM-DD"
+    const formattedStartDate = startDate.toISOString().split('T')[0];
+    const formattedEndDate = endDate.toISOString().split('T')[0];
+
+    try {
+      const success = await rentVehicle({
+        userId,
+        vehicleId,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate
+      });
+
+      if (success) {
+        alert(`Booking confirmed for ${selectedVehicle.name}`);
+        setSelectedVehicle(null);
+        setSearchPerformed(false);
+      } else {
+        alert("Failed to book the vehicle. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during booking:", error);
+      alert("An unexpected error occurred while booking.");
+    }
   };
 
 

@@ -121,3 +121,23 @@ export const getVehiclesByDateRange = async (
     return [];
   }
 };
+
+/**
+ * Rent a vehicle
+ */
+export interface RentVehiclePayload {
+  userId: number;
+  vehicleId: number;
+  startDate: string; // "YYYY-MM-DD"
+  endDate: string;   // "YYYY-MM-DD"
+}
+
+export const rentVehicle = async (payload: RentVehiclePayload): Promise<boolean> => {
+  try {
+    const response = await apiClient.post('/rentVehicle', payload);
+    return response.status === 200 || response.status === 201;
+  } catch (error) {
+    console.error('Error renting vehicle:', error);
+    return false;
+  }
+};
