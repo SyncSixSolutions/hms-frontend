@@ -4,33 +4,8 @@ import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import CardContent from '../../../../components/ui/CardContent';
 import Input from '../../../../components/ui/Input';
-
-import { 
-  Box, 
-  Typography, 
-  TextField, 
-  IconButton, 
-  Paper, 
-  Grid, 
-  MenuItem, 
-  Avatar,
-  InputAdornment,
-  useMediaQuery,
-  useTheme,
-  Drawer,
-  AppBar,
-  Toolbar,
-  Container
-} from '@mui/material';
+import { Search, Save, X, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import SaveIcon from '@mui/icons-material/Save';
-import InfoIcon from '@mui/icons-material/Info';
-import CloseIcon from '@mui/icons-material/Close';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import SearchIcon from '@mui/icons-material/Search';
-import MenuIcon from '@mui/icons-material/Menu';
-// Import your admin avatar if you have one or use a placeholder
-// import adminAvatar from '../../../../assets/images/admin-avatar.png';
 
 interface FoodFormData {
   foodNumber: string;
@@ -45,11 +20,7 @@ interface FoodFormData {
 }
 
 const AddFood: React.FC = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -68,12 +39,11 @@ const AddFood: React.FC = () => {
   // Cleanup function for image preview URLs
   useEffect(() => {
     return () => {
-      // Clean up the object URLs when component unmounts
       formData.imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
     };
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -98,7 +68,6 @@ const AddFood: React.FC = () => {
     const newImages = [...formData.images];
     const newPreviews = [...formData.imagePreviews];
     
-    // Revoke the URL to prevent memory leaks
     URL.revokeObjectURL(newPreviews[index]);
     
     newImages.splice(index, 1);
@@ -117,7 +86,6 @@ const AddFood: React.FC = () => {
     setError(null);
 
     try {
-      // Create a food data object that matches your backend expectations
       const foodDataForBackend = {
         foodNumber: formData.foodNumber,
         foodName: formData.foodName,
@@ -128,18 +96,12 @@ const AddFood: React.FC = () => {
         foodDescription: formData.foodDescription
       };
 
-      // If there's an image, log that it's not handled yet
       if (formData.images.length > 0) {
         console.log("Image upload is not implemented in the backend yet");
       }
 
-      // Use the service to add the food
       await foodService.addFood(foodDataForBackend);
-      
-      // Show success message
       alert('Food added successfully!');
-      
-      // Navigate back to the food list
       navigate('/admin/foods');
     } catch (err: any) {
       console.error('Error during submission:', err);
@@ -150,375 +112,292 @@ const AddFood: React.FC = () => {
   };
 
   const handleCancel = () => {
-    // Navigate back to the food list page
     navigate('/admin/foods');
   };
 
-  const currentDate = new Date().toLocaleDateString('en-US', {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-  });
+  const getCurrentDate = () => {
+    const date = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    };
+    return date.toLocaleDateString('en-US', options);
+  };
 
-  // Mobile drawer content
-  const drawerContent = (
-    <Box sx={{ width: 250, p: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <Avatar sx={{ bgcolor: '#6366f1', mr: 2 }} />
-        <Typography variant="h6">Admin Panel</Typography>
-      </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <div className="mb-2">
-          <Button variant="secondary" className="w-full text-left justify-start" onClick={() => navigate('/dashboard-admin')}>
-            Dashboard
-          </Button>
-        </div>
-        <div className="mb-2">
-          <Button 
-            variant="primary" 
-            className="w-full text-left justify-start"
-            onClick={() => navigate('/admin/foods')}
-          >
-            Food Management
-          </Button>
-        </div>
-        <div className="mb-2">
-          <Button variant="secondary" className="w-full text-left justify-start">
-            User Management
-          </Button>
-        </div>
-        <div className="mb-2">
-          <Button variant="secondary" className="w-full text-left justify-start">
-            Settings
-          </Button>
-        </div>
-      </Box>
-    </Box>
-  );
+  const handleSearchChange = (value: string) => {
+    console.log("Search value:", value);
+  };
+
+  const handleProfileClick = () => {
+    console.log("Profile clicked");
+  };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Mobile App Bar */}
-      {isMobile && (
-        <AppBar position="static" sx={{ bgcolor: 'white', boxShadow: 1 }}>
-          <Toolbar>
-            <IconButton 
-              edge="start" 
-              color="inherit" 
-              aria-label="menu"
-              onClick={() => setDrawerOpen(true)}
-            >
-              <MenuIcon sx={{ color: '#334155' }} />
-            </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: '#334155' }}>
-              Add Food
-            </Typography>
-            <Avatar sx={{ bgcolor: '#6366f1', width: 35, height: 35 }} />
-          </Toolbar>
-        </AppBar>
-      )}
-
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-      >
-        {drawerContent}
-      </Drawer>
-
-      <Container maxWidth="lg" sx={{ 
-        flexGrow: 1,
-        display: 'flex', 
-        flexDirection: 'column',
-        bgcolor: '#f8f9fa',
-        p: { xs: 1, sm: 2, md: 3 },
-        pt: isMobile ? 2 : 3,
-      }}>
-        {/* Desktop/Tablet Header */}
-        {!isMobile && (
-          <Box sx={{
-            p: { xs: 1, sm: 2 },
-            display: 'flex',
-            flexDirection: isTablet ? 'column' : 'row',
-            justifyContent: 'space-between',
-            alignItems: isTablet ? 'flex-start' : 'center',
-            mb: 3,
-            gap: isTablet ? 2 : 0
-          }}>
-            <Box>
-              <Typography 
-                variant={isTablet ? "h6" : "h5"} 
-                sx={{ color: '#334155', fontWeight: 600 }}
-              >
-                Welcome, Admin
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  mt: 0.5,
-                  color: '#64748b',
-                  fontSize: '0.9rem'
-                }}
-              >
-                {currentDate}
-              </Typography>
-            </Box>
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 2,
-              width: isTablet ? '100%' : 'auto'
-            }}>
-              <TextField
-                placeholder="Search"
-                variant="outlined"
-                size="small"
-                fullWidth={isTablet}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#94a3b8' }} />
-                    </InputAdornment>
-                  ),
-                  sx: { borderRadius: 20, bgcolor: 'white' }
-                }}
+    <div className="min-h-screen bg-gray-50 p-6 bg-gradient-to-br from-gray-50 to-gray-100"> {/* Same as ClientDashboards_Bookings */}
+      {/* Main container with wider width to minimize edge distance - EXACT SAME AS ClientDashboards_Bookings */}
+      <div className="max-w-[95%] mx-auto">
+        {/* Header - now aligned with card below - EXACT SAME AS ClientDashboards_Bookings */}
+        <div className="flex justify-between items-center mb-4"> {/* Same margin as ClientDashboards_Bookings */}
+          <div>
+            <h1 className="text-2xl font-normal text-gray-500">Welcome, Admin</h1> {/* Same text color as ClientDashboards_Bookings */}
+            <p className="text-sm text-gray-500 mt-1">{getCurrentDate()}</p>
+          </div>
+          <div className="flex items-center space-x-3"> {/* Same spacing as ClientDashboards_Bookings */}
+           
+            
+            {/* Profile Avatar - EXACT SAME AS ClientDashboards_Bookings */}
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-white shadow-md"> {/* Enhanced shadow */}
+              <img
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+                alt="Admin Profile"
+                className="w-full h-full object-cover"
               />
-              <Avatar 
-                // src={adminAvatar} 
-                sx={{ 
-                  width: 40, 
-                  height: 40,
-                  bgcolor: '#6366f1',
-                  flexShrink: 0
-                }} 
-              />
-            </Box>
-          </Box>
-        )}
-
-        {/* Main Content */}
-        <Card className="mb-4 flex-grow">
-          {/* Page Title */}
-          <div className="bg-primary text-white p-4 -m-4 mb-4 rounded-t-2xl">
-            <Typography variant="h6" fontWeight="600">
-              Add a new food
-            </Typography>
+            </div>
+          </div>
+        </div>      
+      
+        {/* Add Food Header - matched with ClientDashboards_Bookings but with enhanced shadow */}
+        <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"> {/* Added shadow with hover effect */}
+          <div className="rounded-t-lg p-2 bg-[#6B72D6]">
+            <h2 className="text-xl font-bold text-white ml-1">Add a new food</h2>
           </div>
 
-          <CardContent className="p-4 -m-4">
-            {error && (
-              <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-6">
-                <p>{error}</p>
-              </div>
-            )}
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Food Picture Section */}
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border">
-                  <Typography variant="subtitle1" fontWeight="600">
-                    Food Picture
-                  </Typography>
-                  <InfoIcon sx={{ fontSize: 18, color: '#64748b' }} />
+          {/* Form Content */}
+          <div className="p-2 bg-white rounded-b-lg">
+            <div className="space-y-4">
+              {error && (
+                <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-6">
+                  <p>{error}</p>
                 </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
-                  {/* Uploaded image previews */}
-                  {formData.imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={preview}
-                        alt={`Food preview ${index + 1}`}
-                        className="w-full aspect-square object-cover rounded-xl border border-border"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
-                      >
-                        <CloseIcon fontSize="small" />
-                      </button>
-                    </div>
-                  ))}
-
-                  {/* Image upload box */}
-                  <div className="relative">
-                    <label 
-                      htmlFor="image-upload"
-                      className="flex flex-col items-center justify-center w-full aspect-square border border-dashed border-border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
-                    >
-                      <input
-                        type="file"
-                        id="image-upload"
-                        accept="image/*"
-                        onChange={handleFileUpload}
-                        className="sr-only"
-                      />
-                      <AddPhotoAlternateIcon sx={{ fontSize: 24, color: '#94a3b8', mb: 1 }} />
-                      <span className="text-xs text-gray-500">
-                        {formData.imagePreviews.length > 0 ? 'Change image' : 'Add image'}
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Food Details Section */}
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border">
-                  <Typography variant="subtitle1" fontWeight="600">
-                    Food Details
-                  </Typography>
-                  <InfoIcon sx={{ fontSize: 18, color: '#64748b' }} />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <Input
-                    label="Food number"
-                    name="foodNumber"
-                    value={formData.foodNumber}
-                    onChange={handleChange}
-                    required
-                    placeholder="Food number"
-                  />
+              )}
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Food Picture Section */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium mb-4">Food Picture</h3>
                   
-                  <Input
-                    label="Food name"
-                    name="foodName"
-                    value={formData.foodName}
-                    onChange={handleChange}
-                    required
-                    placeholder="Food name"
-                  />
+                  <div className="flex gap-4 items-start">
+                    {/* Image previews */}
+                    {formData.imagePreviews.map((preview, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={preview}
+                          alt={`Food preview ${index + 1}`}
+                          className="w-28 h-20 object-cover rounded-lg shadow-md" // Added shadow like ClientDashboards_Bookings
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
 
-                  <div className="mb-2 p-2">
-                    <label className="block mb-1 text-sm font-medium text-text">
-                      Available times
-                    </label>
-                    <select
-                      name="availableTimes"
-                      value={formData.availableTimes}
-                      onChange={handleChange as any}
-                      required
-                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
-                               hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
-                               focus:outline-none transition duration-150 ease-in-out"
-                    >
-                      <option value="">-Select-</option>
-                      <option value="breakfast">Breakfast</option>
-                      <option value="lunch">Lunch</option>
-                      <option value="dinner">Dinner</option>
-                      <option value="allday">All Day</option>
-                    </select>
-                  </div>
-
-                  <div className="mb-2 p-2">
-                    <label className="block mb-1 text-sm font-medium text-text">
-                      Food nature
-                    </label>
-                    <select
-                      name="foodNature"
-                      value={formData.foodNature}
-                      onChange={handleChange as any}
-                      required
-                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
-                               hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
-                               focus:outline-none transition duration-150 ease-in-out"
-                    >
-                      <option value="">-Select-</option>
-                      <option value="veg">Vegetarian</option>
-                      <option value="nonveg">Non-Vegetarian</option>
-                      <option value="vegan">Vegan</option>
-                    </select>
-                  </div>
-
-                  <div className="mb-2 p-2">
-                    <label className="block mb-1 text-sm font-medium text-text">
-                      Price
-                    </label>
+                    {/* Upload button */}
                     <div className="relative">
-                      <span className="absolute left-3 top-2 text-gray-500">Rs.</span>
-                      <input
-                        name="price"
-                        value={formData.price}
-                        onChange={handleChange}
-                        required
-                        placeholder="Price"
-                        className="w-full px-3 py-2 pl-10 border border-border rounded-3xl shadow-sm bg-bg text-text 
-                                 hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
-                                 focus:outline-none transition duration-150 ease-in-out"
-                      />
+                      <label 
+                        htmlFor="image-upload"
+                        className="flex flex-col items-center justify-center w-28 h-20 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors shadow-md" // Added shadow
+                      >
+                        <input
+                          type="file"
+                          id="image-upload"
+                          accept="image/*"
+                          onChange={handleFileUpload}
+                          className="sr-only"
+                        />
+                        <div className="text-2xl text-[#6B72D6]">+</div>
+                        <span className="text-xs text-gray-500 mt-1">Add image</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Food Details Section */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium mb-4">Food Details</h3>
+
+                  <div className="flex md:flex-row flex-col gap-6">
+                    {/* Left column */}
+                    <div className="flex-1 space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Food number</label>
+                        <input
+                          type="text"
+                          name="foodNumber"
+                          value={formData.foodNumber}
+                          onChange={handleChange}
+                          required
+                          placeholder="Food number"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Food name</label>
+                        <input
+                          type="text"
+                          name="foodName"
+                          value={formData.foodName}
+                          onChange={handleChange}
+                          required
+                          placeholder="Food name"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Available times</label>
+                        <select
+                          name="availableTimes"
+                          value={formData.availableTimes}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        >
+                          <option value="">-Select-</option>
+                          <option value="breakfast">Breakfast</option>
+                          <option value="lunch">Lunch</option>
+                          <option value="dinner">Dinner</option>
+                          <option value="allday">All Day</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Right column */}
+                    <div className="flex-1 space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Food nature</label>
+                        <select
+                          name="foodNature"
+                          value={formData.foodNature}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        >
+                          <option value="">-Select-</option>
+                          <option value="veg">Vegetarian</option>
+                          <option value="nonveg">Non-Vegetarian</option>
+                          <option value="vegan">Vegan</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-2 text-gray-500">Rs.</span>
+                          <input
+                            type="text"
+                            name="price"
+                            value={formData.price}
+                            onChange={handleChange}
+                            required
+                            placeholder="Price"
+                            className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                     hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                     focus:outline-none transition duration-150 ease-in-out"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Food type</label>
+                        <select
+                          name="foodType"
+                          value={formData.foodType}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        >
+                          <option value="">-Select-</option>
+                          <option value="appetizer">Appetizer</option>
+                          <option value="mainCourse">Main Course</option>
+                          <option value="dessert">Dessert</option>
+                          <option value="beverage">Beverage</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="mb-2 p-2">
-                    <label className="block mb-1 text-sm font-medium text-text">
-                      Food type
-                    </label>
-                    <select
-                      name="foodType"
-                      value={formData.foodType}
-                      onChange={handleChange as any}
-                      required
-                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
-                               hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
-                               focus:outline-none transition duration-150 ease-in-out"
-                    >
-                      <option value="">-Select-</option>
-                      <option value="appetizer">Appetizer</option>
-                      <option value="mainCourse">Main Course</option>
-                      <option value="dessert">Dessert</option>
-                      <option value="beverage">Beverage</option>
-                    </select>
-                  </div>
-
-                  <div className="mb-2 p-2 sm:col-span-2">
-                    <label className="block mb-1 text-sm font-medium text-text">
-                      Food description
-                    </label>
+                  {/* Full width description */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Food description</label>
                     <textarea
                       name="foodDescription"
                       value={formData.foodDescription}
                       onChange={handleChange}
                       required
                       placeholder="Food description"
-                      rows={isMobile ? 3 : 4}
-                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
-                               hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                               hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
                                focus:outline-none transition duration-150 ease-in-out"
                     />
                   </div>
                 </div>
-              </div>
 
-              {/* Action Buttons */}
-              <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} gap-4 mt-6`}>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={loading}
-                  className={`flex items-center justify-center gap-2 text-black ${isMobile ? 'w-full' : ''}`}
-                >
-                  <SaveIcon style={{ fontSize: '1.25rem' }} />
-                  {loading ? 'Saving...' : 'Save Changes'}
-                </Button>
-                
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleCancel}
-                  className={isMobile ? 'w-full' : ''}
-                >
-                  Cancel
-                </Button>
+                {/* Action Buttons */}
+                <div className="flex gap-6 md:flex-row flex-col">
+                  <Button
+                    type="submit"
+                    variant="filled"
+                    disabled={loading}
+                    className="flex items-center justify-center gap-2 text-white shadow-sm hover:shadow transition-shadow duration-300"
+                    style={{ backgroundColor: "#6B72D6" }}
+                  >
+                    <Save className="w-4 h-4" />
+                    {loading ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                  
+                  <Button
+                    type="button"
+                    variant="border"
+                    onClick={handleCancel}
+                    className="text-gray-700 shadow-sm hover:shadow transition-shadow duration-300"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+
+              {/* Footer section - aligned with bottom edge style like ClientDashboards_Bookings */}
+              <div className="mt-5 bg-gray-100 rounded-lg p-2 flex justify-between items-center shadow-sm hover:shadow transition-shadow duration-300"> {/* Added shadow */}
+                <div>
+                  <span className="text-gray-700 text-sm">Form Status: </span>
+                  <span className="font-medium text-[#6B72D6] text-sm">{loading ? 'Saving...' : 'Ready to save'}</span>
+                </div>
+                <div>
+                  <a
+                    href="#"
+                    className="text-xs hover:underline text-[#6B72D6]"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/admin/foods');
+                    }}
+                  >
+                    Back to food list
+                  </a>
+                </div>
               </div>
-            </form>
-          </CardContent>
-        </Card>
-      </Container>
-    </Box>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
