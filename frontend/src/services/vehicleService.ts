@@ -36,7 +36,7 @@ export interface AddVehiclePayload {
 
 // Create an axios instance
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8765/api/v1/services/vehicle',
+  baseURL: 'http://localhost:8765/api/services/vehicle',
 });
 
 /**
@@ -45,6 +45,7 @@ const apiClient = axios.create({
 export const getOwners = async (): Promise<Owner[]> => {
   try {
     const response = await apiClient.get('/getOwners');
+    console.log('Fetched owners:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching owners:', error);

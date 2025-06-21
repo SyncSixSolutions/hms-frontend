@@ -3,7 +3,8 @@ import { Box, Typography, Button, CircularProgress, Card, CardMedia, Divider, Ic
 import { useNavigate } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { roomService, RoomItem } from '../../../../services/roomService';
+// import { roomService, RoomItem } from '../../../../services/roomService';
+import { roomService, RoomItem } from '../../../../services/RoomService';
 
 const RoomList: React.FC = () => {
   const navigate = useNavigate();
