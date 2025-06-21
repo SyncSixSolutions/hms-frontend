@@ -1,7 +1,9 @@
 import Home from './pages/Home';
 import VehicleListing from './pages/Client/Vehicle/VehicleListing';
 import ShowBookings from './pages/Admin/Management/Booking/ShowBookings';
-// import BookingDashboard from './pages/Admin/Management/Booking/ViewBooking';
+import BookingDashboard from './pages/Admin/Management/Booking/ViewBooking';
+import ClientDashboard from './pages/Client/ClientDashboard';
+import BookingSummary from './pages/Client/Booking/BookingSummary';
 import AddVehicle from './pages/Admin/CRUDS/Vehicle/AddVehicle';
 import ViewAllVehicle from './pages/Admin/CRUDS/Vehicle/ViewAllVehicle';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -24,6 +26,7 @@ import AddFood from './pages/Admin/CRUDS/Food/AddFood';
 import EditFood from './pages/Admin/CRUDS/Food/EditFood';
 import FoodList from './pages/Admin/CRUDS/Food/FoodList';
 import MakeBooking from './pages/Client/Booking/MakeBooking';
+import ConfirmBooking from './pages/Client/Booking/ConfirmBooking';
 import RoomsLayout from './pages/Client/Booking/RoomsLayout';
 import ReceiptionistDashboard from './pages/Receiptionist/ReceiptionistDashboard';
 import ShowOrderings from './pages/Admin/Management/Food/ShowOrderings';
@@ -69,6 +72,11 @@ function App() {
         <Route path="/spa-dashboard" element={<SpaDashboard />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/booking" element={<MakeBooking />} />
+        <Route path="/booking-summary" element={<BookingSummary />} />
+        <Route path="/confirm-booking" element={<ConfirmBooking />} />
+        <Route path="/rooms-layout" element={<RoomsLayout />} />
+        <Route path="/client-dashboard" element={<ClientDashboard />} />
+        <Route path="/booking-dashboard" element={<BookingDashboard />} />
         <Route path="/receiptionist-dashboard" element={<ReceiptionistDashboard />} />
         <Route path="/admin/show-orderings" element={<ShowOrderings />} />
         <Route path="/admin/therapy-booking-history" element={<TherapyBookingHistory />} />
