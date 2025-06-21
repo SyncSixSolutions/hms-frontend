@@ -225,7 +225,7 @@ const AddRoom: React.FC = () => {
       }
 
       alert("Room added successfully!");
-      navigate("/admin/rooms");
+      navigate("/admin/rooms/all");
     } catch (err: any) {
       console.error(err);
       setError(err.message || "Submission failed");
