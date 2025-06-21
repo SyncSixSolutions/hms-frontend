@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../../../components/ui/Button';
-import { Search, Save, X, Plus } from 'lucide-react';
+import { Save, X,} from 'lucide-react';
 
 interface RoomFormData {
   roomNumber: string;
@@ -161,13 +161,6 @@ const AddRoom: React.FC = () => {
     return date.toLocaleDateString('en-US', options);
   };
 
-  const handleSearchChange = (value: string) => {
-    console.log("Search value:", value);
-  };
-
-  const handleProfileClick = () => {
-    console.log("Profile clicked");
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 bg-gradient-to-br from-gray-50 to-gray-100"> {/* Same as AddFood */}
