@@ -1,7 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Button from '../../../../components/ui/Button';
-import { Save, X,} from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "../../../../components/ui/Button";
+import Card from "../../../../components/ui/Card";
+import CardContent from "../../../../components/ui/CardContent";
+import Input from "../../../../components/ui/Input";
+import Checkbox from "../../../../components/ui/Checkbox";
+import { roomService } from "../../../../services/roomService";
+
+import {
+  Box,
+  Typography,
+  TextField,
+  IconButton,
+  Avatar,
+  InputAdornment,
+  useMediaQuery,
+  useTheme,
+  Drawer,
+  AppBar,
+  Toolbar,
+  Container,
+} from "@mui/material";
+
+import SaveIcon from "@mui/icons-material/Save";
+import InfoIcon from "@mui/icons-material/Info";
+import CloseIcon from "@mui/icons-material/Close";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import SearchIcon from "@mui/icons-material/Search";
+import MenuIcon from "@mui/icons-material/Menu";
 
 interface RoomFormData {
   roomNumber: string;
@@ -14,7 +40,7 @@ interface RoomFormData {
   roomSize: string;
   description: string;
   images: File[];
-  imagePreviews: string[];  
+  imagePreviews: string[];
   amenities: {
     petFriendly: boolean;
     smoking: boolean;
@@ -33,19 +59,22 @@ interface RoomFormData {
 
 const AddRoom: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<RoomFormData>({
-    roomNumber: '',
-    roomFloor: '',
-    reservationStatus: 'Vacant',
-    roomType: 'Deluxe',
-    capacity: '',
-    pricePerNight: '',
-    bedType: 'King size',
-    roomSize: '',
-    description: '',
+    roomNumber: "",
+    roomFloor: "",
+    reservationStatus: "Vacant",
+    roomType: "Deluxe",
+    capacity: "",
+    pricePerNight: "",
+    bedType: "King size",
+    roomSize: "",
+    description: "",
     images: [],
     imagePreviews: [],
     amenities: {
@@ -60,18 +89,22 @@ const AddRoom: React.FC = () => {
       refrigerator: false,
       airConditioner: false,
       tvCable: false,
-      seaView: false
-    }
+      seaView: false,
+    },
   });
 
   // Cleanup function for image preview URLs
   useEffect(() => {
     return () => {
-      formData.imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+      formData.imagePreviews.forEach((preview) => URL.revokeObjectURL(preview));
     };
-  }, []);
+  }, [formData.imagePreviews]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -85,8 +118,8 @@ const AddRoom: React.FC = () => {
       ...formData,
       amenities: {
         ...formData.amenities,
-        [name]: checked
-      }
+        [name]: checked,
+      },
     });
   };
 
@@ -94,31 +127,28 @@ const AddRoom: React.FC = () => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const previewUrl = URL.createObjectURL(file);
-      
-      // Add to existing previews (up to 4 images)
-      if (formData.imagePreviews.length < 4) {
-        setFormData({
-          ...formData,
-          images: [...formData.images, file],
-          imagePreviews: [...formData.imagePreviews, previewUrl]
-        });
-      }
+
+      setFormData({
+        ...formData,
+        images: [...formData.images, file],
+        imagePreviews: [...formData.imagePreviews, previewUrl],
+      });
     }
   };
 
   const handleRemoveImage = (index: number) => {
     const newImages = [...formData.images];
     const newPreviews = [...formData.imagePreviews];
-    
+
     URL.revokeObjectURL(newPreviews[index]);
-    
+
     newImages.splice(index, 1);
     newPreviews.splice(index, 1);
-    
+
     setFormData({
       ...formData,
       images: newImages,
-      imagePreviews: newPreviews
+      imagePreviews: newPreviews,
     });
   };
 
@@ -128,99 +158,296 @@ const AddRoom: React.FC = () => {
     setError(null);
 
     try {
-      // Here you would call your room service to save room data
-      // Example: await roomService.addRoom(formData);
-      
-      console.log('Room data to be submitted:', formData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      alert('Room added successfully!');
-      navigate('/admin/rooms');
+      // 1. Convert floor number from string (e.g., "Floor 3") to integer
+      const parsedFloor = parseInt(
+        formData.roomFloor.replace(/[^0-9]/g, ""),
+        10
+      );
+      if (isNaN(parsedFloor)) {
+        throw new Error("Invalid floor number");
+      }
+
+      // 2. Map checked amenities to their corresponding IDs
+      const amenityNameToId: Record<string, number> = {
+        petFriendly: 1,
+        smoking: 2,
+        wifi: 3,
+        miniBar: 4,
+        coffeeMaker: 5,
+        cityView: 6,
+        shower: 7,
+        sofaBox: 8,
+        refrigerator: 9,
+        airConditioner: 10,
+        tvCable: 11,
+        seaView: 12,
+      };
+
+      const selectedAmenityIds = Object.entries(formData.amenities)
+        .filter(([_, isChecked]) => isChecked)
+        .map(([key]) => amenityNameToId[key]);
+
+      // 3. Build FormData for multipart/form-data
+      const formDataToSend = new FormData();
+      formDataToSend.append("roomNumber", formData.roomNumber);
+      formDataToSend.append("floor", parsedFloor.toString()); // ✅ match backend DTO (floor)
+      formDataToSend.append("status", formData.reservationStatus); // ✅ match backend DTO (status)
+      formDataToSend.append("roomType", formData.roomType);
+      formDataToSend.append("capacity", parseInt(formData.capacity).toString());
+      formDataToSend.append(
+        "pricePerNight",
+        parseFloat(formData.pricePerNight).toString()
+      );
+      formDataToSend.append("bedType", formData.bedType);
+      formDataToSend.append("roomSize", formData.roomSize);
+      formDataToSend.append("description", formData.description);
+
+      selectedAmenityIds.forEach((id) =>
+        formDataToSend.append("amenityIds", id.toString())
+      );
+      formData.images.forEach((image) =>
+        formDataToSend.append("images", image)
+      );
+
+      // 4. Submit to backend
+      const response = await fetch(
+        "http://localhost:8765/api/services/rooms/add",
+        {
+          method: "POST",
+          body: formDataToSend,
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to submit room: ${errorText}`);
+      }
+
+      alert("Room added successfully!");
+      navigate("/admin/rooms");
     } catch (err: any) {
-      console.error('Error during submission:', err);
-      setError(err.message || 'Error connecting to server. Please try again later.');
+      console.error(err);
+      setError(err.message || "Submission failed");
     } finally {
       setLoading(false);
     }
   };
 
   const handleCancel = () => {
-    navigate('/admin/rooms');
+    navigate("/admin/rooms");
   };
 
-  const getCurrentDate = () => {
-    const date = new Date();
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'short',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    };
-    return date.toLocaleDateString('en-US', options);
-  };
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    weekday: "short",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 
+  // Mobile drawer content
+  const drawerContent = (
+    <Box sx={{ width: 250, p: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
+        <Avatar sx={{ bgcolor: "#6366f1", mr: 2 }} />
+        <Typography variant="h6">Admin Panel</Typography>
+      </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <div className="mb-2">
+          <Button
+            variant="secondary"
+            className="w-full text-left justify-start"
+            onClick={() => navigate("/admin/dashboard")}
+          >
+            Dashboard
+          </Button>
+        </div>
+        <div className="mb-2">
+          <Button
+            variant="primary"
+            className="w-full text-left justify-start"
+            onClick={() => navigate("/admin/rooms")}
+          >
+            Room Management
+          </Button>
+        </div>
+        <div className="mb-2">
+          <Button
+            variant="secondary"
+            className="w-full text-left justify-start"
+          >
+            User Management
+          </Button>
+        </div>
+        <div className="mb-2">
+          <Button
+            variant="secondary"
+            className="w-full text-left justify-start"
+          >
+            Settings
+          </Button>
+        </div>
+      </Box>
+    </Box>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 bg-gradient-to-br from-gray-50 to-gray-100"> {/* Same as AddFood */}
-      {/* Main container with wider width to minimize edge distance - EXACT SAME AS AddFood */}
-      <div className="max-w-[95%] mx-auto">
-        {/* Header - now aligned with card below - EXACT SAME AS AddFood */}
-        <div className="flex justify-between items-center mb-4"> {/* Same margin as AddFood */}
-          <div>
-            <h1 className="text-2xl font-normal text-gray-500">Welcome, Admin</h1> {/* Same text color as AddFood */}
-            <p className="text-sm text-gray-500 mt-1">{getCurrentDate()}</p>
-          </div>
-          <div className="flex items-center space-x-3"> {/* Same spacing as AddFood */}
-           
-            
-            {/* Profile Avatar - EXACT SAME AS AddFood */}
-            <div className="w-10 h-10 rounded-full overflow-hidden border border-white shadow-md"> {/* Enhanced shadow */}
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
-                alt="Admin Profile"
-                className="w-full h-full object-cover"
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      {/* Mobile App Bar */}
+      {isMobile && (
+        <AppBar position="static" sx={{ bgcolor: "white", boxShadow: 1 }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={() => setDrawerOpen(true)}
+            >
+              <MenuIcon sx={{ color: "#334155" }} />
+            </IconButton>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1, color: "#334155" }}
+            >
+              Add Room
+            </Typography>
+            <Avatar sx={{ bgcolor: "#6366f1", width: 35, height: 35 }} />
+          </Toolbar>
+        </AppBar>
+      )}
+
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+      >
+        {drawerContent}
+      </Drawer>
+
+      <Container
+        maxWidth="lg"
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          bgcolor: "#f3f3f3",
+          p: { xs: 0.3, sm: 0.5, md: 1 },
+          pt: isMobile ? 2 : 3,
+          boxShadow: 3,
+        }}
+      >
+        {/* Desktop/Tablet Header */}
+        {!isMobile && (
+          <Box
+            sx={{
+              p: { xs: 1, sm: 2 },
+              display: "flex",
+              flexDirection: isTablet ? "column" : "row",
+              justifyContent: "space-between",
+              alignItems: isTablet ? "flex-start" : "center",
+              mb: 3,
+              gap: isTablet ? 2 : 0,
+            }}
+          >
+            <Box>
+              <Typography
+                variant={isTablet ? "h6" : "h5"}
+                sx={{ color: "#334155", fontWeight: 600 }}
+              >
+                Welcome, Admin
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  mt: 0.5,
+                  color: "#64748b",
+                  fontSize: "0.9rem",
+                }}
+              >
+                {currentDate}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                width: isTablet ? "100%" : "auto",
+              }}
+            >
+              <TextField
+                placeholder="Search"
+                variant="outlined"
+                size="small"
+                fullWidth={isTablet}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: "#94a3b8" }} />
+                    </InputAdornment>
+                  ),
+                  sx: { borderRadius: 20, bgcolor: "white" },
+                }}
               />
-            </div>
-          </div>
-        </div>      
-      
-        {/* Add Room Header - matched with AddFood but with enhanced shadow */}
-        <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"> {/* Added shadow with hover effect */}
-          <div className="rounded-t-lg p-2 bg-[#6B72D6]">
-            <h2 className="text-xl font-bold text-white ml-1">Add a new room</h2>
+              <Avatar
+                sx={{
+                  width: 40,
+                  height: 40,
+                  bgcolor: "#6366f1",
+                  flexShrink: 0,
+                }}
+              />
+            </Box>
+          </Box>
+        )}
+
+        {/* Main Content */}
+        <Card className="mb-4 flex-grow">
+          {/* Page Title */}
+          <div className="bg-primary text-white p-4 -m-4 mb-4 rounded-t-2xl">
+            <Typography variant="h6" fontWeight="600">
+              Add a new room
+            </Typography>
           </div>
 
-          {/* Form Content */}
-          <div className="p-2 bg-white rounded-b-lg">
-            <div className="space-y-4">
-              {error && (
-                <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-6">
-                  <p>{error}</p>
+          <CardContent className="p-4 -m-4">
+            {error && (
+              <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-6">
+                <p>{error}</p>
+              </div>
+            )}
+
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-6"
+              encType="multipart/form-data"
+            >
+              {/* Room Picture Section */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border">
+                  <Typography variant="subtitle1" fontWeight="600">
+                    Room Picture
+                  </Typography>
+                  <InfoIcon sx={{ fontSize: 18, color: "#64748b" }} />
                 </div>
-              )}
-              
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Room Picture Section */}
-                <div className="mb-8">
-                  <h3 className="text-lg font-medium mb-4">Room Pictures</h3>
-                  
-                  <div className="flex gap-4 items-start"> {/* Changed from grid to flex like AddFood */}
-                    {/* Image previews */}
+
+                <div className="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {/* Uploaded image previews */}
                     {formData.imagePreviews.map((preview, index) => (
                       <div key={index} className="relative">
                         <img
                           src={preview}
                           alt={`Room preview ${index + 1}`}
-                          className="w-46 h-36 object-cover rounded-lg shadow-md" // Same size as AddFood
+                          className="w-full aspect-square object-cover rounded-xl border border-border"
                         />
                         <button
                           type="button"
                           onClick={() => handleRemoveImage(index)}
                           className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
                         >
-                          <X className="w-4 h-4" />
+                          <CloseIcon fontSize="small" />
                         </button>
                       </div>
                     ))}
@@ -228,9 +455,9 @@ const AddRoom: React.FC = () => {
                     {/* Upload button - reduced size to match AddFood */}
                     {formData.imagePreviews.length < 4 && (
                       <div className="relative">
-                        <label 
+                        <label
                           htmlFor="image-upload"
-                          className="flex flex-col items-center justify-center w-36 h-28 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors shadow-md" // Same size as AddFood
+                          className="flex flex-col items-center justify-center w-full aspect-square border border-dashed border-border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
                         >
                           <input
                             type="file"
@@ -239,68 +466,66 @@ const AddRoom: React.FC = () => {
                             onChange={handleFileUpload}
                             className="sr-only"
                           />
-                          <div className="text-2xl text-[#6B72D6]">+</div>
-                          <span className="text-xs text-gray-500 mt-1">Add image</span>
+                          <AddPhotoAlternateIcon
+                            sx={{ fontSize: 24, color: "#94a3b8", mb: 1 }}
+                          />
+                          <span className="text-xs text-gray-500">
+                            Add image
+                          </span>
                         </label>
                       </div>
                     )}
                   </div>
                 </div>
+              </div>
 
-                {/* Room Details Section */}
-                <div className="mb-8">
-                  <h3 className="text-lg font-medium mb-4">Room Details</h3>
+              {/* Room Details Section */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border">
+                  <Typography variant="subtitle1" fontWeight="600">
+                    Room Details
+                  </Typography>
+                  <InfoIcon sx={{ fontSize: 18, color: "#64748b" }} />
+                </div>
 
-                  <div className="flex md:flex-row flex-col gap-6">
-                    {/* Left column */}
-                    <div className="flex-1 space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Room number</label>
-                        <input
-                          type="text"
-                          name="roomNumber"
-                          value={formData.roomNumber}
-                          onChange={handleChange}
-                          required
-                          placeholder="Room number"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
-                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                   focus:outline-none transition duration-150 ease-in-out"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Room floor</label>
-                        <input
-                          type="text"
-                          name="roomFloor"
-                          value={formData.roomFloor}
-                          onChange={handleChange}
-                          required
-                          placeholder="Floor number"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
-                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                   focus:outline-none transition duration-150 ease-in-out"
-                        />
-                      </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <Input
+                    label="Room number"
+                    name="roomNumber"
+                    value={formData.roomNumber}
+                    onChange={handleChange}
+                    required
+                    placeholder="Room number"
+                  />
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Reservation status</label>
-                        <select
-                          name="reservationStatus"
-                          value={formData.reservationStatus}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
-                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                   focus:outline-none transition duration-150 ease-in-out"
-                        >
-                          <option value="Vacant">Vacant</option>
-                          <option value="Reserved">Reserved</option>
-                          <option value="Occupied">Occupied</option>
-                          <option value="Maintenance">Maintenance</option>
-                        </select>
-                      </div>
+                  <Input
+                    label="Room floor"
+                    name="roomFloor"
+                    value={formData.roomFloor}
+                    onChange={handleChange}
+                    required
+                    placeholder="Floor number"
+                  />
+
+                  <div className="mb-2 p-2">
+                    <label className="block mb-1 text-sm font-medium text-text">
+                      Reservation status
+                    </label>
+                    <select
+                      name="reservationStatus"
+                      value={formData.reservationStatus}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
+                               hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
+                               focus:outline-none transition duration-150 ease-in-out"
+                    >
+                      <option value="Vacant">Vacant</option>
+                      <option value="Reserved">Reserved</option>
+                      <option value="Occupied">Occupied</option>
+                      <option value="Maintenance">Maintenance</option>
+                    </select>
+                  </div>
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Room type</label>
@@ -322,177 +547,133 @@ const AddRoom: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Right column */}
-                    <div className="flex-1 space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Room capacity</label>
-                        <input
-                          type="text"
-                          name="capacity"
-                          value={formData.capacity}
-                          onChange={handleChange}
-                          required
-                          placeholder="2-4 guests"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
-                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                   focus:outline-none transition duration-150 ease-in-out"
-                        />
-                      </div>
+                  <Input
+                    label="Room capacity"
+                    name="capacity"
+                    value={formData.capacity}
+                    onChange={handleChange}
+                    required
+                    placeholder="2-4 guests"
+                  />
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Price per night</label>
-                        <div className="relative">
-                          <span className="absolute left-3 top-2 text-gray-500">$</span>
-                          <input
-                            type="text"
-                            name="pricePerNight"
-                            value={formData.pricePerNight}
-                            onChange={handleChange}
-                            required
-                            placeholder="Price"
-                            className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
-                                     hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                     focus:outline-none transition duration-150 ease-in-out"
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Bed type</label>
-                        <select
-                          name="bedType"
-                          value={formData.bedType}
-                          onChange={handleChange}
-                          required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
-                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                   focus:outline-none transition duration-150 ease-in-out"
-                        >
-                          <option value="King size">King size</option>
-                          <option value="Queen size">Queen size</option>
-                          <option value="Twin">Twin</option>
-                          <option value="Double">Double</option>
-                          <option value="Single">Single</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Room size</label>
-                        <input
-                          type="text"
-                          name="roomSize"
-                          value={formData.roomSize}
-                          onChange={handleChange}
-                          placeholder="Square footage"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
-                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                   focus:outline-none transition duration-150 ease-in-out"
-                        />
-                      </div>
+                  <div className="mb-2 p-2">
+                    <label className="block mb-1 text-sm font-medium text-text">
+                      Room price per night
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-2 text-gray-500">
+                        $
+                      </span>
+                      <input
+                        name="pricePerNight"
+                        value={formData.pricePerNight}
+                        onChange={handleChange}
+                        required
+                        placeholder="Price"
+                        className="w-full px-3 py-2 pl-10 border border-border rounded-3xl shadow-sm bg-bg text-text 
+                                 hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
+                                 focus:outline-none transition duration-150 ease-in-out"
+                      />
                     </div>
                   </div>
 
-                  {/* Full width description */}
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Room description</label>
+                  <div className="mb-2 p-2">
+                    <label className="block mb-1 text-sm font-medium text-text">
+                      Bed type
+                    </label>
+                    <select
+                      name="bedType"
+                      value={formData.bedType}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
+                                                     hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
+                                                     focus:outline-none transition duration-150 ease-in-out"
+                    >
+                      <option value="King size">King size</option>
+                      <option value="Queen size">Queen size</option>
+                      <option value="Twin">Twin</option>
+                      <option value="Double">Double</option>
+                      <option value="Single">Single</option>
+                    </select>
+                  </div>
+
+                  <Input
+                    label="Room size (sq ft)"
+                    name="roomSize"
+                    value={formData.roomSize}
+                    onChange={handleChange}
+                    required
+                    placeholder="e.g., 350"
+                  />
+
+                  <div className="mb-2 p-2">
+                    <label className="block mb-1 text-sm font-medium text-text">
+                      Description
+                    </label>
                     <textarea
                       name="description"
                       value={formData.description}
                       onChange={handleChange}
-                      required
-                      placeholder="Room description"
                       rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
-                               hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                               focus:outline-none transition duration-150 ease-in-out"
+                      placeholder="Write room description here..."
+                      className="w-full px-3 py-2 border border-border rounded-xl shadow-sm bg-bg text-text 
+                                                       hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
+                                                       focus:outline-none transition duration-150 ease-in-out resize-none"
                     />
                   </div>
                 </div>
 
-                {/* Amenities Section */}
-                <div className="mb-8">
-                  <h3 className="text-lg font-medium mb-4">Amenities</h3>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {[
-                      { key: 'petFriendly', label: 'Pet-friendly' },
-                      { key: 'smoking', label: 'Smoking' },
-                      { key: 'wifi', label: 'Wi-Fi' },
-                      { key: 'miniBar', label: 'Mini-bar' },
-                      { key: 'coffeeMaker', label: 'Coffee maker' },
-                      { key: 'cityView', label: 'City view' },
-                      { key: 'shower', label: 'Shower' },
-                      { key: 'sofaBox', label: 'Sofa box' },
-                      { key: 'refrigerator', label: 'Refrigerator' },
-                      { key: 'airConditioner', label: 'Air conditioner' },
-                      { key: 'tvCable', label: 'TV Cable' },
-                      { key: 'seaView', label: 'Sea view' }
-                    ].map(({ key, label }) => (
-                      <div key={key} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id={key}
-                          name={key}
-                          checked={formData.amenities[key as keyof typeof formData.amenities]}
-                          onChange={handleAmenityChange}
-                          className="w-4 h-4 text-[#6B72D6] border-gray-300 rounded focus:ring-[#6B72D6] focus:ring-2"
-                        />
-                        <label htmlFor={key} className="text-sm text-gray-700 cursor-pointer">
-                          {label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+              {/* Amenities Section */}
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border">
+                  <Typography variant="subtitle1" fontWeight="600">
+                    Amenities
+                  </Typography>
+                  <InfoIcon sx={{ fontSize: 18, color: "#64748b" }} />
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-6 md:flex-row flex-col">
-                  <Button
-                    type="submit"
-                    variant="filled"
-                    disabled={loading}
-                    className="flex items-center justify-center gap-2 text-white shadow-sm hover:shadow transition-shadow duration-300"
-                    style={{ backgroundColor: "#6B72D6" }}
-                  >
-                    <Save className="w-4 h-4" />
-                    {loading ? 'Saving...' : 'Save Changes'}
-                  </Button>
-                  
-                  <Button
-                    type="button"
-                    variant="border"
-                    onClick={handleCancel}
-                    className="text-gray-700 shadow-sm hover:shadow transition-shadow duration-300"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-
-              {/* Footer section - aligned with bottom edge style like AddFood */}
-              <div className="mt-5 bg-gray-100 rounded-lg p-2 flex justify-between items-center shadow-sm hover:shadow transition-shadow duration-300"> {/* Added shadow */}
-                <div>
-                  <span className="text-gray-700 text-sm">Form Status: </span>
-                  <span className="font-medium text-[#6B72D6] text-sm">{loading ? 'Saving...' : 'Ready to save'}</span>
-                </div>
-                <div>
-                  <a
-                    href="#"
-                    className="text-xs hover:underline text-[#6B72D6]"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate('/admin/rooms');
-                    }}
-                  >
-                    Back to room list
-                  </a>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {Object.entries(formData.amenities).map(
+                    ([amenity, checked]) => (
+                      <Checkbox
+                        key={amenity}
+                        label={amenity
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (str) => str.toUpperCase())}
+                        name={amenity}
+                        checked={checked}
+                        onChange={handleAmenityChange}
+                      />
+                    )
+                  )}
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+
+              {/* Submit and Cancel Buttons */}
+              <div className="flex justify-end gap-4">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleCancel}
+                  disabled={loading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={loading}
+                  startIcon={<SaveIcon />}
+                >
+                  {loading ? "Saving..." : "Save Room"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </Container>
+    </Box>
   );
 };
 

@@ -63,6 +63,7 @@ import {
   TabItem,
   ContentArea,
   NavBarComponent,
+  FloatingNavBar
 } from '../components/layout';
 
 const Dashboard = () => {
@@ -71,6 +72,7 @@ const Dashboard = () => {
   return (
     <div>
       <NavBarComponent />
+      <FloatingNavBar />
       <div className="flex h-screen">
         <Sidebar>
           <SidebarItem label="Dashboard" active />
