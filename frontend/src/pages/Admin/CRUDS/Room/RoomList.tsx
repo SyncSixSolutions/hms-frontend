@@ -38,19 +38,23 @@ const RoomList: React.FC = () => {
     fetchRooms();
   }, []);
 
-  const handleDeleteRoom = async (id: number) => {
+  const handleDeleteRoom = async (roomNumber: string) => {
     if (window.confirm("Are you sure you want to delete this room?")) {
       try {
-        await roomService.deleteRoom(id);
-        setRooms((prev) => prev.filter((room) => room.id !== id));
+        setLoading(true);
+        await roomService.deleteRoom(roomNumber);
+        setRooms(rooms.filter((room) => room.roomNumber !== roomNumber));
       } catch (err: any) {
-        alert(err.message || "Error deleting room.");
+        console.error("Failed to delete room:", err);
+        setError(err.message || "Failed to delete room. Please try again.");
+      } finally {
+        setLoading(false);
       }
     }
   };
 
   const handleAddRoom = () => navigate("/admin/rooms/add");
-  const handleEditRoom = (id: number) => navigate(`/admin/rooms/edit/${id}`);
+  const handleEditRoom = (roomNumber: string) => navigate(`/admin/rooms/edit/${roomNumber}`);
 
   const currentDate = new Date().toLocaleDateString("en-US", {
     weekday: "short",
@@ -126,8 +130,9 @@ const RoomList: React.FC = () => {
               <CardMedia
                 component="img"
                 image={
-                  room.imageUrls?.[0] ||
-                  "https://via.placeholder.com/140x90?text=Room"
+                  room.imageUrls?.[0]
+                    ? `http://localhost:8765/${room.imageUrls[0]}`
+                    : "https://via.placeholder.com/140x90?text=Room"
                 }
                 alt={`Room ${room.roomNumber}`}
                 sx={{
@@ -139,7 +144,7 @@ const RoomList: React.FC = () => {
                   objectFit: "cover",
                   cursor: "pointer",
                 }}
-                onClick={() => handleEditRoom(room.id!)}
+                onClick={() => handleEditRoom(room.roomNumber)}
               />
 
               {/* Room Details */}
@@ -179,7 +184,7 @@ const RoomList: React.FC = () => {
                   startIcon={<DeleteIcon />}
                   size="small"
                   sx={{ mt: 1 }}
-                  onClick={() => handleDeleteRoom(room.id!)}
+                  onClick={() => handleDeleteRoom(room.roomNumber)}
                 >
                   Delete
                 </Button>
