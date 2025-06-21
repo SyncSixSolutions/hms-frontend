@@ -116,6 +116,7 @@ export const getVehiclesByDateRange = async (
         endDate,
       },
     });
+    console.log('Fetched vehicles by date range:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching vehicles by date range:', error);

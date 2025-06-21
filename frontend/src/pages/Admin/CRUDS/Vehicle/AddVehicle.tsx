@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Image, HelpCircle, ChevronDown } from 'lucide-react';
 import {getOwners, addVehicle} from '../../../../services/vehicleService';
+import { validateVehicleForm, ValidationErrors } from './VehicleValidations';
+import { useVehicleImages } from './useVehicleImages';
+
+
 
 // Define Owner interface
 interface Owner {
@@ -43,7 +47,10 @@ const AddVehicle: React.FC = () => {
   const [owners, setOwners] = useState<Owner[]>([]);
   const [filteredOwners, setFilteredOwners] = useState<Owner[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [vehicleImages, setVehicleImages] = useState<string[]>([]);
+  // const [vehicleImages, setVehicleImages] = useState<string[]>([]);
+  const [errors, setErrors] = useState<ValidationErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   useEffect(() => {
     const fetchOwners = async () => {
@@ -84,57 +91,107 @@ const AddVehicle: React.FC = () => {
     setFilteredOwners([]);
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          setVehicleImages(prev => [...prev, e.target?.result as string]);
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-    event.target.value = '';
-  };
+  // const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const files = event.target.files;
+  //   if (files) {
+  //     Array.from(files).forEach(file => {
+  //       const reader = new FileReader();
+  //       reader.onload = (e) => {
+  //         setVehicleImages(prev => [...prev, e.target?.result as string]);
+  //       };
+  //       reader.readAsDataURL(file);
+  //     });
+  //   }
+  //   event.target.value = '';
+  // };
 
-  const removeImage = (index: number) => {
-    setVehicleImages(prev => prev.filter((_, i) => i !== index));
-  };
+  // const removeImage = (index: number) => {
+  //   setVehicleImages(prev => prev.filter((_, i) => i !== index));
+  // };
+
+    const {
+    images,
+    savedImageUrls,
+    isUploading,
+    uploadError,
+    handleImageUpload,
+    removeImage,
+    saveImages,
+    clearImages,
+    getImagePreviews
+  } = useVehicleImages();
 
 const handleSubmit = async () => {
-  const payload = {
-    vehicle: {
-      vehicleNumber: formData.vehicleNumber,
-      passengerCount: parseInt(formData.passengerCount),
-      vehicleType: formData.vehicleType,
-      pricePerKm: parseFloat(formData.pricePerKm),
-      basePrice: parseFloat(formData.basePrice),
-      availabilityFrom: formData.availabilityFrom,
-      availabilityTo: formData.availabilityTo,
-      description: formData.description || "Vehicle description"
-    },
-    availability: {
-      availabilityFrom: formData.availabilityFrom,
-      availabilityTo: formData.availabilityTo
-    },
-    owner: {
-      name: formData.ownerName,
-      contactNumber: formData.contactNumber,
-      nic: formData.ownerNIC
-    },
-    images: vehicleImages.map((_, index) => ({
-      imageUrl: `https://example.com/images/${formData.vehicleNumber}_${index  + 1}.jpg`,
-      uploadedAt: new Date().toISOString()
-    }))
-  };
+  // Clear previous errors
+  setErrors({});
+  
+  // Validate form
+  const validationErrors = validateVehicleForm(formData);
+  
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
 
-  const success = await addVehicle(payload);
-  if (success) {
-    console.log('Vehicle added successfully');
-    // Optionally reset form or redirect
+  setIsSubmitting(true);
+  
+  try {
+    // Save images first and get URLs
+    const imageUrls = await saveImages(formData.vehicleNumber);
+    
+    const payload = {
+      vehicle: {
+        vehicleNumber: formData.vehicleNumber,
+        passengerCount: parseInt(formData.passengerCount),
+        vehicleType: formData.vehicleType,
+        pricePerKm: parseFloat(formData.pricePerKm),
+        basePrice: parseFloat(formData.basePrice),
+        availabilityFrom: formData.availabilityFrom,
+        availabilityTo: formData.availabilityTo,
+        description: formData.description || "Vehicle description"
+      },
+      availability: {
+        availabilityFrom: formData.availabilityFrom,
+        availabilityTo: formData.availabilityTo
+      },
+      owner: {
+        name: formData.ownerName,
+        contactNumber: formData.contactNumber,
+        nic: formData.ownerNIC
+      },
+      images: imageUrls.map((url, index) => ({
+        imageUrl: url,
+        uploadedAt: new Date().toISOString()
+      }))
+    };
+
+    const success = await addVehicle(payload);
+    if (success) {
+      console.log('Vehicle added successfully');
+      // Reset form on success
+      setFormData({
+        vehicleNumber: '',
+        passengerCount: '',
+        vehicleType: '',
+        pricePerKm: '',
+        basePrice: '',
+        availabilityFrom: '',
+        availabilityTo: '',
+        description: '',
+        ownerName: '',
+        contactNumber: '',
+        ownerNIC: ''
+      });
+      clearImages();
+    }
+  } catch (error) {
+    console.error('Error adding vehicle:', error);
+  } finally {
+    setIsSubmitting(false);
   }
 };
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -149,14 +206,20 @@ const handleSubmit = async () => {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <h3 className="text-base font-medium text-gray-800">Vehicle Picture</h3>
-              {/* <HelpCircle className="w-4 h-4 text-gray-400" /> */}
             </div>
+            
+            {uploadError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm">{uploadError}</p>
+              </div>
+            )}
+            
             <div className="flex gap-4 flex-wrap">
               {/* Display uploaded images */}
-              {vehicleImages.map((image, index) => (
+              {getImagePreviews().map((preview, index) => (
                 <div key={index} className="relative w-60 h-40 bg-gray-100 rounded-lg flex items-center justify-center group">
                   <img 
-                    src={image}
+                    src={preview}
                     alt={`Vehicle ${index + 1}`}
                     className="w-full h-full object-contain rounded-lg"
                   />
@@ -168,20 +231,23 @@ const handleSubmit = async () => {
                   </button>
                 </div>
               ))}
+              
               {/* Add image button */}
-              <label className="w-60 h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 cursor-pointer">
+              <label className={`w-60 h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:border-gray-400 cursor-pointer ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                 <Image className="w-8 h-8 mb-2" />
-                <span className="text-sm">Add image</span>
+                <span className="text-sm">{isUploading ? 'Uploading...' : 'Add image'}</span>
                 <input
                   type="file"
                   accept="image/*"
                   multiple
                   onChange={handleImageUpload}
+                  disabled={isUploading}
                   className="hidden"
                 />
               </label>
             </div>
           </div>
+
 
           {/* Vehicle Details Section */}
           <div className="mb-8">
@@ -201,6 +267,9 @@ const handleSubmit = async () => {
                   onChange={(e) => handleInputChange('vehicleNumber', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {errors.vehicleNumber && (
+                  <p className="text-red-500 text-xs mt-1">{errors.vehicleNumber}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -217,6 +286,9 @@ const handleSubmit = async () => {
                   <option value="6">6</option>
                   <option value="8">8</option>
                 </select>
+                {errors.passengerCount && (
+                  <p className="text-red-500 text-xs mt-1">{errors.passengerCount}</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -233,6 +305,9 @@ const handleSubmit = async () => {
                   <option value="bus">Bus</option>
                   <option value="bike">Bike</option>
                 </select>
+                {errors.vehicleType && (
+                  <p className="text-red-500 text-xs mt-1">{errors.vehicleType}</p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-3 gap-6">
@@ -247,6 +322,10 @@ const handleSubmit = async () => {
                   onChange={(e) => handleInputChange('pricePerKm', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+              {errors.pricePerKm && (
+                <p className="text-red-500 text-xs mt-1">{errors.pricePerKm}</p>
+              )}
+
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -259,6 +338,10 @@ const handleSubmit = async () => {
                   onChange={(e) => handleInputChange('basePrice', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {errors.basePrice && (
+                  <p className="text-red-500 text-xs mt-1">{errors.basePrice}</p>
+                )}
+
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -281,6 +364,17 @@ const handleSubmit = async () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
+                  {(errors.availabilityFrom || errors.availabilityTo) && (
+                    <div className="mt-1">
+                      {errors.availabilityFrom && (
+                        <p className="text-red-500 text-xs">{errors.availabilityFrom}</p>
+                      )}
+                      {errors.availabilityTo && (
+                        <p className="text-red-500 text-xs">{errors.availabilityTo}</p>
+                      )}
+                    </div>
+                  )}
+
                 </div>
               </div>
             </div>
@@ -313,6 +407,10 @@ const handleSubmit = async () => {
                   }}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {errors.ownerName && (
+                  <p className="text-red-500 text-xs mt-1">{errors.ownerName}</p>
+                )}
+
                 {/* Suggestions Dropdown */}
                 {showSuggestions && filteredOwners.length > 0 && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
@@ -342,6 +440,10 @@ const handleSubmit = async () => {
                   onChange={(e) => handleInputChange('contactNumber', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {errors.contactNumber && (
+                  <p className="text-red-500 text-xs mt-1">{errors.contactNumber}</p>
+                )}
+
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -354,6 +456,10 @@ const handleSubmit = async () => {
                   onChange={(e) => handleInputChange('ownerNIC', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {errors.ownerNIC && (
+                  <p className="text-red-500 text-xs mt-1">{errors.ownerNIC}</p>
+                )}
+
               </div>
               <div className="mt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -374,13 +480,19 @@ const handleSubmit = async () => {
           <div className="flex gap-3 pt-6">
             <button 
               onClick={handleSubmit}
-              className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2"
+              disabled={isSubmitting}
+              className={`${
+                isSubmitting 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-indigo-500 hover:bg-indigo-600'
+              } text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
               </svg>
-              Save Changes
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
             </button>
+
             <button className="bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors duration-200">
               Cancel
             </button>
