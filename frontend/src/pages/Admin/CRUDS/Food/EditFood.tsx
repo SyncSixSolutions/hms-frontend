@@ -1,33 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  TextField, 
-  Button, 
-  IconButton, 
-  Paper, 
-  Grid, 
-  MenuItem, 
-  Avatar,
-  InputAdornment,
-  useMediaQuery,
-  useTheme,
-  Drawer,
-  AppBar,
-  Toolbar,
-  Container,
-  CircularProgress
-} from '@mui/material';
-import { useParams, useNavigate } from 'react-router-dom';
-import SaveIcon from '@mui/icons-material/Save';
-import InfoIcon from '@mui/icons-material/Info';
-import CloseIcon from '@mui/icons-material/Close';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import SearchIcon from '@mui/icons-material/Search';
-import MenuIcon from '@mui/icons-material/Menu';
 import { foodService } from '../../../../services/foodService';
+import Button from '../../../../components/ui/Button';
+import { Search, Save, X } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
 
-// Define the form data interface
 interface FoodFormData {
   foodNumber: string;
   foodName: string;
@@ -41,14 +17,11 @@ interface FoodFormData {
 }
 
 const EditFood: React.FC = () => {
-  const theme = useTheme();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [formData, setFormData] = useState<FoodFormData>({
     foodNumber: '',
     foodName: '',
@@ -64,9 +37,7 @@ const EditFood: React.FC = () => {
   // Cleanup function for image preview URLs
   useEffect(() => {
     return () => {
-      // Clean up the object URLs when component unmounts
       formData.imagePreviews.forEach(preview => {
-        // Only revoke if it's an object URL (starts with blob:)
         if (preview.startsWith('blob:')) {
           URL.revokeObjectURL(preview);
         }
@@ -85,7 +56,6 @@ const EditFood: React.FC = () => {
 
       try {
         setLoading(true);
-        // Convert id from string to number
         const foodId = parseInt(id, 10);
         
         if (isNaN(foodId)) {
@@ -94,7 +64,6 @@ const EditFood: React.FC = () => {
         
         const foodData = await foodService.getFoodById(foodId);
         
-        // Populate the form with the fetched food data
         setFormData({
           foodNumber: foodData.foodNumber,
           foodName: foodData.foodName,
@@ -119,7 +88,7 @@ const EditFood: React.FC = () => {
     loadFoodData();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -144,7 +113,6 @@ const EditFood: React.FC = () => {
     const newImages = [...formData.images];
     const newPreviews = [...formData.imagePreviews];
     
-    // Only revoke if it's an object URL (starts with blob:)
     if (newPreviews[index].startsWith('blob:')) {
       URL.revokeObjectURL(newPreviews[index]);
     }
@@ -164,6 +132,8 @@ const EditFood: React.FC = () => {
     if (!id) return;
     
     setLoading(true);
+    setError(null);
+
     try {
       const foodId = parseInt(id, 10);
       
@@ -180,9 +150,12 @@ const EditFood: React.FC = () => {
         foodType: formData.foodType,
         foodDescription: formData.foodDescription
       };
+
+      if (formData.images.length > 0) {
+        console.log("Image upload is not implemented in the backend yet");
+      }
       
       await foodService.updateFood(foodId, foodDataForUpdate);
-      
       alert('Food updated successfully!');
       navigate('/admin/foods');
     } catch (err: any) {
@@ -197,453 +170,310 @@ const EditFood: React.FC = () => {
     navigate('/admin/foods');
   };
 
-  const currentDate = new Date().toLocaleDateString('en-US', {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-  });
+  const getCurrentDate = () => {
+    const date = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    };
+    return date.toLocaleDateString('en-US', options);
+  };
 
-  // Mobile drawer content
-  const drawerContent = (
-    <Box sx={{ width: 250, p: 2 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
-        <Avatar sx={{ bgcolor: '#6366f1', mr: 2 }} />
-        <Typography variant="h6">Admin Panel</Typography>
-      </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Button variant="text" sx={{ justifyContent: 'flex-start' }}>Dashboard</Button>
-        <Button 
-          variant="text" 
-          sx={{ 
-            justifyContent: 'flex-start',
-            bgcolor: 'rgba(99, 102, 241, 0.08)',
-            color: '#6366f1'
-          }}
-          onClick={() => navigate('/admin/foods')}
-        >
-          Food Management
-        </Button>
-        <Button variant="text" sx={{ justifyContent: 'flex-start' }}>User Management</Button>
-        <Button variant="text" sx={{ justifyContent: 'flex-start' }}>Settings</Button>
-      </Box>
-    </Box>
-  );
+  const handleSearchChange = (value: string) => {
+    console.log("Search value:", value);
+  };
+
+  const handleProfileClick = () => {
+    console.log("Profile clicked");
+  };
 
   // Show loading state
   if (loading && !formData.foodName) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
-      </Box>
+      <div className="min-h-screen bg-gray-50 p-6 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6B72D6] mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading food data...</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Mobile App Bar */}
-      {isMobile && (
-        <AppBar position="static" sx={{ bgcolor: 'white', boxShadow: 1 }}>
-          <Toolbar>
-            <IconButton 
-              edge="start" 
-              color="inherit" 
-              aria-label="menu"
-              onClick={() => setDrawerOpen(true)}
-            >
-              <MenuIcon sx={{ color: '#334155' }} />
-            </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: '#334155' }}>
-              Edit Food
-            </Typography>
-            <Avatar sx={{ bgcolor: '#6366f1', width: 35, height: 35 }} />
-          </Toolbar>
-        </AppBar>
-      )}
-
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-      >
-        {drawerContent}
-      </Drawer>
-
-      <Container maxWidth="lg" sx={{ 
-        flexGrow: 1,
-        display: 'flex', 
-        flexDirection: 'column',
-        bgcolor: '#f8f9fa',
-        p: { xs: 1, sm: 2, md: 3 },
-        pt: isMobile ? 2 : 3,
-      }}>
-        {/* Desktop/Tablet Header */}
-        {!isMobile && (
-          <Box sx={{
-            p: { xs: 1, sm: 2 },
-            display: 'flex',
-            flexDirection: isTablet ? 'column' : 'row',
-            justifyContent: 'space-between',
-            alignItems: isTablet ? 'flex-start' : 'center',
-            mb: 3,
-            gap: isTablet ? 2 : 0
-          }}>
-            <Box>
-              <Typography 
-                variant={isTablet ? "h6" : "h5"} 
-                sx={{ color: '#334155', fontWeight: 600 }}
-              >
-                Edit Food Item
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  mt: 0.5,
-                  color: '#64748b',
-                  fontSize: '0.9rem'
-                }}
-              >
-                {currentDate}
-              </Typography>
-            </Box>
-            <Box sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 2,
-              width: isTablet ? '100%' : 'auto'
-            }}>
-              <TextField
+    <div className="min-h-screen bg-gray-50 p-6 bg-gradient-to-br from-gray-50 to-gray-100"> {/* Same as AddFood */}
+      {/* Main container with wider width to minimize edge distance - EXACT SAME AS AddFood */}
+      <div className="max-w-[95%] mx-auto">
+        {/* Header - now aligned with card below - EXACT SAME AS AddFood */}
+        <div className="flex justify-between items-center mb-4"> {/* Same margin as AddFood */}
+          <div>
+            <h1 className="text-2xl font-normal text-gray-500">Welcome, Admin</h1> {/* Same text color as AddFood */}
+            <p className="text-sm text-gray-500 mt-1">{getCurrentDate()}</p>
+          </div>
+          <div className="flex items-center space-x-3"> {/* Same spacing as AddFood */}
+            {/* Search Bar - Same as AddFood */}
+            <div className="relative bg-white rounded-full shadow-sm">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
                 placeholder="Search"
-                variant="outlined"
-                size="small"
-                fullWidth={isTablet}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#94a3b8' }} />
-                    </InputAdornment>
-                  ),
-                  sx: { borderRadius: 20, bgcolor: 'white' }
-                }}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="pl-10 pr-4 py-2 w-56 rounded-full bg-white text-gray-600 text-sm border-none focus:outline-none focus:ring-1 focus:ring-gray-200"
               />
-              <Avatar 
-                sx={{ 
-                  width: 40, 
-                  height: 40,
-                  bgcolor: '#6366f1',
-                  flexShrink: 0
-                }} 
-              />
-            </Box>
-          </Box>
-        )}
-
-        {/* Main Content */}
-        <Paper 
-          elevation={0} 
-          sx={{ 
-            borderRadius: 3, 
-            overflow: 'hidden',
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
-            mb: 4,
-            flexGrow: 1
-          }}
-        >
-          {/* Page Title */}
-          <Box sx={{ bgcolor: '#6366f1', color: 'white', p: 2 }}>
-            <Typography variant="h6" fontWeight="600">
-              Edit Food Item: {formData.foodName}
-            </Typography>
-          </Box>
-
-          <Box sx={{ p: { xs: 2, sm: 3 } }}>
-            {error && (
-              <Box sx={{ 
-                bgcolor: '#FEE2E2', 
-                color: '#B91C1C', 
-                p: 2, 
-                borderRadius: 1,
-                mb: 3 
-              }}>
-                <Typography>{error}</Typography>
-              </Box>
-            )}
+            </div>
             
-            <form onSubmit={handleSubmit}>
-              {/* Food Picture Section */}
-              <Box sx={{ mb: 4 }}>
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 1,
-                  mb: 2,
-                  pb: 1,
-                  borderBottom: '1px solid #e2e8f0'
-                }}>
-                  <Typography variant="subtitle1" fontWeight="600">
-                    Food Picture
-                  </Typography>
-                  <InfoIcon sx={{ fontSize: 18, color: '#64748b' }} />
-                </Box>
+            {/* Profile Avatar - EXACT SAME AS AddFood */}
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-white shadow-md"> {/* Enhanced shadow */}
+              <img
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+                alt="Admin Profile"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>      
+      
+        {/* Edit Food Header - matched with AddFood but with enhanced shadow */}
+        <div className="rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"> {/* Added shadow with hover effect */}
+          <div className="rounded-t-lg p-2 bg-[#6B72D6]">
+            <h2 className="text-xl font-bold text-white ml-1">Edit Food Item: {formData.foodName}</h2>
+          </div>
 
-                <Grid container spacing={2}>
-                  {/* Uploaded image previews */}
-                  {formData.imagePreviews.map((preview, index) => (
-                    <Grid item xs={6} sm={4} md={3} lg={2} key={index}>
-                      <Box sx={{ position: 'relative' }}>
-                        <Box
-                          component="img"
+          {/* Form Content */}
+          <div className="p-2 bg-white rounded-b-lg">
+            <div className="space-y-4">
+              {error && (
+                <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-6">
+                  <p>{error}</p>
+                </div>
+              )}
+              
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Food Picture Section */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium mb-4">Food Picture</h3>
+                  
+                  <div className="flex gap-4 items-start">
+                    {/* Image previews */}
+                    {formData.imagePreviews.map((preview, index) => (
+                      <div key={index} className="relative">
+                        <img
                           src={preview}
                           alt={`Food preview ${index + 1}`}
-                          sx={{
-                            width: '100%',
-                            aspectRatio: '1/1',
-                            objectFit: 'cover',
-                            borderRadius: 2,
-                            border: '1px solid #e2e8f0'
-                          }}
+                          className="w-28 h-20 object-cover rounded-lg shadow-md" // Added shadow like AddFood
                         />
-                        <IconButton
-                          size="small"
+                        <button
+                          type="button"
                           onClick={() => handleRemoveImage(index)}
-                          sx={{
-                            position: 'absolute',
-                            top: -8,
-                            right: -8,
-                            bgcolor: 'white',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                            '&:hover': {
-                              bgcolor: '#f1f5f9',
-                            }
-                          }}
+                          className="absolute -top-2 -right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
                         >
-                          <CloseIcon fontSize="small" />
-                        </IconButton>
-                      </Box>
-                    </Grid>
-                  ))}
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
 
-                  {/* Image upload box */}
-                  <Grid item xs={6} sm={4} md={3} lg={2}>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        aspectRatio: '1/1',
-                        border: '1px dashed #cbd5e1',
-                        borderRadius: 2,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        transition: 'background-color 0.2s',
-                        '&:hover': {
-                          bgcolor: '#f1f5f9',
-                        }
-                      }}
-                      component="label"
-                      htmlFor="image-upload"
-                    >
-                      <input
-                        type="file"
-                        id="image-upload"
-                        accept="image/*"
-                        onChange={handleFileUpload}
-                        style={{ display: 'none' }}
-                      />
-                      <AddPhotoAlternateIcon sx={{ fontSize: 24, color: '#94a3b8', mb: 1 }} />
-                      <Typography variant="caption" color="#64748b" align="center">
-                        {formData.imagePreviews.length > 0 ? 'Change image' : 'Add image'}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
+                    {/* Upload button */}
+                    <div className="relative">
+                      <label 
+                        htmlFor="image-upload"
+                        className="flex flex-col items-center justify-center w-28 h-20 border border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors shadow-md" // Added shadow
+                      >
+                        <input
+                          type="file"
+                          id="image-upload"
+                          accept="image/*"
+                          onChange={handleFileUpload}
+                          className="sr-only"
+                        />
+                        <div className="text-2xl text-[#6B72D6]">+</div>
+                        <span className="text-xs text-gray-500 mt-1">{formData.imagePreviews.length > 0 ? 'Change image' : 'Add image'}</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
 
-              {/* Food Details Section */}
-              <Box sx={{ mb: 4 }}>
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: 1,
-                  mb: 2,
-                  pb: 1,
-                  borderBottom: '1px solid #e2e8f0'
-                }}>
-                  <Typography variant="subtitle1" fontWeight="600">
-                    Food Details
-                  </Typography>
-                  <InfoIcon sx={{ fontSize: 18, color: '#64748b' }} />
-                </Box>
+                {/* Food Details Section */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium mb-4">Food Details</h3>
 
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Food number"
-                      name="foodNumber"
-                      value={formData.foodNumber}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      placeholder="Food number"
-                      variant="outlined"
-                      size="small"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Food name"
-                      name="foodName"
-                      value={formData.foodName}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      placeholder="Food name"
-                      variant="outlined"
-                      size="small"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      select
-                      label="Available times"
-                      name="availableTimes"
-                      value={formData.availableTimes}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      variant="outlined"
-                      size="small"
-                    >
-                      <MenuItem value="">-Select-</MenuItem>
-                      <MenuItem value="breakfast">Breakfast</MenuItem>
-                      <MenuItem value="lunch">Lunch</MenuItem>
-                      <MenuItem value="dinner">Dinner</MenuItem>
-                      <MenuItem value="allday">All Day</MenuItem>
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      select
-                      label="Food nature"
-                      name="foodNature"
-                      value={formData.foodNature}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      variant="outlined"
-                      size="small"
-                    >
-                      <MenuItem value="">-Select-</MenuItem>
-                      <MenuItem value="veg">Vegetarian</MenuItem>
-                      <MenuItem value="nonveg">Non-Vegetarian</MenuItem>
-                      <MenuItem value="vegan">Vegan</MenuItem>
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="Price"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      placeholder="Rs. Price"
-                      variant="outlined"
-                      size="small"
-                      InputProps={{
-                        startAdornment: <InputAdornment position="start">Rs.</InputAdornment>,
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      select
-                      label="Food type"
-                      name="foodType"
-                      value={formData.foodType}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      variant="outlined"
-                      size="small"
-                    >
-                      <MenuItem value="">-Select-</MenuItem>
-                      <MenuItem value="appetizer">Appetizer</MenuItem>
-                      <MenuItem value="mainCourse">Main Course</MenuItem>
-                      <MenuItem value="dessert">Dessert</MenuItem>
-                      <MenuItem value="beverage">Beverage</MenuItem>
-                    </TextField>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      label="Food description"
+                  <div className="flex md:flex-row flex-col gap-6">
+                    {/* Left column */}
+                    <div className="flex-1 space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Food number</label>
+                        <input
+                          type="text"
+                          name="foodNumber"
+                          value={formData.foodNumber}
+                          onChange={handleChange}
+                          required
+                          placeholder="Food number"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Food name</label>
+                        <input
+                          type="text"
+                          name="foodName"
+                          value={formData.foodName}
+                          onChange={handleChange}
+                          required
+                          placeholder="Food name"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Available times</label>
+                        <select
+                          name="availableTimes"
+                          value={formData.availableTimes}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        >
+                          <option value="">-Select-</option>
+                          <option value="breakfast">Breakfast</option>
+                          <option value="lunch">Lunch</option>
+                          <option value="dinner">Dinner</option>
+                          <option value="allday">All Day</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Right column */}
+                    <div className="flex-1 space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Food nature</label>
+                        <select
+                          name="foodNature"
+                          value={formData.foodNature}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        >
+                          <option value="">-Select-</option>
+                          <option value="veg">Vegetarian</option>
+                          <option value="nonveg">Non-Vegetarian</option>
+                          <option value="vegan">Vegan</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-2 text-gray-500">Rs.</span>
+                          <input
+                            type="text"
+                            name="price"
+                            value={formData.price}
+                            onChange={handleChange}
+                            required
+                            placeholder="Price"
+                            className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                     hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                     focus:outline-none transition duration-150 ease-in-out"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Food type</label>
+                        <select
+                          name="foodType"
+                          value={formData.foodType}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        >
+                          <option value="">-Select-</option>
+                          <option value="appetizer">Appetizer</option>
+                          <option value="mainCourse">Main Course</option>
+                          <option value="dessert">Dessert</option>
+                          <option value="beverage">Beverage</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Full width description */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Food description</label>
+                    <textarea
                       name="foodDescription"
                       value={formData.foodDescription}
                       onChange={handleChange}
-                      fullWidth
                       required
                       placeholder="Food description"
-                      variant="outlined"
-                      size="small"
-                      multiline
-                      rows={isMobile ? 3 : 4}
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                               hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                               focus:outline-none transition duration-150 ease-in-out"
                     />
-                  </Grid>
-                </Grid>
-              </Box>
+                  </div>
+                </div>
 
-              {/* Action Buttons */}
-              <Box sx={{ 
-                display: 'flex', 
-                flexDirection: isMobile ? 'column' : 'row',
-                gap: 2, 
-                mt: 4 
-              }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  fullWidth={isMobile}
-                  startIcon={<SaveIcon />}
-                  disabled={loading}
-                  sx={{
-                    bgcolor: '#6366f1',
-                    borderRadius: 2,
-                    py: 1,
-                    px: 3,
-                    '&:hover': {
-                      bgcolor: '#5355c9'
-                    }
-                  }}
-                >
-                  {loading ? 'Saving...' : 'Update Food'}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outlined"
-                  fullWidth={isMobile}
-                  onClick={handleCancel}
-                  sx={{
-                    borderColor: '#cbd5e1',
-                    color: '#64748b',
-                    borderRadius: 2,
-                    py: 1,
-                    px: 3,
-                    '&:hover': {
-                      bgcolor: '#f1f5f9',
-                      borderColor: '#cbd5e1',
-                    }
-                  }}
-                >
-                  Cancel
-                </Button>
-              </Box>
-            </form>
-          </Box>
-        </Paper>
-      </Container>
-    </Box>
+                {/* Action Buttons */}
+                <div className="flex gap-6 md:flex-row flex-col">
+                  <Button
+                    type="submit"
+                    variant="filled"
+                    disabled={loading}
+                    className="flex items-center justify-center gap-2 text-white shadow-sm hover:shadow transition-shadow duration-300"
+                    style={{ backgroundColor: "#6B72D6" }}
+                  >
+                    <Save className="w-4 h-4" />
+                    {loading ? 'Updating...' : 'Update Food'}
+                  </Button>
+                  
+                  <Button
+                    type="button"
+                    variant="border"
+                    onClick={handleCancel}
+                    className="text-gray-700 shadow-sm hover:shadow transition-shadow duration-300"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+
+              {/* Footer section - aligned with bottom edge style like AddFood */}
+              <div className="mt-5 bg-gray-100 rounded-lg p-2 flex justify-between items-center shadow-sm hover:shadow transition-shadow duration-300"> {/* Added shadow */}
+                <div>
+                  <span className="text-gray-700 text-sm">Form Status: </span>
+                  <span className="font-medium text-[#6B72D6] text-sm">{loading ? 'Updating...' : 'Ready to update'}</span>
+                </div>
+                <div>
+                  <a
+                    href="#"
+                    className="text-xs hover:underline text-[#6B72D6]"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate('/admin/foods');
+                    }}
+                  >
+                    Back to food list
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

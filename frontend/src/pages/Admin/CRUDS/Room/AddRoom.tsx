@@ -58,7 +58,6 @@ interface RoomFormData {
 }
 
 const AddRoom: React.FC = () => {
-  const theme = useTheme();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -453,7 +452,7 @@ const AddRoom: React.FC = () => {
                       </div>
                     ))}
 
-                    {/* Image upload box - only show if less than 4 images */}
+                    {/* Upload button - reduced size to match AddFood */}
                     {formData.imagePreviews.length < 4 && (
                       <div className="relative">
                         <label
@@ -528,26 +527,25 @@ const AddRoom: React.FC = () => {
                     </select>
                   </div>
 
-                  <div className="mb-2 p-2">
-                    <label className="block mb-1 text-sm font-medium text-text">
-                      Room type
-                    </label>
-                    <select
-                      name="roomType"
-                      value={formData.roomType}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-3 py-2 border border-border rounded-3xl shadow-sm bg-bg text-text 
-                               hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary-ring 
-                               focus:outline-none transition duration-150 ease-in-out"
-                    >
-                      <option value="Deluxe">Deluxe</option>
-                      <option value="Standard">Standard</option>
-                      <option value="Suite">Suite</option>
-                      <option value="Executive">Executive</option>
-                      <option value="Family">Family</option>
-                    </select>
-                  </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Room type</label>
+                        <select
+                          name="roomType"
+                          value={formData.roomType}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 
+                                   hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                   focus:outline-none transition duration-150 ease-in-out"
+                        >
+                          <option value="Deluxe">Deluxe</option>
+                          <option value="Standard">Standard</option>
+                          <option value="Suite">Suite</option>
+                          <option value="Executive">Executive</option>
+                          <option value="Family">Family</option>
+                        </select>
+                      </div>
+                    </div>
 
                   <Input
                     label="Room capacity"
@@ -625,7 +623,6 @@ const AddRoom: React.FC = () => {
                     />
                   </div>
                 </div>
-              </div>
 
               {/* Amenities Section */}
               <div className="mb-8">
