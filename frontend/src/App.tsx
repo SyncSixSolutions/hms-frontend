@@ -64,7 +64,7 @@ function App() {
         <Route path="/admin/food/editfood/:id" element={<EditFood />} />
         <Route path="/admin/food/list" element={<FoodList />} />
         <Route path="/admin/rooms/add" element={<AddRoom />} />
-        <Route path="/admin/rooms/edit/:id" element={<EditRoom />} />
+        <Route path="/admin/rooms/edit/:roomNumber" element={<EditRoom />} />
         <Route path="/admin/rooms/all" element={<RoomList />} />
         <Route path="/show-bookings" element={<ShowBookings />} />
         <Route path="/add-therapy" element={<AddTherapy />} />
