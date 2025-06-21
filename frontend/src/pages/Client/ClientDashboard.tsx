@@ -9,6 +9,7 @@ import dashboardPool from "../../assets/images/dashboard_pool.jpg";
 import dashboardTherapy from "../../assets/images/dashboard_therapy.jpg";
 import visaLogo from "../../assets/images/visa-logo.png";
 import mastercardLogo from "../../assets/images/mastercard-logo.png";
+import { FloatingNavBar } from "../../components/layout";
 
 
 const ClientDashboard: React.FC = () => {
@@ -58,6 +59,9 @@ const ClientDashboard: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-5 font-sans text-gray-800">
+      <FloatingNavBar role={
+        "user"
+      }/>
       {/* Header Component */}
       <ClientHeader
         userName={userData.name}

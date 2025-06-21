@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../../../../components/ui/Button';
 import Card from '../../../../components/ui/Card';
 import CardContent from '../../../../components/ui/CardContent';
@@ -18,7 +18,8 @@ import {
   Drawer,
   AppBar,
   Toolbar,
-  Container
+  Container,
+  CircularProgress
 } from '@mui/material';
 
 import SaveIcon from '@mui/icons-material/Save';
@@ -56,23 +57,24 @@ interface RoomFormData {
   };
 }
 
-const AddRoom: React.FC = () => {
+const EditRoom: React.FC = () => {
   const theme = useTheme();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<RoomFormData>({
     roomNumber: '',
     roomFloor: '',
-    reservationStatus: 'Vacant',
-    roomType: 'Deluxe',
+    reservationStatus: '',
+    roomType: '',
     capacity: '',
     pricePerNight: '',
-    bedType: 'King size',
+    bedType: '',
     roomSize: '',
     description: '',
     images: [],
@@ -97,9 +99,92 @@ const AddRoom: React.FC = () => {
   useEffect(() => {
     return () => {
       // Clean up the object URLs when component unmounts
-      formData.imagePreviews.forEach(preview => URL.revokeObjectURL(preview));
+      formData.imagePreviews.forEach(preview => {
+        // Only revoke if it's an object URL (starts with blob:)
+        if (preview.startsWith('blob:')) {
+          URL.revokeObjectURL(preview);
+        }
+      });
     };
-  }, []);
+  }, [formData.imagePreviews]);
+
+  // Load room data when component mounts
+  useEffect(() => {
+    const loadRoomData = async () => {
+      if (!id) {
+        setError('No room ID provided');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        // Convert id from string to number
+        const roomId = parseInt(id, 10);
+        
+        if (isNaN(roomId)) {
+          throw new Error('Invalid room ID');
+        }
+        
+        // Here you would call your room service
+        // Example: const roomData = await roomService.getRoomById(roomId);
+        
+        // For now, let's create mock data
+        const roomData = {
+          id: roomId,
+          roomNumber: `10${roomId}`,
+          roomFloor: `${Math.floor(roomId / 10) + 1}`,
+          reservationStatus: 'Vacant',
+          roomType: 'Deluxe',
+          capacity: '2-4 guests',
+          pricePerNight: '150',
+          bedType: 'King size',
+          roomSize: '400 sq ft',
+          description: 'Spacious room with beautiful view and modern amenities.',
+          images: ['https://via.placeholder.com/300x200?text=Room+Image'],
+          amenities: {
+            petFriendly: true,
+            smoking: false,
+            wifi: true,
+            miniBar: true,
+            coffeeMaker: true,
+            cityView: false,
+            shower: true,
+            sofaBox: true,
+            refrigerator: false,
+            airConditioner: true,
+            tvCable: true,
+            seaView: false
+          }
+        };
+        
+        // Populate the form with the fetched room data
+        setFormData({
+          roomNumber: roomData.roomNumber,
+          roomFloor: roomData.roomFloor,
+          reservationStatus: roomData.reservationStatus,
+          roomType: roomData.roomType,
+          capacity: roomData.capacity,
+          pricePerNight: roomData.pricePerNight,
+          bedType: roomData.bedType,
+          roomSize: roomData.roomSize,
+          description: roomData.description,
+          images: [],
+          imagePreviews: roomData.images || [],
+          amenities: roomData.amenities
+        });
+        
+        setError(null);
+      } catch (err: any) {
+        console.error('Error loading room data:', err);
+        setError(err.message || 'Failed to load room data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadRoomData();
+  }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -138,8 +223,10 @@ const AddRoom: React.FC = () => {
     const newImages = [...formData.images];
     const newPreviews = [...formData.imagePreviews];
     
-    // Revoke the URL to prevent memory leaks
-    URL.revokeObjectURL(newPreviews[index]);
+    // Only revoke if it's an object URL (starts with blob:)
+    if (newPreviews[index].startsWith('blob:')) {
+      URL.revokeObjectURL(newPreviews[index]);
+    }
     
     newImages.splice(index, 1);
     newPreviews.splice(index, 1);
@@ -153,21 +240,30 @@ const AddRoom: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!id) return;
+    
     setLoading(true);
-    setError(null);
-
     try {
-      // Here you would call your room service to save room data
-      // Example: await roomService.addRoom(formData);
+      const roomId = parseInt(id, 10);
+      
+      if (isNaN(roomId)) {
+        throw new Error('Invalid room ID');
+      }
+      
+      // Here you would call your room service to update the room
+      // Example: await roomService.updateRoom(roomId, formData);
+      
+      // For now, just log the data
+      console.log('Room data to update:', formData);
       
       // Show success message
-      alert('Room added successfully!');
+      alert('Room updated successfully!');
       
       // Navigate back to the rooms list
       navigate('/admin/rooms');
     } catch (err: any) {
-      console.error('Error during submission:', err);
-      setError(err.message || 'Error connecting to server. Please try again later.');
+      console.error('Error updating room:', err);
+      setError(err.message || 'Failed to update room. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -220,6 +316,15 @@ const AddRoom: React.FC = () => {
     </Box>
   );
 
+  // Show loading state
+  if (loading && !formData.roomNumber) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Mobile App Bar */}
@@ -235,7 +340,7 @@ const AddRoom: React.FC = () => {
               <MenuIcon sx={{ color: '#334155' }} />
             </IconButton>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: '#334155' }}>
-              Add Room
+              Edit Room
             </Typography>
             <Avatar sx={{ bgcolor: '#6366f1', width: 35, height: 35 }} />
           </Toolbar>
@@ -276,7 +381,7 @@ const AddRoom: React.FC = () => {
                 variant={isTablet ? "h6" : "h5"} 
                 sx={{ color: '#334155', fontWeight: 600 }}
               >
-                Welcome, Admin
+                Edit Room: {formData.roomNumber}
               </Typography>
               <Typography
                 variant="body2"
@@ -326,7 +431,7 @@ const AddRoom: React.FC = () => {
           {/* Page Title */}
           <div className="bg-primary text-white p-4 -m-4 mb-4 rounded-t-2xl">
             <Typography variant="h6" fontWeight="600">
-              Add a new room
+              Edit Room: {formData.roomNumber}
             </Typography>
           </div>
 
@@ -666,7 +771,7 @@ const AddRoom: React.FC = () => {
                   className={`flex items-center justify-center gap-2 text-black ${isMobile ? 'w-full' : ''}`}
                 >
                   <SaveIcon style={{ fontSize: '1.25rem' }} />
-                  {loading ? 'Saving...' : 'Save Changes'}
+                  {loading ? 'Saving...' : 'Update Room'}
                 </Button>
                 
                 <Button
@@ -686,4 +791,4 @@ const AddRoom: React.FC = () => {
   );
 };
 
-export default AddRoom;
+export default EditRoom;
