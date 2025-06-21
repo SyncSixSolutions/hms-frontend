@@ -45,6 +45,7 @@ const apiClient = axios.create({
 export const getOwners = async (): Promise<Owner[]> => {
   try {
     const response = await apiClient.get('/getOwners');
+    console.log('Fetched owners:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching owners:', error);
@@ -115,6 +116,7 @@ export const getVehiclesByDateRange = async (
         endDate,
       },
     });
+    console.log('Fetched vehicles by date range:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching vehicles by date range:', error);
