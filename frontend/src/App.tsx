@@ -41,14 +41,17 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/dashboard-bookings-client" element={<ClientDashboard_Bookings />} />
+        <Route
+          path="/dashboard-bookings-client"
+          element={<ClientDashboard_Bookings />}
+        />
         <Route path="/profile" element={<Profile />} />
         <Route path="/rooms" element={<ShowRooms />} />
-        <Route path="/signup" element={<SignUp/>} ></Route>
+        <Route path="/signup" element={<SignUp />}></Route>
         <Route path="/therapies" element={<ViewTherapiesPage />} />
         <Route path="/addtherapy" element={<AddTherapyPage />} />
         <Route path="/edittherapy" element={<EditTherapyPage />} />
-        <Route path="/food" element={<FoodClient/>} />
+        <Route path="/food" element={<FoodClient />} />
         <Route path="/calendar" element={<BookingCalendar />} />
         <Route path="/recieptionist-view-rentings" element={<ViewRentings />} />
         <Route path="/dashboard-admin" element={<AdminDashboard />} />
@@ -60,19 +63,28 @@ function App() {
         <Route path="/admin/food/addfood" element={<AddFood />} />
         <Route path="/admin/food/editfood/:id" element={<EditFood />} />
         <Route path="/admin/food/list" element={<FoodList />} />
-        <Route path="/admin/room/addroom" element={<AddRoom />} />
-        <Route path='/admin/room/editroom/:id' element={<EditRoom />} />
-        <Route path="/admin/room/list" element={<RoomList />} />
+        <Route path="/admin/rooms/add" element={<AddRoom />} />
+        <Route path="/admin/rooms/edit/:id" element={<EditRoom />} />
+        <Route path="/admin/rooms/all" element={<RoomList />} />
         <Route path="/show-bookings" element={<ShowBookings />} />
         <Route path="/add-therapy" element={<AddTherapy />} />
         <Route path="/edit-therapy" element={<EditTherapy />} />
         <Route path="/spa-dashboard" element={<SpaDashboard />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/booking" element={<MakeBooking />} />
-        <Route path="/receiptionist-dashboard" element={<ReceiptionistDashboard />} />
+        <Route
+          path="/receiptionist-dashboard"
+          element={<ReceiptionistDashboard />}
+        />
         <Route path="/admin/show-orderings" element={<ShowOrderings />} />
-        <Route path="/admin/therapy-booking-history" element={<TherapyBookingHistory />} />
-        <Route path="/admin/vehicle-renting-history" element={<VehicleRentingHistory />} />
+        <Route
+          path="/admin/therapy-booking-history"
+          element={<TherapyBookingHistory />}
+        />
+        <Route
+          path="/admin/vehicle-renting-history"
+          element={<VehicleRentingHistory />}
+        />
       </Routes>
     </Router>
   );
