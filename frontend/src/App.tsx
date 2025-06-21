@@ -1,7 +1,7 @@
 import Home from './pages/Home';
 import VehicleListing from './pages/Client/Vehicle/VehicleListing';
 import ShowBookings from './pages/Admin/Management/Booking/ShowBookings';
-import BookingDashboard from './pages/Admin/Management/Booking/ViewBooking';
+// import BookingDashboard from './pages/Admin/Management/Booking/ViewBooking';
 import AddVehicle from './pages/Admin/CRUDS/Vehicle/AddVehicle';
 import ViewAllVehicle from './pages/Admin/CRUDS/Vehicle/ViewAllVehicle';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -23,9 +23,17 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AddFood from './pages/Admin/CRUDS/Food/AddFood'; 
 import EditFood from './pages/Admin/CRUDS/Food/EditFood';
 import FoodList from './pages/Admin/CRUDS/Food/FoodList';
+import MakeBooking from './pages/Client/Booking/MakeBooking';
+import RoomsLayout from './pages/Client/Booking/RoomsLayout';
+import ReceiptionistDashboard from './pages/Receiptionist/ReceiptionistDashboard';
+import ShowOrderings from './pages/Admin/Management/Food/ShowOrderings';
+import RoomListing from './pages/Admin/Management/Room/RoomListing';
+import TherapyBookingHistory from './pages/Admin/Management/Therapy/TherapyBookingHistory';
+import VehicleRentingHistory from './pages/Admin/Management/Vehicle/VehicleRentingHistory';
 import AddRoom from './pages/Admin/CRUDS/Room/AddRoom';
 import EditRoom from './pages/Admin/CRUDS/Room/EditRoom';
 import RoomList from './pages/Admin/CRUDS/Room/RoomList';
+
 
 function App() {
 
@@ -45,6 +53,8 @@ function App() {
         <Route path="/recieptionist-view-rentings" element={<ViewRentings />} />
         <Route path="/dashboard-admin" element={<AdminDashboard />} />
         <Route path="/vehicle-listing" element={<VehicleListing />} />
+        <Route path="/show-bookings" element={<ShowBookings />} />
+        <Route path="/admin/rooms" element={<RoomListing />} />
         <Route path="/add-vehicle" element={<AddVehicle />} />
         <Route path="/view-all-vehicles" element={<ViewAllVehicle />} />
         <Route path="/admin/food/addfood" element={<AddFood />} />
@@ -58,6 +68,11 @@ function App() {
         <Route path="/edit-therapy" element={<EditTherapy />} />
         <Route path="/spa-dashboard" element={<SpaDashboard />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/booking" element={<MakeBooking />} />
+        <Route path="/receiptionist-dashboard" element={<ReceiptionistDashboard />} />
+        <Route path="/admin/show-orderings" element={<ShowOrderings />} />
+        <Route path="/admin/therapy-booking-history" element={<TherapyBookingHistory />} />
+        <Route path="/admin/vehicle-renting-history" element={<VehicleRentingHistory />} />
       </Routes>
     </Router>
   );

@@ -5,3 +5,4 @@ export { default as TabNav } from './TabNav';
 export { default as TabItem } from './TabItem';
 export { default as ContentArea } from './ContentArea';
 export { default as NavBarComponent } from './NavBarComponent';
+export { default as FloatingNavBar } from './FloatingNavBar';
