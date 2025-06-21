@@ -61,22 +61,17 @@ export const roomService = {
   },
 
   /**
-   * Delete a room by ID.
-   * Backend: DELETE /api/services/rooms/{id}
+   * Delete a room by Room Number.
+   * Backend: DELETE /api/services/rooms/{roomNumber}
    */
-  deleteRoom: async (id: number): Promise<void> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/${id}`, {
-        method: 'DELETE',
-      });
+  deleteRoom: async (roomNumber: string): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/delete/${roomNumber}`, {
+      method: 'DELETE',
+    });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error deleting room: ${errorText}`);
-      }
-    } catch (error) {
-      console.error('Error deleting room:', error);
-      throw error;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error deleting room: ${errorText}`);
     }
   },
 };
