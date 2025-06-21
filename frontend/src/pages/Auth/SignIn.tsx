@@ -3,6 +3,7 @@ import { Button, Input, Card } from '../../components/ui';
 import { FcGoogle } from 'react-icons/fc';
 import { NavBarComponent } from '../../components/layout';
 import Footer from '../../components/layout/Footer';
+import { useNavigate } from 'react-router-dom';
 
 const SignIn: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -10,9 +11,12 @@ const SignIn: React.FC = () => {
 
     const handleSignIn = () => console.log("Sign In");
     const handleSignUp = () => console.log("Sign Up");
+    const navigate = useNavigate();
 
     const handleLogin = () => {
+        navigate('/client-dashboard'); // Redirect to dashboard after login
         console.log({ email, password });
+
     };
 
     return (

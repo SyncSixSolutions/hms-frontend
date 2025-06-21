@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Header from "./components/Header";
 import CategoryHeader from "./components/CategoryHeader";
 import PopularCategories from "./components/PopularCategories";
 import CategoryGrid from "./components/CategoryGrid";
@@ -8,6 +7,7 @@ import Cart from "./components/Cart";
 import { CartProvider, useCart } from "./context/CartContext";
 import { MealType, FoodItem } from "./types";
 import { getFoods, getBreakfastFoods, getLunchFoods, getDinnerFoods } from "../../../api/foodApi";
+import { NavBarComponent } from "../../../components/layout";
 
 import { popularCategories, categories, foodItems } from "./data/foodData";
 
@@ -61,9 +61,16 @@ const FoodApp: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 ">
+      <NavBarComponent
+            role="guest"
+            isAuthenticated={false}
+            forWhat="profile"
+            activeLink="Services & Foods"
+            onProfileClick={() => console.log("Profile clicked")}
+            profileImageUrl="/path-to-user.png"
+          />
       <div className="max-w-7xl mx-auto px-4 py-4 bg-[url('/home/kavindu/vsCode/hms-frontend/frontend/src/assets/images/client-food.png')] bg-cover bg-center ">
-        <Header />
-
+        
         <main className="mt-6">
           <CategoryHeader 
           title="Foods & Beverages" 

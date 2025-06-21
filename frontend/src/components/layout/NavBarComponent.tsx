@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "../ui";
 import { Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import defaultProfileImage from "../../assets/images/profile_image.jpeg";
 
 interface NavLink {
   label: string;
@@ -12,18 +14,16 @@ interface NavBarProps {
   role?: "guest" | "user" | "admin";
   isAuthenticated?: boolean;
   forWhat?: "signIn" | "signUp" | "profile";
-  onSignIn?: () => void;
-  onSignUp?: () => void;
   onProfileClick?: () => void;
   profileImageUrl?: string;
-  activeLink?: string; // New prop to highlight active nav link
+  activeLink?: string;
 }
 
 const navLinksByRole: Record<string, NavLink[]> = {
   guest: [
     { label: "Home", href: "/" },
-    { label: "Rooms", href: "/rooms" },
-    { label: "Services & Foods", href: "/services" },
+    { label: "Rooms", href: "/booking" },
+    { label: "Services & Foods", href: "/food" },
     { label: "Contact Us", href: "/contact" },
     { label: "Hotel Policies", href: "/policies" },
     { label: "About Us", href: "/about" },
@@ -42,12 +42,11 @@ const NavBarComponent: React.FC<NavBarProps> = ({
   role = "guest",
   isAuthenticated = false,
   forWhat = "signIn",
-  onSignIn,
-  onSignUp,
   onProfileClick,
   profileImageUrl,
   activeLink = "",
 }) => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const navLinks = navLinksByRole[role] || navLinksByRole.guest;
 
@@ -59,6 +58,10 @@ const NavBarComponent: React.FC<NavBarProps> = ({
       },
     },
   };
+
+  // Navigation handlers
+  const handleSignIn = () => navigate("/signin");
+  const handleSignUp = () => navigate("/signup");
 
   return (
     <motion.nav
@@ -72,7 +75,8 @@ const NavBarComponent: React.FC<NavBarProps> = ({
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="text-4xl font-parisienne text-[#000957]"
+        className="text-4xl font-parisienne text-[#000957] cursor-pointer"
+        onClick={() => navigate("/")}
       >
         OceanView
       </motion.h1>
@@ -101,8 +105,9 @@ const NavBarComponent: React.FC<NavBarProps> = ({
                 ? "text-blue-600 font-semibold"
                 : "text-[#6B7280] hover:text-blue-500"
             }`}
+            onClick={() => navigate(item.href)}
           >
-            <a href={item.href}>{item.label}</a>
+            {item.label}
           </motion.li>
         ))}
       </motion.ul>
@@ -117,12 +122,12 @@ const NavBarComponent: React.FC<NavBarProps> = ({
         {!isAuthenticated ? (
           <>
             {forWhat === "signIn" && (
-              <Button variant="rounded" onClick={onSignIn}>
+              <Button variant="rounded" onClick={handleSignIn}>
                 Sign In
               </Button>
             )}
             {forWhat === "signUp" && (
-              <Button variant="rounded" onClick={onSignUp}>
+              <Button variant="rounded" onClick={handleSignUp}>
                 Sign Up
               </Button>
             )}
@@ -164,29 +169,31 @@ const NavBarComponent: React.FC<NavBarProps> = ({
       {isOpen && (
         <div className="absolute top-16 left-0 w-full bg-white shadow-md px-4 py-4 space-y-2 md:hidden">
           {navLinks.map(({ label, href }) => (
-            <a
+            <div
               key={label}
-              href={href}
-              className={`block rounded-md px-3 py-2 ${
+              className={`block rounded-md px-3 py-2 cursor-pointer ${
                 activeLink.toLowerCase() === label.toLowerCase()
                   ? "text-blue-600 font-semibold bg-blue-50"
                   : "text-gray-700 hover:bg-gray-100"
               }`}
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                navigate(href);
+                setIsOpen(false);
+              }}
             >
               {label}
-            </a>
+            </div>
           ))}
 
           {!isAuthenticated ? (
             <>
               {forWhat === "signIn" && (
-                <Button variant="rounded" className="w-full" onClick={onSignIn}>
+                <Button variant="rounded" className="w-full" onClick={handleSignIn}>
                   Sign In
                 </Button>
               )}
               {forWhat === "signUp" && (
-                <Button variant="rounded" className="w-full" onClick={onSignUp}>
+                <Button variant="rounded" className="w-full" onClick={handleSignUp}>
                   Sign Up
                 </Button>
               )}

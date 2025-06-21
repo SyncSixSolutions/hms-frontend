@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useAnimation, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { NavBarComponent } from '../components/layout';
 
 import HomeHeader from '../assets/images/HomeHeader.png';
 import How1Icon from '../assets/images/how1.png';
@@ -580,7 +581,7 @@ const Home: React.FC = () => {
     <div className="font-sans">
       {/* Hero Section */}
       {/* Navbar */}
-      <motion.nav 
+      {/* <motion.nav 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -628,7 +629,8 @@ const Home: React.FC = () => {
         >
           Sign up
         </motion.button>
-      </motion.nav>
+      </motion.nav> */}
+      <NavBarComponent />
         <motion.header
         className="relative overflow-hidden bg-cover bg-center"
         style={{

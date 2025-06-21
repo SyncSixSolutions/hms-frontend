@@ -55,8 +55,6 @@ const MakeBooking: React.FC = () => {
         isAuthenticated={false}
         forWhat="signIn"
         activeLink="Rooms"
-        onSignIn={() => console.log("Signing in...")}
-        onSignUp={() => console.log("Signing up...")}
         onProfileClick={() => console.log("Profile clicked")}
         profileImageUrl="/path-to-user.png"
       />
